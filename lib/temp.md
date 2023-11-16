@@ -1,14 +1,4 @@
-# PromptManager
-
-**Under Development**
-
-Extracting the prompt management functionality fro the aip.rb file into a new gem that will provide a generic management service for other programs.
-
-## AIP.RB Legacy Summary of Capability
-
-This is just some source material for later documentation.
-
-### README for aip.rb
+### README for aip.rb Ruby Script
 
 #### Overview
 
@@ -65,36 +55,3 @@ For help with using the CLI tool or further understanding the `mods` command, us
 
 The `aip.rb` script is designed to offer a user-friendly and flexible approach to integrating generative AI into content creation processes. It streamlines the interactions and management of AI-generated content by providing prompt management, AI integration, and logging capabilities, packaged inside a simple command-line utility.
 
-
-
-
-
-## Installation
-
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
-Install the gem and add to the application's Gemfile by executing:
-
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-
-## Usage
-
-TODO: Write usage instructions here
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/prompt_manager.
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
