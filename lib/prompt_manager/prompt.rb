@@ -1,55 +1,48 @@
 # prompt_manager/lib/prompt_manager/prompt.rb
 
+# TODO: Consider an ActiveModel ??
+
 class PromptManager::Prompt
-  @@storage_adapter = nil
-
   PARAMETER_REGEX   = /\[([A-Z _]+)\]/.freeze
-  KEYWORD_REGEX     = /(\[[A-Z _|]+\])/ # NOTE: old from aip.rb
+  # KEYWORD_REGEX   = /(\[[A-Z _|]+\])/ # NOTE: old from aip.rb
+  @storage_adapter  = nil
 
-  attr_accessor :text, :parameters
-
+  class << self
+    attr_accessor :storage_adapter
+  end
+  
+  attr_accessor :db, :text, :parameters
+  
   def initialize(
-      id: # A String name for the prompt
+      id:       nil,  # A String name for the prompt
+      context:  []    # FIXME: Array of Strings or Pathname?
     )
 
-    raise ArgumentError, 'storage cannot be nil'      if storage.nil?
-    raise ArgumentError, 'prompt_id cannot be blank'  if id.nil? || id.empty?
-
-    @storage    = storage
-    @id         = prompt_id
-    @raw_text   = @storage.prompt_text(prompt_id)
-    @parameters = @storage.parameter_values(prompt_id)
+    raise ArgumentError, 'id cannot be blank' if id.nil? || id.strip.empty?
+    
+    @id  = id
+    @db  = self.class.storage_adapter
+    
+    raise ArgumentError, 'storage_adapter is not set' unless @storage
+    
+    @raw_text, @parameters  = db.get(id: id)
+    
     @text       = interpolate_parameters
   end
 
-  # TODO: ignore any line in @raw_text whose first non-white space
-  #       character is "#" - ie a comment line.
-
-  # TODO: ignore allines in @raw_text that come after a line
-  #       equal to "__END__"
-
-
-
   # Displays the prompt text after parameter interpolation.
   def to_s
-    @prompt_text
+    @text
   end
-
 
   def save
-    @storage.save(id, @raw_text, parameters)    
+    db.save(@id, @raw_text, @parameters)    
   end
-
 
   def search(for_what)
-    @storage.search(for_what)
+    db.search(for_what)
   end
 
-  class << self
-    alias_method :get, :new
-  end
-
-  ###############################################
   private
 
   # Converts keys in the hash to lowercase symbols for easy parameter replacement.
@@ -64,7 +57,31 @@ class PromptManager::Prompt
       @parameters[param_name] || match
     end
   end
+
+  
+  # TODO: Implement and integrate ignore_after_end and apply the logic within initialize.
+  
+  # TODO: Implement and integrate extract_raw_prompt and apply the logic within initialize.
+    
+  # TODO: Implement a better error handling strategy for the storage methods (save, search, get).
+  
+  # TODO: Refactor class to support more explicit and semantic configuration and setup.
+  
+  # TODO: Consider adding a method to refresh the parameters and re-interpolate the prompt text.
+  
+  # TODO: Check the responsibility of the save method; should it deal with the parameters directly or leave it to storage?
+    
+  # TODO: Check overall consistency and readability of the code.
 end
+
+# Usage of the fixed class would change as follows:
+# Assuming Storage is a defined class that manages storing and retrieving prompts.
+# storage_instance = Storage.new(...)
+# PromptManager::Prompt.storage_adapter = storage_instance
+
+# prompt = PromptManager::Prompt.new(id: 'my_prompt_id')
+# puts prompt.to_s
+# Expected output would depend on the parameters stored with 'my_prompt_id'
 
 __END__
 
