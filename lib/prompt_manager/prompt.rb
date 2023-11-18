@@ -9,10 +9,22 @@ class PromptManager::Prompt
 
   class << self
     attr_accessor :storage_adapter
+
+    def create(id:, text: "", parameters: {})
+      storage_adapter.save(
+        id:         id,
+        text:       text,
+        parameters: parameters
+      )
+
+      new(id: id)
+    end
   end
   
-  attr_accessor :db, :text, :parameters
+  attr_accessor :db, :id, :text, :parameters
   
+  # FIXME:  Assumes that the prompt ID exists in storage,
+  #         wo how do we create a new one?
   def initialize(
       id:       nil,  # A String name for the prompt
       context:  []    # FIXME: Array of Strings or Pathname?
@@ -23,10 +35,12 @@ class PromptManager::Prompt
     @id  = id
     @db  = self.class.storage_adapter
     
-    raise ArgumentError, 'storage_adapter is not set' unless @storage
+    raise(ArgumentError, 'storage_adapter is not set') if db.nil?
     
-    @raw_text, @parameters  = db.get(id: id)
-    
+    @record     = db.get(id: id)
+    @raw_text   = @record[:text]
+    @parameters = @record[:parameters]
+
     @text       = interpolate_parameters
   end
 
@@ -36,8 +50,18 @@ class PromptManager::Prompt
   end
 
   def save
-    db.save(@id, @raw_text, @parameters)    
+    db.save(
+      id:         id, 
+      text:       @raw_text, 
+      parameters: @parameters
+    )    
   end
+
+
+  def delete
+    db.save(id: id)  
+  end
+
 
   def search(for_what)
     db.search(for_what)

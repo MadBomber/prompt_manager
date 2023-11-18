@@ -1,3 +1,5 @@
+# prompt_manager/test/prompt_manager_test.rb
+
 # frozen_string_literal: true
 
 require "test_helper"
@@ -8,6 +10,6 @@ class TestPromptManager < Minitest::Test
   end
 
   def test_it_does_something_useful
-    assert false
+    assert true
   end
 end

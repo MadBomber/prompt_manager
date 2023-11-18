@@ -108,7 +108,12 @@ class PromptManager::Storage::FileSystemAdapter
     File.read(full_path)
   end
 
+  # TODO: rewrite the search_prompts method to make use of
+  #       the @search_cmd
+
   def search_prompts(search_term)
+    ids = []
+
     Dir.glob(File.join(@prompts_dir, "*#{PROMPT_EXTENSION}")).each_with_object([]) do |file_path, ids|
       File.open(file_path) do |file|
         file.each_line do |line|
@@ -119,6 +124,8 @@ class PromptManager::Storage::FileSystemAdapter
         end
       end
     end
+
+    ids
   end
 
   def serialize(data)
