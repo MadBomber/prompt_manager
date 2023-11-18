@@ -1,6 +1,8 @@
 # PromptManager
 
-**Under Development**
+**Under Development**  Not ready for use.
+
+I'm looking for some contributors to help define the API between the Prompt class and the Storage adapters.  I'm focusing on the FileSystemAdapter since the majority of my work is on the command line. 
 
 Extracting the prompt management functionality fro the aip.rb file into a new gem that will provide a generic management service for other programs.
 
