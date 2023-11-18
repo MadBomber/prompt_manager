@@ -144,6 +144,6 @@ class PromptManager::Storage::FileSystemAdapter
 
 
   def deserialize(data)
-    JSON.parse(data, symbolize_names: true)
+    JSON.parse(data)
   end
 end

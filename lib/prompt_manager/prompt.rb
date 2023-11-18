@@ -3,7 +3,8 @@
 # TODO: Consider an ActiveModel ??
 
 class PromptManager::Prompt
-  PARAMETER_REGEX   = /\[([A-Z _]+)\]/.freeze
+  # PARAMETER_REGEX   = /\[([A-Z _]+)\]/.freeze
+  PARAMETER_REGEX   = /(\[[A-Z _|]+\])/ # NOTE: old from aip.rb
   # KEYWORD_REGEX   = /(\[[A-Z _|]+\])/ # NOTE: old from aip.rb
   @storage_adapter  = nil
 
@@ -72,15 +73,10 @@ class PromptManager::Prompt
   ######################################
   private
 
-  # Converts keys in the hash to lowercase symbols for easy parameter replacement.
-  def symbolize_and_downcase_keys(hash)
-    hash.map { |key, value| [key.to_s.downcase.to_sym, value] }.to_h
-  end
-
   # Interpolate the parameters within the prompt.
   def interpolate_parameters
     text.gsub(PARAMETER_REGEX) do |match|
-      param_name = match[1..-2].downcase
+      param_name = match
       parameters[param_name] || match
     end
   end
