@@ -1,0 +1,8 @@
+# .prompts/todo.txt
+# Desc: replace NotImpleted.needs_to "prompt_string" with the
+# 			results of sending the prompt_string to an LLM
+#
+
+As an experienced [LANGUAGE] software engineer write some [LANGUAGE] source code. Consider the following [LANGUAGE] file.  For each comment line that contains the word "todo" take the text that follows that word as a requirement to be implemented in [LANGUAGE].  Remove the 'todo' word from the comment line.  After the line insert the [LANGUAGE] code that implements the requirement.
+
+__END__
