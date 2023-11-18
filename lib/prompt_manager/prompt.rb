@@ -10,6 +10,8 @@ class PromptManager::Prompt
   class << self
     attr_accessor :storage_adapter
 
+    alias_method :get, :new
+
     def create(id:, text: "", parameters: {})
       storage_adapter.save(
         id:         id,
@@ -18,6 +20,10 @@ class PromptManager::Prompt
       )
 
       new(id: id)
+    end
+
+    def search(for_what)
+      storage_adapter.search(for_what)
     end
   end
   
@@ -38,35 +44,32 @@ class PromptManager::Prompt
     raise(ArgumentError, 'storage_adapter is not set') if db.nil?
     
     @record     = db.get(id: id)
-    @raw_text   = @record[:text]
+    @text       = @record[:text]
     @parameters = @record[:parameters]
 
-    @text       = interpolate_parameters
+    @prompt     = interpolate_parameters
   end
 
   # Displays the prompt text after parameter interpolation.
   def to_s
-    @text
+    @prompt
   end
 
   def save
     db.save(
       id:         id, 
-      text:       @raw_text, 
-      parameters: @parameters
+      text:       text, 
+      parameters: parameters
     )    
   end
 
 
   def delete
-    db.save(id: id)  
+    db.delete(id: id)  
   end
 
 
-  def search(for_what)
-    db.search(for_what)
-  end
-
+  ######################################
   private
 
   # Converts keys in the hash to lowercase symbols for easy parameter replacement.
@@ -76,9 +79,9 @@ class PromptManager::Prompt
 
   # Interpolate the parameters within the prompt.
   def interpolate_parameters
-    @raw_text.gsub(PARAMETER_REGEX) do |match|
-      param_name = match[1..-2].downcase.to_sym
-      @parameters[param_name] || match
+    text.gsub(PARAMETER_REGEX) do |match|
+      param_name = match[1..-2].downcase
+      parameters[param_name] || match
     end
   end
 
