@@ -11,7 +11,7 @@ class PromptManager::Storage::FileSystemAdapter
 
   def initialize(
       prompts_dir:  '.prompts',
-      search_cmd:   'ripfzf'
+      search_proc:  nil   # Example: ->(q) {`ag -l #{q}`}
     )
 
     # validate that prompts_dir exist and is in fact a directory.
@@ -20,28 +20,33 @@ class PromptManager::Storage::FileSystemAdapter
     end
 
     @prompts_dir  = prompts_dir
-    @search_cmd   = search_cmd
+    @search_proc  = search_proc
   end
+
 
   def get(id:)
     validate_id(id)
 
-    [
-      prompt_text(id),
-      parameter_values(id)
-    ]
+    {
+      id:         id,
+      text:       prompt_text(id),
+      parameters: parameter_values(id)
+    }
   end
+
 
   # Retrieve prompt text by its id
   def prompt_text(prompt_id)
     read_file(file_path(prompt_id, PROMPT_EXTENSION))
   end
 
+
   # Retrieve parameter values by its id
   def parameter_values(prompt_id)
     json_content = read_file(file_path(prompt_id, PARAMS_EXTENSION))
     deserialize(json_content)
   end
+
 
   # Save prompt text and parameter values to corresponding files
   def save(
@@ -58,6 +63,7 @@ class PromptManager::Storage::FileSystemAdapter
     write_with_error_handling(params_filepath, serialize(parameters))
   end
 
+
   # Delete prompted text and parameter values files
   def delete(id:)
     validate_id(id)
@@ -69,19 +75,23 @@ class PromptManager::Storage::FileSystemAdapter
     delete_with_error_handling(params_filepath)
   end
 
+
   def search(for_what)
-    # search through all prompts. Return an Array of
-    # prompt_id where the text of the prompt contains
-    # for_what is being searched. Use the search_command
-    # provided in the initialize.
-    search_prompts(for_what)
+    if @search_proc
+      @search_proc.call(for_what)
+    else
+      search_prompts(for_what)
+    end
   end
 
+
+  ##########################################
   private
 
   def validate_id(id)
     raise ArgumentError, 'Invalid ID format' unless id =~ /^[a-zA-Z0-9\-_]+$/
   end
+
 
   def write_with_error_handling(file_path, content)
     begin
@@ -91,6 +101,7 @@ class PromptManager::Storage::FileSystemAdapter
     end
   end
 
+
   def delete_with_error_handling(file_path)
     begin
       FileUtils.rm_f(file_path)
@@ -99,38 +110,38 @@ class PromptManager::Storage::FileSystemAdapter
     end
   end
 
+
   def file_path(id, extension)
     File.join(@prompts_dir, "#{id}#{extension}")
   end
+
 
   def read_file(full_path)
     raise IOError, 'File does not exist' unless File.exist?(full_path)
     File.read(full_path)
   end
 
-  # TODO: rewrite the search_prompts method to make use of
-  #       the @search_cmd
 
   def search_prompts(search_term)
-    ids = []
+    query_term = search_term.downcase
 
     Dir.glob(File.join(@prompts_dir, "*#{PROMPT_EXTENSION}")).each_with_object([]) do |file_path, ids|
       File.open(file_path) do |file|
         file.each_line do |line|
-          if line.include?(search_term)
+          if line.downcase.include?(query_term)
             ids << File.basename(file_path, PROMPT_EXTENSION)
-            break
+            next
           end
         end
       end
-    end
-
-    ids
+    end.uniq
   end
+
 
   def serialize(data)
     data.to_json
   end
+
 
   def deserialize(data)
     JSON.parse(data, symbolize_names: true)
