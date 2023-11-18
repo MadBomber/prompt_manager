@@ -13,6 +13,9 @@
 #
 
 
+require_relative '../lib/prompt_manager'
+
+
 =begin
 
 brew install fzf mods the_silver_searcher
@@ -48,8 +51,10 @@ This robust tool is excellent for users who wish to harness the power of generat
 
 #
 # TODO: I think this script has reached the point where
-#       it is ready to become a proper gem.
+#       it is ready to become a proper gem.  This would
+#       be a different gem than prompt_manager.
 #
+
 
 require 'pathname'
 HOME = Pathname.new( ENV['HOME'] )
@@ -72,22 +77,10 @@ AI_COMMAND        = "#{AI_CLI_PROGRAM} #{ai_options} "
 EDITOR            = ENV['EDITOR']
 PROMPT_DIR        = HOME + ".prompts"
 PROMPT_LOG        = PROMPT_DIR + "_prompts.log"
-PROMPT_EXTNAME    = ".txt"
-DEFAULTS_EXTNAME  = ".json"
-# SEARCH_COMMAND    = "ag -l"
-KEYWORD_REGEX     = /(\[[A-Z _|]+\])/
 
-AVAILABLE_PROMPTS = PROMPT_DIR
-                      .children
-                      .select{|c| PROMPT_EXTNAME == c.extname}
-                      .map{|c| c.basename.to_s.split('.')[0]}
-
-AVAILABLE_PROMPTS_HELP  = AVAILABLE_PROMPTS
-                            .map{|c| "  * " + c}
-                            .join("\n")
 
 require 'amazing_print'
-require 'json'
+# require 'json'
 require 'readline'    # TODO: or reline ??
 require 'word_wrap'
 require 'word_wrap/core_ext'
@@ -125,6 +118,7 @@ cli_helper("Use generative AI with saved parameterized prompts") do |o|
   o.bool    '-e', '--edit',   'Edit the prompt text',   default: false
   o.bool    '-f', '--fuzzy',   'Allow fuzzy matching',  default: false
   o.path    '-o', '--output', 'The output file',        default: Pathname.pwd + "temp.md"
+  o.string  '-s', '--storage','How are the prompts stored', default: 'FileSystemAdapter'
 end
 
 
@@ -173,60 +167,84 @@ unless edit?
   end
 end
 
-abort_if_errors
+valid_storage = %w[
+  FileSystemAdapter
+  SqliteAdapter
+  ActiveRecordAdapter
+]
 
-configatron.prompt_path   = PROMPT_DIR + (configatron.prompt + PROMPT_EXTNAME)
-configatron.defaults_path = PROMPT_DIR + (configatron.prompt + DEFAULTS_EXTNAME)
-
-if  !configatron.prompt_path.exist? && !edit?
-  error "This prompt does not exist: #{configatron.prompt}\n"
+if valid_storange.include? configatron.storage
+  require_relative "../lib/storage/#{configatron.storage}"
+  STORAGE = "PromptManager::Storage::#{configatron.storage}".constantize
+else
+  error "Unknow storage: #{configatron.storage}"
 end
 
-configatron.prompt_path   = PROMPT_DIR + (configatron.prompt + PROMPT_EXTNAME)
-configatron.defaults_path = PROMPT_DIR + (configatron.prompt + DEFAULTS_EXTNAME)
+abort_if_errors
+
+# configatron.prompt_path   = PROMPT_DIR + (configatron.prompt + PROMPT_EXTNAME)
+# configatron.defaults_path = PROMPT_DIR + (configatron.prompt + DEFAULTS_EXTNAME)
+
+begin
+  PromptManager::Prompt.storage_adapter = STORAGE.new
+rescue StandardError => e
+  error "Unknown storage adapter: #{configatron.storage}\n#{e}"
+end
 
 abort_if_errors
 
-if edit?
-  unless configatron.prompt_path.exist?
-    configatron.prompt_path.write <<~PROMPT
-      # #{configatron.prompt_path.relative_path_from(HOME)}
-      # DESC: 
-
-    PROMPT
-  end
-
-  `#{EDITOR} #{configatron.prompt_path}`
+begin
+  PROMPT = PromptManager::Prompt.get(id: configatron.prompt)
+rescue Exception => e
+  error "Storage (#{configatron.storage}) does not have: #{configatron.prompt}\n#{e}"
 end
+
+abort_if_errors
+
+# TODO: This will have to change.
+#
+# if edit?
+#   unless configatron.prompt_path.exist?
+#     configatron.prompt_path.write <<~PROMPT
+#       # #{configatron.prompt_path.relative_path_from(HOME)}
+#       # DESC: 
+#
+#     PROMPT
+#   end
+#
+#   `#{EDITOR} #{configatron.prompt_path}`
+# end
 
 ######################################################
 # Local methods
 
-def extract_raw_prompt
-  array_of_strings = ignore_after_end
-  print_header_comment(array_of_strings)
-
-  array_of_strings.reject do |a_line|
-                    a_line.chomp.strip.start_with?('#')
-                  end
-                  .join("\n")
-end
-
-
-def ignore_after_end
-  array_of_strings  = configatron.prompt_path.readlines
-                        .map{|a_line| a_line.chomp.strip}
-
-  x = array_of_strings.index("__END__")
-
-  unless x.nil?
-    array_of_strings = array_of_strings[..x-1]
-  end
-
-  array_of_strings
-end
+# def extract_raw_prompt
+#   array_of_strings = ignore_after_end
+#   print_header_comment(array_of_strings)
+#
+#   array_of_strings.reject do |a_line|
+#                     a_line.chomp.strip.start_with?('#')
+#                   end
+#                   .join("\n")
+# end
 
 
+# def ignore_after_end
+#   array_of_strings  = configatron.prompt_path.readlines
+#                         .map{|a_line| a_line.chomp.strip}
+#
+#   x = array_of_strings.index("__END__")
+#
+#   unless x.nil?
+#     array_of_strings = array_of_strings[..x-1]
+#   end
+#
+#   array_of_strings
+# end
+
+
+# SMELL:  This is based upon a convention that not everyone
+#         may want to follow.
 def print_header_comment(array_of_strings)
   print "\n\n" if verbose?
 
@@ -247,9 +265,9 @@ end
 #   [KEY PHRASE]
 #   [KEY PHRASE | KEY PHRASE | KEY_WORD]
 #
-def extract_keywords_from(prompt_raw)
-  prompt_raw.scan(KEYWORD_REGEX).flatten.uniq
-end
+# def extract_keywords_from(prompt_raw)
+#   prompt_raw.scan(KEYWORD_REGEX).flatten.uniq
+# end
 
 # get the replacements for the keywords
 def replacements_for(keywords)
@@ -268,31 +286,32 @@ def replacements_for(keywords)
 end
 
 
-def load_default_replacements
-  if configatron.defaults_path.exist?
-    JSON.parse(configatron.defaults_path.read)
-  else
-    {}
-  end
-end
+# def load_default_replacements
+#   if configatron.defaults_path.exist?
+#     JSON.parse(configatron.defaults_path.read)
+#   else
+#     {}
+#   end
+# end
 
 
-def save_default_replacements(a_hash)
-  return if a_hash.empty?
-  defaults = a_hash.to_json
-  configatron.defaults_path.write defaults
-end
+# def save_default_replacements(a_hash)
+#   return if a_hash.empty?
+#   defaults = a_hash.to_json
+#   configatron.defaults_path.write defaults
+# end
+
 
 # substitute the replacements for the keywords
-def replace_keywords_with replacements, prompt_raw
-  prompt = prompt_raw.dup
-
-  replacements.each_pair do |keyword, replacement|
-    prompt.gsub!(keyword, replacement)
-  end
-
-  prompt
-end
+# def replace_keywords_with replacements, prompt_raw
+#   prompt = prompt_raw.dup
+#
+#   replacements.each_pair do |keyword, replacement|
+#     prompt.gsub!(keyword, replacement)
+#   end
+#
+#   prompt
+# end
 
 
 def log(prompt_path, prompt_raw, answer)
@@ -323,16 +342,16 @@ end
 
 ap configatron.to_h  if debug?
 
-configatron.prompt_raw  = extract_raw_prompt
+# configatron.prompt_raw  = extract_raw_prompt
 
 puts
 puts "PROMPT:"
-puts configatron.prompt_raw.wrap
+puts prompt.raw_text.wrap
 puts
 
 
-keywords      = extract_keywords_from configatron.prompt_raw
-replacements  = replacements_for keywords
+keywords      = PROMPT.parameters.keys
+replacements  = PROMPT.parameters
 
 prompt = replace_keywords_with replacements, configatron.prompt_raw
 ptompt = %Q{prompt}

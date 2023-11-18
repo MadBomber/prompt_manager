@@ -1,5 +1,11 @@
 # prompt_manager/lib/prompt_manager/storage/active_record_adapter.rb
 
+require 'active_record'
+
+# TODO: Will need a database.yml file
+#       will need to know the column names that coorespond
+#       with the things that the Prompt class wants.
+
 class PromptManager::Storage::ActiveRecordAdapter
   attr_reader :model_class
 
@@ -33,6 +39,25 @@ class PromptManager::Storage::ActiveRecordAdapter
     prompt.destroy
   end
 
+
+  def search(for_what)
+    # TODO: search through all prompts. Return an Array of
+    #       prompt_id where the text of the prompt contains
+    #       for_what is being searched.
+
+    []
+  end
+
+
+  class << self
+    def config
+      # TODO: establish a connection to the database
+      #       maybe define the prompts table and its
+      #       columns of interest.
+    end
+  end
+
+  ###############################################
   private
 
   def find_prompt(prompt_id)

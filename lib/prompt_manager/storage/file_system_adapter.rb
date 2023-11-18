@@ -46,6 +46,13 @@ class PromptManager::Storage::FileSystemAdapter
     FileUtils.rm_f(params_filepath)
   end
 
+  def search(for_what)
+    # TODO: search through all prompts. Return an Array of
+    #       prompt_id where the text of the prompt contains
+    #       for_what is being searched.
+
+    []
+  end
 
   #################################################
   private

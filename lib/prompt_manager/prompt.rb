@@ -1,19 +1,33 @@
 # prompt_manager/lib/prompt_manager/prompt.rb
 
 class PromptManager::Prompt
-  PARAMETER_REGEX = /\[([A-Z]+)\]/.freeze
+  @@storage_adapter = nil
 
-  def initialize(storage, prompt_id)
+  PARAMETER_REGEX   = /\[([A-Z _]+)\]/.freeze
+  KEYWORD_REGEX     = /(\[[A-Z _|]+\])/ # NOTE: old from aip.rb
+
+  attr_accessor :text, :parameters
+
+  def initialize(
+      id: # A String name for the prompt
+    )
+
     raise ArgumentError, 'storage cannot be nil'      if storage.nil?
-    raise ArgumentError, 'prompt_id cannot be blank'  if prompt_id.nil? || prompt_id.empty?
+    raise ArgumentError, 'prompt_id cannot be blank'  if id.nil? || id.empty?
 
-    @storage          = storage
-    @prompt_id        = prompt_id
-    @prompt_text      = @storage.prompt_text(prompt_id)
-    @parameter_values = @storage.parameter_values(prompt_id)
-
-    interpolate_parameters
+    @storage    = storage
+    @id         = prompt_id
+    @raw_text   = @storage.prompt_text(prompt_id)
+    @parameters = @storage.parameter_values(prompt_id)
+    @text       = interpolate_parameters
   end
+
+  # TODO: ignore any line in @raw_text whose first non-white space
+  #       character is "#" - ie a comment line.
+
+  # TODO: ignore allines in @raw_text that come after a line
+  #       equal to "__END__"
+
 
 
   # Displays the prompt text after parameter interpolation.
@@ -23,9 +37,19 @@ class PromptManager::Prompt
 
 
   def save
-    @storage.save(@prompt_id, @prompt_text, @prompt_values)    
+    @storage.save(id, @raw_text, parameters)    
   end
 
+
+  def search(for_what)
+    @storage.search(for_what)
+  end
+
+  class << self
+    alias_method :get, :new
+  end
+
+  ###############################################
   private
 
   # Converts keys in the hash to lowercase symbols for easy parameter replacement.
@@ -35,14 +59,44 @@ class PromptManager::Prompt
 
   # Interpolate the parameters within the prompt.
   def interpolate_parameters
-    @prompt_text.gsub!(PARAMETER_REGEX) do |match|
+    @raw_text.gsub(PARAMETER_REGEX) do |match|
       param_name = match[1..-2].downcase.to_sym
-      @parameter_values[param_name] || match
+      @parameters[param_name] || match
     end
   end
 end
 
 __END__
+
+def extract_raw_prompt
+  array_of_strings = ignore_after_end
+  print_header_comment(array_of_strings)
+
+  array_of_strings.reject do |a_line|
+                    a_line.chomp.strip.start_with?('#')
+                  end
+                  .join("\n")
+end
+
+
+
+def ignore_after_end
+  array_of_strings  = configatron.prompt_path.readlines
+                        .map{|a_line| a_line.chomp.strip}
+
+  x = array_of_strings.index("__END__")
+
+  unless x.nil?
+    array_of_strings = array_of_strings[..x-1]
+  end
+
+  array_of_strings
+end
+
+
+
+
+
 
 # Usage example:
 prompt_text     = "Hello, [NAME]! You are logged in as [ROLE]."

@@ -38,6 +38,15 @@ class PromptManager::Storage::SqliteAdapter
   end
 
 
+  def search(for_what)
+    # TODO: search through all prompts. Return an Array of
+    #       prompt_id where the text of the prompt contains
+    #       for_what is being searched.
+
+    []
+  end
+
+  ###################################################
   private
 
   def create_tables
