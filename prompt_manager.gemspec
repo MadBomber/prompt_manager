@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   
   spec.description  = <<~EOS
     Manage the parameterized prompts (text) used in generative AI (aka chatGPT, 
-    pen AI, et.al.) using storage adapters such as FileSystemAdapter, 
+    OpenAI, et.al.) using storage adapters such as FileSystemAdapter, 
     SqliteAdapter and ActiveRecordAdapter.
   EOS
 
