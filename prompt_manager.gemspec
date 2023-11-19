@@ -8,8 +8,14 @@ Gem::Specification.new do |spec|
   spec.authors  = ["Dewayne VanHoozer"]
   spec.email    = ["dvanhoozer@gmail.com"]
 
-  spec.summary      = "Manage prompts for use with chatGPT LLMs"
-  spec.description  = "Manage parameterized prompt text for use with GPT/LLM"
+  spec.summary      = "Manage prompts for use with gen-AI processes"
+  
+  spec.description  = <<~EOS
+    Manage the parameterized prompts (text) used in generative AI (aka chatGPT, 
+    pen AI, et.al.) using storage adapters such as FileSystemAdapter, 
+    SqliteAdapter and ActiveRecordAdapter.
+  EOS
+
   spec.homepage     = "https://github.com/MadBomber/prompt_manager"
   spec.license      = "MIT"
 
@@ -34,9 +40,11 @@ Gem::Specification.new do |spec|
   spec.executables    = []
   spec.require_paths  = ["lib"]
 
-  # Uncomment to register a new dependency of your gem
-  # spec.add_dependency "example-gem", "~> 1.0"
+  # TODO: Use these in the Storage Adapters that are TBD
+  # spec.add_dependency "activerecord"
+  # spec.add_dependency "sqlite3"
 
-  # For more information and examples about making a new gem, check out our
-  # guide at: https://bundler.io/guides/creating_gem.html
+  spec.add_development_dependency 'amazing_print'
+  spec.add_development_dependency "fakefs"
+  spec.add_development_dependency "minitest"
 end

@@ -28,8 +28,12 @@ class FileSystemAdapterTest < Minitest::Test
   ############################################
   def test_get
     # Setup
-    expected_text = 'This is a prompt.'
-    expected_params = {size: 20, color: 'blue'}
+    expected_text   = 'This is a prompt.'
+    expected_params = {
+      '[SIZE]'  => 20, 
+      '[COLOR]' => 'blue'
+    }
+    
     File.write(File.join(@prompts_dir, @prompt_id + PromptManager::Storage::FileSystemAdapter::PROMPT_EXTENSION), expected_text)
     File.write(File.join(@prompts_dir, @prompt_id + PromptManager::Storage::FileSystemAdapter::PARAMS_EXTENSION), expected_params.to_json)
 

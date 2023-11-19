@@ -1,101 +1,69 @@
 # PromptManager
 
-**Under Development**  Not ready for use.
-
-I'm looking for some contributors to help define the API between the Prompt class and the Storage adapters.  I'm focusing on the FileSystemAdapter since the majority of my work is on the command line. 
-
-Extracting the prompt management functionality fro the aip.rb file into a new gem that will provide a generic management service for other programs.
-
-## AIP.RB Legacy Summary of Capability
-
-This is just some source material for later documentation.
-
-### README for aip.rb
-
-#### Overview
-
-The `aip.rb` Ruby script is a command-line interface (CLI) tool designed to leverage generative AI with saved parameterized prompts. It integrates with the `mods` command-line tool that uses a GPT-based model to generate responses based on user-provided prompts. The script offers an array of features that make interacting with AI models more convenient and streamlined. 
-
-#### Features
-
-- **Prompt Management**
-  - Users can select prompts from a saved collection with the help of command-line searching and filtering.
-  - Prompts can be edited by the user to better fit their specific context or requirement.
-  - Support for reading input from files to provide context for AI generation is included.
-  
-- **AI Integration**
-  - The script interacts with `mods`, a generative AI utilizing GPT-based models, to produce outputs from the prompts.
-  
-- **Output Handling**
-  - Generated content is saved to a specified file for record-keeping and further use.
-  
-- **Activity Logging**
-  - All actions, including prompt usage and AI output, are logged with timestamps for review and auditing purposes.
-
-#### Dependencies
-
-The script requires the installation of the following command-line tools:
-
-- `fzf`: a powerful command-line fuzzy finder.
-- `mods`: an AI-powered CLI tool for generative AI interactions.
-- `the_silver_searcher (ag)`: a code-searching tool similar to ack and used for searching prompts.
-
-#### Usage
-
-The `aip.rb` script offers a set of command-line options to guide the interaction with AI:
-
-- `-p, --prompt`: Specify the prompt name to be used.
-- `-e, --edit`: Open the prompt text for editing before generation.
-- `-f, --fuzzy`: Allows fuzzy matching for prompt selection.
-- `-o, --output`: Sets the output file for the generated content.
-
-Additional flags and options can be passed to the `mods` tool by appending them after a `--` separator.
-
-#### Installation
-
-Before using the script, one must ensure the required command-line tools (`fzf`, `mods`, and `the_silver_searcher`) are installed, and the Ruby environment is correctly set up with the necessary gems.
-
-#### Development Notes
-
-The author suggests that the script has matured enough to be converted into a Ruby gem for easier distribution and installation.
-
-#### Getting Help
-
-For help with using the CLI tool or further understanding the `mods` command, users can refer to the AI CLI Program help section included in the script or by invoking the `--help` flag.
-
-#### Conclusion
-
-The `aip.rb` script is designed to offer a user-friendly and flexible approach to integrating generative AI into content creation processes. It streamlines the interactions and management of AI-generated content by providing prompt management, AI integration, and logging capabilities, packaged inside a simple command-line utility.
-
-
-
-
+Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, _et.al._) using storage adapters such as FileSystemAdapter, SqliteAdapter and ActiveRecordAdapter.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
 Install the gem and add to the application's Gemfile by executing:
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+    bundle add prompt_manager
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+    gem install prompt_manager
 
 ## Usage
 
-TODO: Write usage instructions here
+See [examples/simple.rb](examples.simple.rb)
+
+## Overview
+
+### Generative AI (gen-AI)
+
+Gen-AI deals with the conversion (some would say execution) of a human natural language text (the "prompt") into somthing else using what are known as large language models (LLM) such as those available from OpenAI.  A parameterized prompt is one in whcih there are embedded keywords (parameters) which are place holders for other text to be inserted into the prompt.
+
+The prompt_manager uses a regurlar expression to identify these keywords within the prompt.  It uses the keywords as keys in a `parameters` Hash which is stored with the prompt text in a serialized form - for example as JSON.
+
+#### What does a keyword look like?
+
+The current hard-coded REGEX for a [KEYWORD] identifies any all [UPPERCASE_TEXT] enclosed in squal brackes as a keyword.  [KEY WORDS CAN ALSO HAVE SPACES] as well as the underscore character.
+
+This is just the initial convention adopted by prompt_manager.  It is intended that this REGEX be configurable so that the promp_manager can be used with other conventions.
+
+### Storage Adapters
+
+A storage adapter is a class instance that ties the `PromptManager::Prompt` class to a storage facility that holds the actual prompts.  Currentlyt there are 3 storage adapters planned for implementation.
+
+#### FileSystemAdapter
+
+This is the first storage adapter developed.  It saves prompts as text files within the file system inside a designated `prompts_dir` (directory) such as `~/,prompts` or where it makes the most sense to you.  Another example would be to have your directory on a shared file system so that others can use the same prompts.
+
+The `promp ID` is the basename of the text file.  For example `todo.txt` is the file for the prompt ID `todo` (see the examples directory.)
+
+The parameters for the `todo` prompt ID are saved in the same directory as `todo.txt` in a JSON file named `todo.json` (also in the examples directory.)
+
+#### SqliteAdapter
+
+TODO: This may be the next adapter to be implemented.
+
+#### ActiveRecordAdapter
+
+TODO: Still looking for requirements on how to integrate with an existing `rails` app.  Looking for ideas.
+
+#### Other Potential Storage Adapters
+
+There are many possibilities to example this plugin concept of the storage adapter.  Here are some for consideration:
+
+* RedisAdapter - Not sure; isn't redis more temporary oriented?
+* ApiAdapter - use some end-point to CRUD a prompt
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Looking for feedback and contributors to enhance the capability of prompt_manager.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/prompt_manager.
+Bug reports and pull requests are welcome on GitHub at https://github.com/MadBomber/prompt_manager.
 
 ## License
 

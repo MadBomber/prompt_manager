@@ -1,11 +1,13 @@
 # prompt_manager/lib/prompt_manager/prompt.rb
 
-# TODO: Consider an ActiveModel ??
+# This class is responsible for managing prompts which can be utilized by
+# generative AI processes. This includes creation, retrieval, storage management,
+# as well as building prompts with replacement of parameterized values and 
+# comment removal. It communicates with a storage system through a storage 
+# adapter.
 
 class PromptManager::Prompt
-  # PARAMETER_REGEX   = /\[([A-Z _]+)\]/.freeze
   PARAMETER_REGEX   = /(\[[A-Z _|]+\])/ # NOTE: old from aip.rb
-  # KEYWORD_REGEX   = /(\[[A-Z _|]+\])/ # NOTE: old from aip.rb
   @storage_adapter  = nil
 
   class << self
@@ -28,34 +30,47 @@ class PromptManager::Prompt
     end
   end
   
-  attr_accessor :db, :id, :text, :parameters
+  # SMELL:  Does the db (aka storage adapter) really need
+  #         to be accessible by the main program?
+  attr_accessor :db, :id, :text, :parameters, :keywords
   
-  # FIXME:  Assumes that the prompt ID exists in storage,
-  #         wo how do we create a new one?
+
+  # Retrieve the specific prompt ID from the Storage system.
   def initialize(
       id:       nil,  # A String name for the prompt
       context:  []    # FIXME: Array of Strings or Pathname?
     )
 
-    raise ArgumentError, 'id cannot be blank' if id.nil? || id.strip.empty?
-    
     @id  = id
     @db  = self.class.storage_adapter
     
-    raise(ArgumentError, 'storage_adapter is not set') if db.nil?
-    
+    validate_arguments(@id, @db)
+
     @record     = db.get(id: id)
     @text       = @record[:text]
     @parameters = @record[:parameters]
+    @keywords   = []
 
-    @prompt     = interpolate_parameters
+    update_keywords
+    build
   end
 
-  # Displays the prompt text after parameter interpolation.
+
+  # Make sure the ID and DB are good-to-go
+  def validate_arguments(prompt_id, prompts_db)
+    raise ArgumentError, 'id cannot be blank'           if prompt_id.nil? || id.strip.empty?
+    raise(ArgumentError, 'storage_adapter is not set')  if prompts_db.nil?
+  end
+
+
+  # Return tje prompt text suitable for passing to a
+  # gen-AI process.
   def to_s
     @prompt
   end
 
+
+  # Save the prompt to the Storage system
   def save
     db.save(
       id:         id, 
@@ -65,85 +80,72 @@ class PromptManager::Prompt
   end
 
 
+  # Delete this prompt from the Storage system
   def delete
     db.delete(id: id)  
   end
 
 
+  # Build the @prompt String by replacing the keywords
+  # with there parameterized values and removing all
+  # the comments.
+  #  
+  def build
+    @prompt = text.gsub(PARAMETER_REGEX) do |match|
+                param_name = match
+                parameters[param_name] || match
+              end
+
+    remove_comments
+  end
+
   ######################################
   private
 
-  # Interpolate the parameters within the prompt.
-  def interpolate_parameters
-    text.gsub(PARAMETER_REGEX) do |match|
-      param_name = match
-      parameters[param_name] || match
+  def update_keywords
+    @keywords = @text.scan(PARAMETER_REGEX).flatten.uniq
+    keywords.each do |kw|
+      @parameters[kw] = "" unless @parameters.has_key?(kw)
     end
   end
 
+
+  def remove_comments
+    lines           = @prompt
+                        .split("\n")
+                        .reject{|a_line| a_line.strip.start_with?('#')}
+
+    # Remove empty lines at the start of the prompt
+    #
+    lines = lines.drop_while(&:empty?)
+
+    # Drop all the lines at __END__ and after
+    #
+    logical_end_inx = lines.index("__END__")
+
+    @prompt = if logical_end_inx
+                lines[0...logical_end_inx] # NOTE: ... means to not include last index
+              else
+                lines
+              end.join("\n") 
+  end
   
-  # TODO: Implement and integrate ignore_after_end and apply the logic within initialize.
-  
-  # TODO: Implement and integrate extract_raw_prompt and apply the logic within initialize.
-    
-  # TODO: Implement a better error handling strategy for the storage methods (save, search, get).
-  
-  # TODO: Refactor class to support more explicit and semantic configuration and setup.
-  
-  # TODO: Consider adding a method to refresh the parameters and re-interpolate the prompt text.
-  
-  # TODO: Check the responsibility of the save method; should it deal with the parameters directly or leave it to storage?
-    
-  # TODO: Check overall consistency and readability of the code.
-end
 
-# Usage of the fixed class would change as follows:
-# Assuming Storage is a defined class that manages storing and retrieving prompts.
-# storage_instance = Storage.new(...)
-# PromptManager::Prompt.storage_adapter = storage_instance
-
-# prompt = PromptManager::Prompt.new(id: 'my_prompt_id')
-# puts prompt.to_s
-# Expected output would depend on the parameters stored with 'my_prompt_id'
-
-__END__
-
-def extract_raw_prompt
-  array_of_strings = ignore_after_end
-  print_header_comment(array_of_strings)
-
-  array_of_strings.reject do |a_line|
-                    a_line.chomp.strip.start_with?('#')
-                  end
-                  .join("\n")
-end
-
-
-
-def ignore_after_end
-  array_of_strings  = configatron.prompt_path.readlines
-                        .map{|a_line| a_line.chomp.strip}
-
-  x = array_of_strings.index("__END__")
-
-  unless x.nil?
-    array_of_strings = array_of_strings[..x-1]
+  # Handle storage errors
+  # SMELL:  Just raise them or get out of their way and let the
+  #         main program do tje job.
+  def handle_storage_error(error)
+    # Log the error message, notify, or take appropriate action
+    log_error("Storage operation failed: #{error.message}")
+    # Re-raise the error if necessary, or define recovery steps
+    raise error
   end
 
-  array_of_strings
+
+  # SMELL:  should this gem log errors or is that a function of
+  #         main program?  I believe its the main program's job.
+  def log_error(message)
+    puts "ERROR: #{message}"
+  end
 end
-
-
-
-
-
-
-# Usage example:
-prompt_text     = "Hello, [NAME]! You are logged in as [ROLE]."
-parameter_hash  = { 'NAME' => 'Alice', 'ROLE' => 'Admin' }
-file_paths      = ['path/to/first_context', 'path/to/second_context']
-
-prompt = Prompt.new(prompt_text, parameter_hash, *file_paths)
-puts prompt.show
-# Expected output: Hello, Alice! You are logged in as Admin.
 
