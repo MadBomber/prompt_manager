@@ -20,17 +20,24 @@ require 'json'      # basic serialization of parameters
 require 'pathname'
 
 class PromptManager::Storage::FileSystemAdapter
-  PARAMS_EXTENSION = '.json'.freeze
-  PROMPT_EXTENSION = '.txt'.freeze
-  PROMPT_ID_FORMAT = /^[a-zA-Z0-9\-\/_]+$/
+  SEARCH_PROC       = nil # placeholder
+  PARAMS_EXTENSION  = '.json'.freeze
+  PROMPT_EXTENSION  = '.txt'.freeze
+  PROMPT_ID_FORMAT  = /^[a-zA-Z0-9\-\/_]+$/
 
   class << self
     attr_accessor :prompts_dir, :search_proc, 
                   :params_extension, :prompt_extension
   
     def config
-      yield self
-      validate_configuration
+      if block_given?
+        yield self
+        validate_configuration     
+      else
+        raise ArgumentError, "No block given to config"
+      end
+
+      self
     end
 
     # Expansion methods on the Prompt class specific to
@@ -43,7 +50,7 @@ class PromptManager::Storage::FileSystemAdapter
 
 
     def path(prompt_id)
-      new(id: prompt_id).path
+      new.path(prompt_id)
     end
 
     #################################################
@@ -81,7 +88,9 @@ class PromptManager::Storage::FileSystemAdapter
     def validate_search_proc
       search_proc_local = self.search_proc
 
-      unless search_proc_local.nil?
+      if search_proc_local.nil?
+        search_proc_local = SEARCH_PROC
+      else
         raise(ArgumentError, "search_proc invalid; does not respond to call") unless search_proc_local.respond_to?(:call)
       end
 
