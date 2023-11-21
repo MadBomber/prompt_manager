@@ -47,4 +47,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'amazing_print'
   spec.add_development_dependency 'debug_me'
   spec.add_development_dependency "minitest"
+  spec.add_development_dependency 'tocer'
 end

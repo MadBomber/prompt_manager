@@ -2,6 +2,31 @@
 
 Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, _et.al._) using storage adapters such as FileSystemAdapter, SqliteAdapter and ActiveRecordAdapter.
 
+<!-- Tocer[start]: Auto-generated, don't remove. -->
+
+## Table of Contents
+
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Overview](#overview)
+    - [Generative AI (gen-AI)](#generative-ai-gen-ai)
+      - [What does a keyword look like?](#what-does-a-keyword-look-like)
+    - [Storage Adapters](#storage-adapters)
+      - [FileSystemAdapter](#filesystemadapter)
+        - [Configuration](#configuration)
+          - [prompts_dir](#prompts_dir)
+          - [search_proc](#search_proc)
+          - [File Extensions](#file-extensions)
+        - [Extra Functionality](#extra-functionality)
+      - [SqliteAdapter](#sqliteadapter)
+      - [ActiveRecordAdapter](#activerecordadapter)
+      - [Other Potential Storage Adapters](#other-potential-storage-adapters)
+  - [Development](#development)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+<!-- Tocer[finish]: Auto-generated, don't remove. -->
+
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
@@ -34,6 +59,8 @@ This is just the initial convention adopted by prompt_manager. It is intended th
 
 A storage adapter is a class instance that ties the `PromptManager::Prompt` class to a storage facility that holds the actual prompts. Currently there are 3 storage adapters planned for implementation.
 
+The `PromptManager::Prompt` to support a small set of methods.  A storage adapter can provide "extra" class or instance methods that can be used through the Prompt class.  See the `test/prompt_manager/prompt_test.rb` for guidance on creating a new storage adapter.
+
 #### FileSystemAdapter
 
 This is the first storage adapter developed. It saves prompts as text files within the file system inside a designated `prompts_dir` (directory) such as `~/.prompts` or where it makes the most sense to you.  Another example would be to have your directory on a shared file system so that others can use the same prompts.
@@ -41,6 +68,62 @@ This is the first storage adapter developed. It saves prompts as text files with
 The `prompt ID` is the basename of the text file. For example `todo.txt` is the file for the prompt ID `todo` (see the examples directory.)
 
 The parameters for the `todo` prompt ID are saved in the same directory as `todo.txt` in a JSON file named `todo.json` (also in the examples directory.)
+
+##### Configuration
+
+Use a `config` block toe establish the configuration for the class.
+
+```ruby
+PromptManager::Storage::FileSystemAdapter.config do |o|
+  o.prompts_dir = "path/to/prompts_directory" 
+  o.search_proc = -> (q) { "ag -l #{q} #{prompts_dir} | reformat" } 
+  o.prompt_extension = '.txt' # default
+  o.params_extension = '.json' # the default
+end
+```
+
+The `config` block returns `self` so that means you can do this to setup the storage adapter with the Prompt class:
+
+```ruby
+PromptManager::Prompt
+  .storage_adapter = 
+    PromptManager::Storage::FileSystemAdapter
+      .config do |config|
+        config.prompts_dir = 'path/to/prompts_dir'
+      end.new
+```
+
+###### prompts_dir
+
+This is either a `String` or a `Pathname` object.  All file paths are maintained in the class as `Pathname` objects.  If you provide a `String` it will be converted.  Relative paths will be converted to absolute paths.
+
+An `ArgumentError` will be raised when `prompts_dir` does not exist or if it is not a directory.
+
+###### search_proc
+
+The default for `search_proc` is nil.  In this case the search will be preformed by a default `search` method which is basically reading all the prompt files to see which ones contain the search term.  There are faster ways to do this kind of thing using CLI=based utilities.
+
+TODO: add a example to the examples directory on how to integrate with command line utilities.
+
+###### File Extensions
+
+These two configuration options are `String` objects that must start with a period "." utherwise an `ArgumentError` will be raised.
+
+* prompt_extension - default: '.txt'
+* params_extension - default: '.json'
+
+Currently the `FileSystemAdapter` only supports a JSON serializer for its parameters Hash.  Using any other values for these extensions will cause problems.
+
+They exist so that there is a platform on to which other storage adapters can be built or serializers added.  This is not currently on the roadmap.
+
+##### Extra Functionality
+
+The `FileSystemAdapter` adds two new methods for use by the `Prompt` class:
+* list - returns an Array of prompt IDs
+* path and path(prompt_id) - returns a `Pathname` object to the prompt file
+
+Use the `path(prompt_id)` form against the `Prompt` class
+Use `prompt.path` when you have an instance of a `Prompt`
 
 #### SqliteAdapter
 
