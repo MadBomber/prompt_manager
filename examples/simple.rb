@@ -9,7 +9,14 @@
 ##  By:   Dewayne VanHoozer (dvanhoozer@gmail.com)
 ##
 #
+# TODO: Add `list` to get an Array of prompt IDs
+# TODO: Add `path` to get a path to the prompt file
+#
 
+require 'debug_me'
+include DebugMe
+
+debug_me "== before require =="
 
 require 'prompt_manager'
 require 'prompt_manager/storage/file_system_adapter'
@@ -30,12 +37,21 @@ at_exit do
   puts
 end
 
-# Configure the Storage Adapter to use
+debug_me "before config"
 
-PromptManager::Prompt.storage_adapter = 
-  PromptManager::Storage::FileSystemAdapter.new(
-    prompts_dir: PROMPTS_DIR
-  )
+# Configure the Storage Adapter to use
+PromptManager::Storage::FileSystemAdapter.config do |config|
+  config.prompts_dir        = PROMPTS_DIR
+  # config.search_proc      = nil     # default
+  # config.prompt_extension = '.txt'  # default
+  # config.parms+_extension = '.json' # default
+end
+
+debug_me "after config"
+
+PromptManager::Prompt.storage_adapter = PromptManager::Storage::FileSystemAdapter.new
+
+debug_me "after new"
 
 # Get a prompt
 
