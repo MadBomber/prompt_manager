@@ -13,11 +13,6 @@
 # TODO: Add `path` to get a path to the prompt file
 #
 
-require 'debug_me'
-include DebugMe
-
-debug_me "== before require =="
-
 require 'prompt_manager'
 require 'prompt_manager/storage/file_system_adapter'
 
@@ -37,8 +32,6 @@ at_exit do
   puts
 end
 
-debug_me "before config"
-
 # Configure the Storage Adapter to use
 PromptManager::Storage::FileSystemAdapter.config do |config|
   config.prompts_dir        = PROMPTS_DIR
@@ -47,11 +40,7 @@ PromptManager::Storage::FileSystemAdapter.config do |config|
   # config.parms+_extension = '.json' # default
 end
 
-debug_me "after config"
-
 PromptManager::Prompt.storage_adapter = PromptManager::Storage::FileSystemAdapter.new
-
-debug_me "after new"
 
 # Get a prompt
 
@@ -103,3 +92,51 @@ EOS
 
 puts todo.to_s
 
+puts <<~EOS
+
+  When using the FileSystemAdapter for prompt storage you can have within 
+  the prompts_dir you can have many sub-directories. These sub-directories 
+  act like categories.  The prompt ID is composed for the sub-directory name, 
+  a "/" character and then the normal prompt ID.  For example "toy/8-ball"
+
+EOS
+
+magic = PromptManager::Prompt.get( id: 'toy/8-ball' )
+
+puts "The magic PROMPT is:"
+puts magic
+puts
+puts "Remember if you want to see the full text of the prompt file:"
+puts magic.text
+
+puts "="*64
+
+puts <<~EOS
+
+  The FileSystemAdapter also adds two new methods to the Prompt class:
+
+    list - provides an Array of pompt IDs
+    path(prompt_id) - Returns a Pathname object to the prompt file
+
+EOS
+
+puts "List of prompts available"
+puts "========================="
+
+puts PromptManager::Prompt.list
+
+puts <<~EOS
+
+  And the path to the "toy/8-ball" prompt file is:
+
+  #{magic.path}
+
+  Use "your_prompt.path" for when you want to do something with the
+  the prompt file like send it to a text editor.
+
+  Your can also use the class method if you supply a prompt_id
+  like this:
+
+EOS
+
+puts PromptManager::Prompt.path('toy/8-ball')

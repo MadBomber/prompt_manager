@@ -1,11 +1,28 @@
 # prompt_manager/lib/prompt_manager/storage/file_system_adapter.rb
 
-require 'json'
+# Use the local (or remote) file system as a place to
+# store and access prompts.
+#
+# Adds two additional methods to the Promp class:
+#   list - returns Array of prompt IDs
+#   path = returns a Pathname object to the prompt's text file
+#   path(prompt_id) - same as path on the prompt instance
+#
+# Allows sub-directories of the prompts_dir to be
+# used like categories.  For example the prompt_id "toy/magic"
+# is found in the `magic.txt` file inside the `toy` sub-directory
+# of the prompts_dir.
+#
+# There can man be many layers of categories (sub-directories)
+#
+
+require 'json'      # basic serialization of parameters
 require 'pathname'
 
 class PromptManager::Storage::FileSystemAdapter
   PARAMS_EXTENSION = '.json'.freeze
   PROMPT_EXTENSION = '.txt'.freeze
+  PROMPT_ID_FORMAT = /^[a-zA-Z0-9\-\/_]+$/
 
   class << self
     attr_accessor :prompts_dir, :search_proc, 
@@ -13,18 +30,20 @@ class PromptManager::Storage::FileSystemAdapter
   
     def config
       yield self
-      debug_me('== after block =='){[
-        :prompts_dir,
-        :search_proc,
-        :prompt_extension,
-        :params_extension
-      ]}
       validate_configuration
     end
 
+    # Expansion methods on the Prompt class specific to
+    # this storage adapter.
 
-    def list(...)
+    # Ignore the incoming prompt_id
+    def list(prompt_id = nil)
       new.list
+    end
+
+
+    def path(prompt_id)
+      new(id: prompt_id).path
     end
 
     #################################################
@@ -39,47 +58,74 @@ class PromptManager::Storage::FileSystemAdapter
 
 
     def validate_prompts_dir
-      unless prompts_dir.is_a?(Pathname)
-        prompts_dir = Pathname.new(prompts_dir) unless prompts_dir.nil?
+      # This is a work around for a Ruby scope issue where the 
+      # class getter/setter method is becoming confused with a 
+      # local variable when anything other than plain 'ol get and 
+      # set are used.'This error is in both Ruby v3.2.2 and
+      # v3.3.0-preview3.
+      #
+      prompts_dir_local = self.prompts_dir
+
+      unless prompts_dir_local.is_a?(Pathname)
+        prompts_dir_local = Pathname.new(prompts_dir_local) unless prompts_dir_local.nil?
       end
 
-      prompts_dir = prompts_dir.expand_path
+      prompts_dir_local = prompts_dir_local.expand_path
 
-      raise(ArgumentError, "prompts_dir: #{prompts_dir}") unless prompts_dir.exist? && prompts_dir.directory?
+      raise(ArgumentError, "prompts_dir: #{prompts_dir_local}") unless prompts_dir_local.exist? && prompts_dir_local.directory?
+      
+      self.prompts_dir = prompts_dir_local
     end
 
 
     def validate_search_proc
-      unless search_proc.nil?
-        raise(ArgumentError, "search_proc invalid; does not respond to call") unless search_proc.respond_to?(:call)
+      search_proc_local = self.search_proc
+
+      unless search_proc_local.nil?
+        raise(ArgumentError, "search_proc invalid; does not respond to call") unless search_proc_local.respond_to?(:call)
       end
+
+      self.search_proc = search_proc_local
     end
 
 
     def validate_prompt_extension
-      if prompt_extension.nil?
-        prompt_extension = PROMPT_EXTENSION
+      prompt_extension_local = self.prompt_extension
+
+      if prompt_extension_local.nil?
+        prompt_extension_local = PROMPT_EXTENSION
       else
-        unless  prompt_extension.is_a?(String)    &&
-                prompt_extension.start_with?('.')
-          raise(ArgumentError, "Invalid prompt_extension: #{prompt_extension}")
+        unless  prompt_extension_local.is_a?(String)    &&
+                prompt_extension_local.start_with?('.')
+          raise(ArgumentError, "Invalid prompt_extension: #{prompt_extension_local}")
         end
       end
+
+      self.prompt_extension = prompt_extension_local
     end
 
 
     def validate_params_extension
-      if params_extension.nil?
-        params_extension = PARAMS_EXTENSION
+      params_extension_local = self.params_extension
+
+      if params_extension_local.nil?
+        params_extension_local = PARAMS_EXTENSION
       else
-        unless  params_extension.is_a?(String)    &&
-                params_extension.start_with?('.')
-          raise(ArgumentError, "Invalid params_extension: #{params_extension}")
+        unless  params_extension_local.is_a?(String)    &&
+                params_extension_local.start_with?('.')
+          raise(ArgumentError, "Invalid params_extension: #{params_extension_local}")
         end
       end
+
+      self.params_extension = params_extension_local
     end
   end
 
+
+  ##################################################
+  ###
+  ##  Instance
+  #
 
   def prompts_dir       = self.class.prompts_dir
   def search_proc       = self.class.search_proc
@@ -88,7 +134,9 @@ class PromptManager::Storage::FileSystemAdapter
 
 
   def initialize
-    self.class.validate_configuration
+    # NOTE: validate because main program may have made
+    #       changes outside of the config block
+    self.class.send(:validate_configuration) # send gets around private designations of a method
   end
 
 
@@ -111,8 +159,14 @@ class PromptManager::Storage::FileSystemAdapter
 
   # Retrieve parameter values by its id
   def parameter_values(prompt_id)
-    json_content = read_file(file_path(prompt_id, params_extension))
-    deserialize(json_content)
+    params_path = file_path(prompt_id, params_extension)
+    
+    if params_path.exist?
+      parms_content = read_file(params_path)
+      deserialize(parms_content)
+    else
+      {}
+    end
   end
 
 
@@ -154,11 +208,11 @@ class PromptManager::Storage::FileSystemAdapter
 
 
   # Return an Array of prompt IDs
-  def list(...)
+  def list(*)
     prompt_ids = []
     
     Pathname.glob(prompts_dir.join("**/*#{prompt_extension}")).each do |file_path|
-      prompt_id = file_path.relative_path_from(prompts_dir).to_s.gsub(promt_extension, '')
+      prompt_id = file_path.relative_path_from(prompts_dir).to_s.gsub(prompt_extension, '')
       prompt_ids << prompt_id
     end
 
@@ -178,7 +232,7 @@ class PromptManager::Storage::FileSystemAdapter
 
   # Validate that the ID contains good characters.
   def validate_id(id)
-    raise ArgumentError, 'Invalid ID format' unless id =~ /^[a-zA-Z0-9\-_]+$/
+    raise ArgumentError, "Invalid ID format id: #{id}" unless id =~ PROMPT_ID_FORMAT
   end
 
 
@@ -244,207 +298,3 @@ class PromptManager::Storage::FileSystemAdapter
     JSON.parse(data)
   end
 end
-
-__END__
-
-require 'debug_me'
-include DebugMe
-
-require 'amazing_print'
-require 'pathname'
-
-class MyClass
-  PARAMS_EXTENSION = '.json'.freeze
-  PROMPT_EXTENSION = '.txt'.freeze
-
-  class << self
-    attr_accessor :prompts_dir, :search_proc,
-                  :params_extension, :prompt_extension
-
-    def config(&block)
-      if block_given?
-        self.class_eval(&block) # yield self
-      else
-        puts "ERROR: No config block"
-        exit(1)
-      end
-
-      debug_me('== after block =='){[
-        :prompts_dir,
-        :search_proc,
-        :prompt_extension,
-        :params_extension
-      ]}
-
-      validate_configuration
-    end
-
-    def list(...)
-      new.list
-    end
-
-
-    private
-
-    def validate_configuration
-      debug_me("=== validate =="){[
-        :prompts_dir,
-        :search_proc,
-        :prompt_extension,
-        :params_extension
-      ]}
-
-      validate_prompts_dir        # ; rescue => e; puts "\n\nERROR: #{e.message}"
-      validate_search_proc        # ; rescue => e; puts "\n\nERROR: #{e.message}"
-      validate_prompt_extension   # ; rescue => e; puts "\n\nERROR: #{e.message}"
-      validate_params_extension   # ; rescue => e; puts "\n\nERROR: #{e.message}"
-    end
-
-    def validate_prompts_dir
-      prompts_dir_local = prompts_dir.dup
-
-      debug_me("=== INSIDE tdv_validate_prompts_dir =="){[
-        :prompts_dir,
-        :prompts_dir_local,
-        :search_proc,
-        :prompt_extension,
-        :params_extension
-      ]}
-
-
-      unless prompts_dir_local.is_a?(Pathname)
-        prompts_dir_local = Pathname.new(prompts_dir_local) unless prompts_dir_local.nil?
-      end
-
-      prompts_dir_local = prompts_dir_local.expand_path
-
-      raise(ArgumentError, "prompts_dir: #{prompts_dir_local}") unless prompts_dir_local.exist? && prompts_dir.directory?
-    
-      prompts_dir = prompts_dir_local
-
-      debug_me{[
-        :prompts_dir,
-        :prompts_dir_local
-      ]}
-    end
-
-
-    def validate_search_proc
-      search_proc_local = search_proc.dup
-
-      debug_me("=== INSIDE tdv_validate_search_proc =="){[
-        :prompts_dir,
-        :search_proc,
-        :search_proc_local,
-        :prompt_extension,
-        :params_extension
-      ]}
-
-
-      unless search_proc_local.nil?
-        raise(ArgumentError, "search_proc invalid; does not respond to call") unless search_proc_local.respond_to?(:call)
-      end
-
-      search_proc = search_proc_local
-    end
-
-
-    def validate_prompt_extension
-      prompt_extension_local = prompt_extension.dup
-
-      debug_me("=== INSIDE tdv_validate_search_proc =="){[
-        :prompts_dir,
-        :search_proc,
-        :prompt_extension,
-        :prompt_extension_local,
-        :params_extension
-      ]}
-
-
-      if prompt_extension_local.nil?
-        prompt_extension_local = PROMPT_EXTENSION
-      else
-        unless  prompt_extension_local.is_a?(String)    &&
-                prompt_extension_local.start_with?('.')
-          raise(ArgumentError, "Invalid prompt_extension: #{prompt_extension_local}")
-        end
-      end
-      prompt_extension = prompt_extension_local
-    end
-
-
-    def validate_params_extension
-      params_extension_local = params_extension.dup
-
-      debug_me("=== INSIDE tdv_validate_search_proc =="){[
-        :prompts_dir,
-        :search_proc,
-        :prompt_extension,
-        :params_extension,
-        :params_extension_local
-      ]}
-
-
-      if params_extension_local.nil?
-        params_extension_local = PARAMS_EXTENSION
-      else
-        unless  params_extension_local.is_a?(String)    &&
-                params_extension_local.start_with?('.')
-          raise(ArgumentError, "Invalid params_extension: #{params_extension_local}")
-        end
-      end
-
-      params_extension = params_extension_local
-    end
-  end
-
-
-  ##########################################
-  ###
-  ##  Instance methods
-  #
-
-  # Instance-level getters that proxy to the class-level variables
-  def prompts_dir       = self.class.prompts_dir
-  def search_proc       = self.class.search_proc
-  def prompt_extension  = self.class.prompt_extension
-  def params_extension  = self.class.params_extension
-  
-  def initialize
-    # TODO: What?
-  end
-
-  def list(...)
-    ap prompts_dir.children
-  end
-
-  # Instance method `hello` without using `self.class` prefix
-  def hello
-    puts prompts_dir
-    puts search_proc.call('winning lotto ticket') # Assuming `search_proc` is a Proc/Lambda object
-  
-    debug_me{[
-      :prompt_extension,
-      :params_extension
-    ]}
-
-  end
-end
-
-# Using the DSL for configuration
-MyClass.config do |option|
-  option.prompts_dir      = Pathname.new(ENV['HOME']) + '.prompts'
-  option.search_proc      = -> (q) { "find #{q} yourself"; [] }
-  option.prompt_extension = ".docx"
-  option.params_extension = ".yml"
-end
-
-# Instantiate MyClass and call the `hello` method
-i = MyClass.new
-i.hello
-i.list
-puts "======"
-MyClass.list
-
-
-
