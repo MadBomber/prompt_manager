@@ -2,6 +2,8 @@
 
 Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, _et.al._) using storage adapters such as FileSystemAdapter, SqliteAdapter and ActiveRecordAdapter.
 
+**Breaking Change** in version 0.2.0 for `FileSystemAdapter` configuration. See [Configuration](#configuration) to see how the new `config` block works.
+
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
 ## Table of Contents
