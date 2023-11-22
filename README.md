@@ -73,7 +73,7 @@ The parameters for the `todo` prompt ID are saved in the same directory as `todo
 
 ##### Configuration
 
-Use a `config` block toe establish the configuration for the class.
+Use a `config` block to establish the configuration for the class.
 
 ```ruby
 PromptManager::Storage::FileSystemAdapter.config do |o|
