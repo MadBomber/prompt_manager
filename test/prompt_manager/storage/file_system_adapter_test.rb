@@ -5,23 +5,80 @@ require 'fakefs/safe'
 require_relative '../../test_helper'
 require_relative '../../../lib/prompt_manager/storage/file_system_adapter'
 
+# Lets create a shortcut ...
+FSA = PromptManager::Storage::FileSystemAdapter
+
+
 class FileSystemAdapterTest < Minitest::Test
   def setup
-    FakeFS.activate!
-
+    @prompts_dir  = $PROMPTS_DIR   # defined in test_helper
     @prompt_id    = 'test_prompt'
-    @prompts_dir  = './test_prompts'
 
-    FileUtils.mkdir_p(@prompts_dir)
-
-    @adapter      = PromptManager::Storage::FileSystemAdapter.new(
-                      prompts_dir: @prompts_dir
-                    )
+    # An instance pf a stprage adapter class
+    @adapter  = FSA.config do |o|
+                  o.prompts_dir = $PROMPTS_DIR   
+                end.new
   end
 
 
   def teardown
-    FakeFS.deactivate!
+    # what should be torn down?
+  end
+
+  ############################################
+  def test_config
+    assert_equal FSA, PromptManager::Storage::FileSystemAdapter
+    
+    assert FSA.respond_to? :config
+
+    assert_equal FSA.prompts_dir,       $PROMPTS_DIR
+    assert_equal FSA.search_proc,       FSA::SEARCH_PROC
+    assert_equal FSA.prompt_extension,  FSA::PROMPT_EXTENSION
+    assert_equal FSA.params_extension,  FSA::PARAMS_EXTENSION
+  end
+
+
+  def test_config_without_a_block
+    assert_raises ArgumentError do
+      FSA.config
+    end
+  end
+
+
+  ############################################
+  def test_list
+    assert FSA.respond_to? :list
+    assert @adapter.respond_to? :list
+
+    result = @adapter.list
+
+    assert result.is_a?(Array)
+    assert result.first.is_a?(String)
+    assert result.include?('todo')
+    assert result.include?('toy/8-ball')
+
+    class_result = FSA.list
+
+    assert class_result.is_a?(Array)
+    assert class_result.first.is_a?(String)
+    assert class_result.include?('todo')
+    assert class_result.include?('toy/8-ball')
+  end
+
+
+  ############################################
+  def test_path
+    assert FSA.respond_to? :path
+    assert @adapter.respond_to? :path
+
+    class_result  = FSA.path('todo')
+    result        = @adapter.path('todo')
+
+    assert_equal class_result, result
+
+    assert_equal result.parent, @prompts_dir
+    assert_equal result.extname.to_s, FSA.prompt_extension
+    assert_equal result.basename.to_s.split('.').first, 'todo'
   end
 
 
@@ -33,9 +90,12 @@ class FileSystemAdapterTest < Minitest::Test
       '[SIZE]'  => 20, 
       '[COLOR]' => 'blue'
     }
-    
-    File.write(File.join(@prompts_dir, @prompt_id + PromptManager::Storage::FileSystemAdapter::PROMPT_EXTENSION), expected_text)
-    File.write(File.join(@prompts_dir, @prompt_id + PromptManager::Storage::FileSystemAdapter::PARAMS_EXTENSION), expected_params.to_json)
+
+    prompt_path = @prompts_dir + (@prompt_id + FSA.prompt_extension)
+    params_path = @prompts_dir + (@prompt_id + FSA.params_extension)
+
+    prompt_path.write(expected_text)
+    params_path.write(expected_params.to_json)
 
     # Exercise
     result = @adapter.get(id: @prompt_id)
@@ -46,6 +106,7 @@ class FileSystemAdapterTest < Minitest::Test
   end
 
 
+  ############################################
   def test_save
     # Setup
     text = 'New prompt text'
@@ -62,6 +123,7 @@ class FileSystemAdapterTest < Minitest::Test
   end
 
 
+  ############################################
   def test_delete
     # Setup
     # Creating the files to be deleted
@@ -77,6 +139,7 @@ class FileSystemAdapterTest < Minitest::Test
   end
 
 
+  ############################################
   def test_search_proc
     search_term = "Mad"
 
@@ -94,7 +157,7 @@ class FileSystemAdapterTest < Minitest::Test
   end
 
 
-
+  ############################################
   def test_search
     # Setup
     search_term         = 'hello'
@@ -125,6 +188,11 @@ class FileSystemAdapterTest < Minitest::Test
     # Verify
     assert_equal results, expected
     refute_includes results, 'excluded'
+  
+    # Clean up
+    File.delete(included_file)
+    File.delete(excluded_file)
+    File.delete(also_included_file)
   end
 
   # Add more tests for exceptional cases and edge conditions

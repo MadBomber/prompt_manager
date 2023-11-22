@@ -1,26 +1,151 @@
 # prompt_manager/lib/prompt_manager/storage/file_system_adapter.rb
 
+# Use the local (or remote) file system as a place to
+# store and access prompts.
+#
+# Adds two additional methods to the Promp class:
+#   list - returns Array of prompt IDs
+#   path = returns a Pathname object to the prompt's text file
+#   path(prompt_id) - same as path on the prompt instance
+#
+# Allows sub-directories of the prompts_dir to be
+# used like categories.  For example the prompt_id "toy/magic"
+# is found in the `magic.txt` file inside the `toy` sub-directory
+# of the prompts_dir.
+#
+# There can man be many layers of categories (sub-directories)
+#
 
-require 'json'
+require 'json'      # basic serialization of parameters
+require 'pathname'
 
 class PromptManager::Storage::FileSystemAdapter
-  PARAMS_EXTENSION = '.json'.freeze
-  PROMPT_EXTENSION = '.txt'.freeze
+  SEARCH_PROC       = nil # placeholder
+  PARAMS_EXTENSION  = '.json'.freeze
+  PROMPT_EXTENSION  = '.txt'.freeze
+  PROMPT_ID_FORMAT  = /^[a-zA-Z0-9\-\/_]+$/
 
-  attr_reader :prompts_dir
+  class << self
+    attr_accessor :prompts_dir, :search_proc, 
+                  :params_extension, :prompt_extension
+  
+    def config
+      if block_given?
+        yield self
+        validate_configuration     
+      else
+        raise ArgumentError, "No block given to config"
+      end
 
-  def initialize(
-      prompts_dir:  '.prompts',
-      search_proc:  nil   # Example: ->(q) {`ag -l #{q}`}
-    )
-
-    # validate that prompts_dir exist and is in fact a directory.
-    unless Dir.exist?(prompts_dir)
-      raise "Directory #{prompts_dir} does not exist or is not a directory"
+      self
     end
 
-    @prompts_dir  = prompts_dir
-    @search_proc  = search_proc
+    # Expansion methods on the Prompt class specific to
+    # this storage adapter.
+
+    # Ignore the incoming prompt_id
+    def list(prompt_id = nil)
+      new.list
+    end
+
+
+    def path(prompt_id)
+      new.path(prompt_id)
+    end
+
+    #################################################
+    private
+
+    def validate_configuration
+      validate_prompts_dir
+      validate_search_proc
+      validate_prompt_extension
+      validate_params_extension
+    end
+
+
+    def validate_prompts_dir
+      # This is a work around for a Ruby scope issue where the 
+      # class getter/setter method is becoming confused with a 
+      # local variable when anything other than plain 'ol get and 
+      # set are used.'This error is in both Ruby v3.2.2 and
+      # v3.3.0-preview3.
+      #
+      prompts_dir_local = self.prompts_dir
+
+      unless prompts_dir_local.is_a?(Pathname)
+        prompts_dir_local = Pathname.new(prompts_dir_local) unless prompts_dir_local.nil?
+      end
+
+      prompts_dir_local = prompts_dir_local.expand_path
+
+      raise(ArgumentError, "prompts_dir: #{prompts_dir_local}") unless prompts_dir_local.exist? && prompts_dir_local.directory?
+      
+      self.prompts_dir = prompts_dir_local
+    end
+
+
+    def validate_search_proc
+      search_proc_local = self.search_proc
+
+      if search_proc_local.nil?
+        search_proc_local = SEARCH_PROC
+      else
+        raise(ArgumentError, "search_proc invalid; does not respond to call") unless search_proc_local.respond_to?(:call)
+      end
+
+      self.search_proc = search_proc_local
+    end
+
+
+    def validate_prompt_extension
+      prompt_extension_local = self.prompt_extension
+
+      if prompt_extension_local.nil?
+        prompt_extension_local = PROMPT_EXTENSION
+      else
+        unless  prompt_extension_local.is_a?(String)    &&
+                prompt_extension_local.start_with?('.')
+          raise(ArgumentError, "Invalid prompt_extension: #{prompt_extension_local}")
+        end
+      end
+
+      self.prompt_extension = prompt_extension_local
+    end
+
+
+    def validate_params_extension
+      params_extension_local = self.params_extension
+
+      if params_extension_local.nil?
+        params_extension_local = PARAMS_EXTENSION
+      else
+        unless  params_extension_local.is_a?(String)    &&
+                params_extension_local.start_with?('.')
+          raise(ArgumentError, "Invalid params_extension: #{params_extension_local}")
+        end
+      end
+
+      self.params_extension = params_extension_local
+    end
+  end
+
+
+  ##################################################
+  ###
+  ##  Instance
+  #
+
+  def prompts_dir       = self.class.prompts_dir
+  def search_proc       = self.class.search_proc
+  def prompt_extension  = self.class.prompt_extension
+  def params_extension  = self.class.params_extension
+
+
+  def initialize
+    # NOTE: validate because main program may have made
+    #       changes outside of the config block
+    self.class.send(:validate_configuration) # send gets around private designations of a method
   end
 
 
@@ -37,14 +162,20 @@ class PromptManager::Storage::FileSystemAdapter
 
   # Retrieve prompt text by its id
   def prompt_text(prompt_id)
-    read_file(file_path(prompt_id, PROMPT_EXTENSION))
+    read_file(file_path(prompt_id, prompt_extension))
   end
 
 
   # Retrieve parameter values by its id
   def parameter_values(prompt_id)
-    json_content = read_file(file_path(prompt_id, PARAMS_EXTENSION))
-    deserialize(json_content)
+    params_path = file_path(prompt_id, params_extension)
+    
+    if params_path.exist?
+      parms_content = read_file(params_path)
+      deserialize(parms_content)
+    else
+      {}
+    end
   end
 
 
@@ -56,8 +187,8 @@ class PromptManager::Storage::FileSystemAdapter
     )
     validate_id(id)
 
-    prompt_filepath = file_path(id, PROMPT_EXTENSION)
-    params_filepath = file_path(id, PARAMS_EXTENSION)
+    prompt_filepath = file_path(id, prompt_extension)
+    params_filepath = file_path(id, params_extension)
     
     write_with_error_handling(prompt_filepath, text)
     write_with_error_handling(params_filepath, serialize(parameters))
@@ -68,8 +199,8 @@ class PromptManager::Storage::FileSystemAdapter
   def delete(id:)
     validate_id(id)
 
-    prompt_filepath = file_path(id, PROMPT_EXTENSION)
-    params_filepath = file_path(id, PARAMS_EXTENSION)
+    prompt_filepath = file_path(id, prompt_extension)
+    params_filepath = file_path(id, params_extension)
     
     delete_with_error_handling(prompt_filepath)
     delete_with_error_handling(params_filepath)
@@ -85,26 +216,54 @@ class PromptManager::Storage::FileSystemAdapter
   end
 
 
+  # Return an Array of prompt IDs
+  def list(*)
+    prompt_ids = []
+    
+    Pathname.glob(prompts_dir.join("**/*#{prompt_extension}")).each do |file_path|
+      prompt_id = file_path.relative_path_from(prompts_dir).to_s.gsub(prompt_extension, '')
+      prompt_ids << prompt_id
+    end
+
+    prompt_ids
+  end
+
+
+  # Returns a Pathname object for a prompt ID text file
+  # However, it is possible that the file does not exist.
+  def path(id)
+    validate_id(id)
+    file_path(id, prompt_extension) 
+  end
+
   ##########################################
   private
 
+  # Validate that the ID contains good characters.
   def validate_id(id)
-    raise ArgumentError, 'Invalid ID format' unless id =~ /^[a-zA-Z0-9\-_]+$/
+    raise ArgumentError, "Invalid ID format id: #{id}" unless id =~ PROMPT_ID_FORMAT
+  end
+
+
+  # Verify that the ID actually exists
+  def verify_id(id)
+    file_path(id, prompt_extension).exist?
   end
 
 
   def write_with_error_handling(file_path, content)
     begin
-      File.write(file_path, content)
+      file_path.write content
     rescue IOError => e
       raise "Failed to write to file: #{e.message}"
     end
   end
 
 
+  # file_path (Pathname)
   def delete_with_error_handling(file_path)
     begin
-      FileUtils.rm_f(file_path)
+      file_path.delete
     rescue IOError => e
       raise "Failed to delete file: #{e.message}"
     end
@@ -112,7 +271,7 @@ class PromptManager::Storage::FileSystemAdapter
 
 
   def file_path(id, extension)
-    File.join(@prompts_dir, "#{id}#{extension}")
+    prompts_dir + "#{id}#{extension}"
   end
 
 
@@ -123,20 +282,21 @@ class PromptManager::Storage::FileSystemAdapter
 
 
   def search_prompts(search_term)
-    query_term = search_term.downcase
-
-    Dir.glob(File.join(@prompts_dir, "*#{PROMPT_EXTENSION}")).each_with_object([]) do |file_path, ids|
-      File.open(file_path) do |file|
-        file.each_line do |line|
-          if line.downcase.include?(query_term)
-            ids << File.basename(file_path, PROMPT_EXTENSION)
-            next
-          end
-        end
+    prompt_ids = []
+    
+    Pathname.glob(prompts_dir.join("**/*#{prompt_extension}")).each do |prompt_path|
+      if prompt_path.read.downcase.include?(search_term)
+        prompt_id = prompt_path.relative_path_from(prompts_dir).to_s.gsub(prompt_extension, '')    
+        prompt_ids << prompt_id
       end
-    end.uniq
+    end
+
+    prompt_ids
+
   end
 
+
+  # TODO: Should the serializer be generic?
 
   def serialize(data)
     data.to_json

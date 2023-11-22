@@ -25,8 +25,23 @@ class PromptManager::Prompt
       new(id: id)
     end
 
+
     def search(for_what)
       storage_adapter.search(for_what)
+    end
+
+
+    def method_missing(method_name, *args, &block)
+      if storage_adapter.respond_to?(method_name)
+        storage_adapter.send(method_name, *args, &block)
+      else
+        super
+      end
+    end
+
+
+    def respond_to_missing?(method_name, include_private = false)
+      storage_adapter.respond_to?(method_name, include_private) || super
     end
   end
   
@@ -139,6 +154,23 @@ class PromptManager::Prompt
     log_error("Storage operation failed: #{error.message}")
     # Re-raise the error if necessary, or define recovery steps
     raise error
+  end
+
+
+  # Let the storage adapter instance take a crake at
+  # these unknown methods.  Don't care what the args
+  # are, just pass the prompt's ID.
+  def method_missing(method_name, *args, &block)
+    if db.respond_to?(method_name)
+      db.send(method_name, id, &block)
+    else
+      super
+    end
+  end
+
+
+  def respond_to_missing?(method_name, include_private = false)
+    db.respond_to?(method_name, include_private) || super
   end
 
 

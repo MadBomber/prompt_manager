@@ -7,6 +7,15 @@ class PromptTest < Minitest::Test
   class MockStorageAdapter
     @@db = {} # generic database - a collection of prompts
 
+    # NOTE: storage adapter can add extra class
+    #       or instance methods available to the Prompt class
+    #
+    class << self
+      def extra(prompt_id)
+        new.extra(prompt_id)
+      end
+    end
+
     attr_accessor :id, :text, :parameters 
     
     def db = @@db
@@ -16,6 +25,7 @@ class PromptTest < Minitest::Test
       @text       = nil # String raw text with parameters
       @parameters = nil # Hash for current prompt
     end
+
 
     def get(id:)
       raise("Prompt ID not found") unless @@db.has_key? id
@@ -29,20 +39,29 @@ class PromptTest < Minitest::Test
       record
     end
 
+
     def save(id: @id, text: @text, parameters: @parameters)
       @@db[id] = { text: text, parameters: parameters }
       true
     end
+
 
     def delete(id: @id)
       raise("What") unless @@db.has_key?(id)
       db.delete(id)
     end
 
+
     def search(query)
       @@db.select { |k, v| v[:text].include?(query) }
     end
+
+
+    def extra(prompt_id)
+      "Hello #{prompt_id}"
+    end
   end
+
 
   ##########################################
   def setup
@@ -66,6 +85,7 @@ class PromptTest < Minitest::Test
   end
 
 
+  ##########################################
   def test_prompt_initialization_raises_argument_error_when_no_storage_adapter_set
     PromptManager::Prompt.storage_adapter = nil
     assert_raises ArgumentError do
@@ -76,12 +96,14 @@ class PromptTest < Minitest::Test
   end
 
 
+  ##########################################
   def test_prompt_interpolates_parameters_correctly
     prompt = PromptManager::Prompt.new(id: 'test_prompt')
     assert_equal "Hello, World!", prompt.to_s
   end
 
 
+  ##########################################
   def test_prompt_saves_to_storage
     new_prompt_id         = 'new_prompt'
     new_prompt_text       = "How are you, [NAME]?"
@@ -100,6 +122,7 @@ class PromptTest < Minitest::Test
   end
 
 
+  ##########################################
   def test_prompt_deletes_from_storage
     prompt = PromptManager::Prompt.create(id: 'test_prompt')
     
@@ -113,11 +136,22 @@ class PromptTest < Minitest::Test
   end
 
 
+  ##########################################
   def test_prompt_searches_storage
     search_results  = PromptManager::Prompt.search('Hello')
 
     refute_empty search_results
     assert search_results.keys.include?('test_prompt')
+  end
+
+
+  ##########################################
+  def test_extra
+    class_result  = PromptManager::Prompt.extra("World")
+    result        = PromptManager::Prompt.create(id: 'World').extra("World")
+
+    assert_equal class_result, result
+    assert_equal result, "Hello World"
   end
 end
 
