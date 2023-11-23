@@ -151,6 +151,7 @@ class PromptManager::Storage::FileSystemAdapter
 
   def get(id:)
     validate_id(id)
+    verify_id(id)
 
     {
       id:         id,
@@ -208,10 +209,12 @@ class PromptManager::Storage::FileSystemAdapter
 
 
   def search(for_what)
+    search_term = for_what.downcase
+
     if @search_proc
-      @search_proc.call(for_what)
+      @search_proc.call(searcj_term)
     else
-      search_prompts(for_what)
+      search_prompts(search_term)
     end
   end
 
@@ -245,9 +248,10 @@ class PromptManager::Storage::FileSystemAdapter
   end
 
 
-  # Verify that the ID actually exists
   def verify_id(id)
-    file_path(id, prompt_extension).exist?
+    unless file_path(id, prompt_extension).exist?
+      raise ArgumentError, "Invalid prompt_id: #{id}"
+    end
   end
 
 
@@ -292,7 +296,6 @@ class PromptManager::Storage::FileSystemAdapter
     end
 
     prompt_ids
-
   end
 
 
