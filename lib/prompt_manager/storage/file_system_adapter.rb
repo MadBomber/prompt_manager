@@ -212,7 +212,7 @@ class PromptManager::Storage::FileSystemAdapter
     search_term = for_what.downcase
 
     if @search_proc
-      @search_proc.call(searcj_term)
+      @search_proc.call(search_term)
     else
       search_prompts(search_term)
     end
