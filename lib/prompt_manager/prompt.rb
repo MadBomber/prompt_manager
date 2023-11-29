@@ -108,7 +108,7 @@ class PromptManager::Prompt
   def build
     @prompt = text.gsub(PARAMETER_REGEX) do |match|
                 param_name = match
-                parameters[param_name] || match
+                parameters[param_name].last || match
               end
 
     remove_comments
