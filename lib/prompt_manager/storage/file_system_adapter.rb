@@ -258,6 +258,7 @@ class PromptManager::Storage::FileSystemAdapter
   def write_with_error_handling(file_path, content)
     begin
       file_path.write content
+      true
     rescue IOError => e
       raise "Failed to write to file: #{e.message}"
     end
@@ -268,6 +269,7 @@ class PromptManager::Storage::FileSystemAdapter
   def delete_with_error_handling(file_path)
     begin
       file_path.delete
+      true
     rescue IOError => e
       raise "Failed to delete file: #{e.message}"
     end

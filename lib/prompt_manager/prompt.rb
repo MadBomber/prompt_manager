@@ -81,8 +81,9 @@ class PromptManager::Prompt
   # Return tje prompt text suitable for passing to a
   # gen-AI process.
   def to_s
-    @prompt
+    build
   end
+  alias_method :prompt, :to_s
 
 
   # Save the prompt to the Storage system
@@ -108,10 +109,15 @@ class PromptManager::Prompt
   def build
     @prompt = text.gsub(PARAMETER_REGEX) do |match|
                 param_name = match
-                parameters[param_name].last || match
+                Array(parameters[param_name]).last || match
               end
 
     remove_comments
+  end
+
+
+  def keywords
+    update_keywords
   end
 
   ######################################
@@ -119,9 +125,11 @@ class PromptManager::Prompt
 
   def update_keywords
     @keywords = @text.scan(PARAMETER_REGEX).flatten.uniq
-    keywords.each do |kw|
+    @keywords.each do |kw|
       @parameters[kw] = [] unless @parameters.has_key?(kw)
     end
+
+    @keywords
   end
 
 
