@@ -108,7 +108,7 @@ class PromptManager::Prompt
   def build
     @prompt = text.gsub(PARAMETER_REGEX) do |match|
                 param_name = match
-                parameters[param_name] || match
+                parameters[param_name].last || match
               end
 
     remove_comments
@@ -120,7 +120,7 @@ class PromptManager::Prompt
   def update_keywords
     @keywords = @text.scan(PARAMETER_REGEX).flatten.uniq
     keywords.each do |kw|
-      @parameters[kw] = "" unless @parameters.has_key?(kw)
+      @parameters[kw] = [] unless @parameters.has_key?(kw)
     end
   end
 

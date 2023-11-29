@@ -2,7 +2,8 @@
 
 Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, _et.al._) using storage adapters such as FileSystemAdapter, SqliteAdapter and ActiveRecordAdapter.
 
-**Breaking Change** in version 0.2.0 for `FileSystemAdapter` configuration. See [Configuration](#configuration) to see how the new `config` block works.
+**Breaking Change** in version 0.3.0 - The value of the parameters Hash for a keyword is now an Array instead of a single value.  The last value in the Array is always the most recent value used for the given keyword.  This was done to support the use of a Readline::History object editing in the [aia](https://github.com/MadBomber/aia) CLI tool
+
 
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
@@ -19,6 +20,8 @@ Manage the parameterized prompts (text) used in generative AI (aka chatGPT, Open
           - [prompts_dir](#prompts_dir)
           - [search_proc](#search_proc)
           - [File Extensions](#file-extensions)
+        - [Example Prompt Text File](#example-prompt-text-file)
+        - [Example Prompt Parameters JSON File](#example-prompt-parameters-json-file)
         - [Extra Functionality](#extra-functionality)
       - [SqliteAdapter](#sqliteadapter)
       - [ActiveRecordAdapter](#activerecordadapter)
@@ -117,6 +120,36 @@ These two configuration options are `String` objects that must start with a peri
 Currently the `FileSystemAdapter` only supports a JSON serializer for its parameters Hash.  Using any other values for these extensions will cause problems.
 
 They exist so that there is a platform on to which other storage adapters can be built or serializers added.  This is not currently on the roadmap.
+
+##### Example Prompt Text File
+
+```text
+# ~/.prompts/joke.txt
+# Desc: Tell some jokes
+
+Tell me a few [KIND] jokes about [SUBJECT]
+```
+
+Note the command lines at the top.  This is a convention I use.  It is not part of the software.  I find it helpful in documenting the prompt.
+
+##### Example Prompt Parameters JSON File
+
+```json
+{
+  "[KIND]": [
+    "pun",
+    "family friendly"
+  ],
+  "[SUBJECT]": [
+    "parrot",
+    "garbage man",
+    "snowman",
+    "weather girl"
+  ]
+}
+```
+
+The last value in the keyword's Array is the most recent value used for that keyword.  This is a functionality established since v0.3.0.  Its purpose is to provide a history of values from which a user can select to repeat a previous value or to select ta previous value and edit it into something new.
 
 ##### Extra Functionality
 
