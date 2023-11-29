@@ -70,7 +70,7 @@ class PromptTest < Minitest::Test
     @storage_adapter.save(
       id:         'test_prompt', 
       text:       "Hello, [NAME]!", 
-      parameters: {'[NAME]' => 'World'}
+      parameters: {'[NAME]' => ['World']}
     )
 
     PromptManager::Prompt.storage_adapter = @storage_adapter
