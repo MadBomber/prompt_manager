@@ -120,6 +120,7 @@ class PromptManager::Prompt
     update_keywords
   end
 
+
   ######################################
   private
 

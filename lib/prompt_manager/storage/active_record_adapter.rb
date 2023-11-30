@@ -1,161 +1,130 @@
 # prompt_manager/lib/prompt_manager/storage/active_record_adapter.rb
 
-require 'active_record'
-
-# TODO: Will need a database.yml file
-#       will need to know the column names that coorespond
-#       with the things that the Prompt class wants.
+# This class acts as an adapter for interacting with an ActiveRecord model
+# to manage storage operations for PromptManager::Prompt instances. It defines
+# methods that allow for saving, searching, retrieving by ID, and deleting
+# prompts.
 
 class PromptManager::Storage::ActiveRecordAdapter
-  attr_reader :model_class
+  
+  class << self
+    attr_accessor :model, :prompt_id_column, :prompt_text_column, :parameters_column
 
-  def initialize(model_class)
-    @model_class = model_class
+    def config
+      if block_given?
+        yield self
+        validate_configuration
+      else
+        raise ArgumentError, "No block given to config"
+      end
+      
+      self
+    end
+
+
+    def method_missing(method_name, *args, &block)
+      if model.respond_to?(method_name)
+        model.send(method_name, *args, &block)
+      else
+        super
+      end
+    end
+
+
+    def respond_to_missing?(method_name, include_private = false)
+      model.respond_to?(method_name, include_private) || super
+    end
+  end
+  
+
+  ##############################################
+  attr_accessor :record
+
+  def initialize
+    self.class.send(:validate_configuration) # send gets around private designations of a method
+    @record = nil
   end
 
 
-  def prompt_text(prompt_id)
-    prompt = find_prompt(prompt_id)
-    prompt.text
+  def get(id:)
+    @record = model.find_by(prompt_id_column => id)
+    raise ArgumentError, "Prompt not found with id: #{id}" unless @record
+
+    {
+      id:         id, # same as the prompt_id_column
+      text:       @record[prompt_text_column],
+      parameters: @record[parameters_column]
+    }
+  end
+
+  
+  def list(*)
+    model.all.pluck(prompt_id_column)
   end
 
 
-  def parameter_values(prompt_id)
-    prompt = find_prompt(prompt_id)
-    JSON.parse(prompt.params, symbolize_names: true)
+  def save(id:, text: "", parameters: {})
+    prompt_id = @record[prompt_id_column]
+    @record = model.find_or_initialize_by(prompt_id_column => id) unless prompt_id == id
+   
+    @record[prompt_text_column] = text
+    @record[parameters_column]  = parameters
+    @record.save!
   end
 
 
-  def save(prompt_id, prompt_text, parameter_values)
-    prompt        = model_class.find_or_initialize_by(id: prompt_id)
-    prompt.text   = prompt_text
-    prompt.params = parameter_values.to_json
-    prompt.save!
-  end
-
-
-  def delete(prompt_id)
-    prompt = find_prompt(prompt_id)
-    prompt.destroy
+  def delete(id:)
+    @record = model.find_by(prompt_id_column => id) unless @record[prompt_id_column] = id
+    @record&.destroy
   end
 
 
   def search(for_what)
-    # TODO: search through all prompts. Return an Array of
-    #       prompt_id where the text of the prompt contains
-    #       for_what is being searched.
-
-    []
+    model.where("#{prompt_text_column} LIKE ?", "%#{for_what}%").pluck(prompt_id_column)
   end
 
 
-  class << self
-    def config
-      # TODO: establish a connection to the database
-      #       maybe define the prompts table and its
-      #       columns of interest.
-    end
-  end
-
-  ###############################################
+  ##############################################
   private
 
-  def find_prompt(prompt_id)
-    model_class.find_by(id: prompt_id) || raise('Prompt not found')
+  # Avoid code littered with self.class prefixes ...
+  def model               = self.class.model
+  def prompt_id_column    = self.class.prompt_id_column
+  def prompt_text_column  = self.class.prompt_text_column
+  def parameters_column   = self.class.parameters_column
+
+
+  def validate_configuration
+    validate_model
+    validate_columns
   end
-end
 
 
-__END__
+  def validate_model
+    raise ArgumentError, "AR Model not set" unless model
+    raise ArgumentError, "AR Model is not an ActiveRecord model" unless model < ActiveRecord::Base
+  end
 
-# prompt_manager/lib/prompt_manager/storage/active_record_adapter.rb
 
-require 'active_record'
-
-module PromptManager
-  module Storage
-    class ActiveRecordAdapter
-
-      # Define models for ActiveRecord
-      class Prompt < ActiveRecord::Base
-        validates :unique_id, presence: true
-        validates :text, presence: true
-      end
-
-      class PromptParameter < ActiveRecord::Base
-        belongs_to :prompt
-        validates :key, presence: true
-        serialize :value
-      end
-
-      def initialize
-        unless ActiveRecord::Base.connected?
-          raise ArgumentError, "ActiveRecord is not connected"
-        end
-      end
-
-      def get(id:)
-        prompt = Prompt.find_by(unique_id: id)
-        return nil unless prompt
-
-        parameters = prompt.prompt_parameters.index_by(&:key)
-
-        {
-          id:         prompt.unique_id,
-          text:       prompt.text,
-          parameters: parameters.transform_values(&:value)
-        }
-      end
-
-      def save(id:, text: "", parameters: {})
-        prompt = Prompt.find_or_initialize_by(unique_id: id)
-        prompt.text = text
-        prompt.save!
-
-        parameters.each do |key, value|
-          parameter = PromptParameter.find_or_initialize_by(prompt: prompt, key: key)
-          parameter.value = value
-          parameter.save!
-        end
-      end
-
-      def delete(id:)
-        prompt = Prompt.find_by(unique_id: id)
-        return unless prompt
-        
-        prompt.prompt_parameters.destroy_all
-        prompt.destroy
-      end
-
-      def search(for_what)
-        query = '%' + for_what.downcase + '%'
-        Prompt.where('LOWER(text) LIKE ?', query).pluck(:unique_id)
-      end
-
-      def list(*)
-        Prompt.pluck(:unique_id)
-      end
-
-      private
-
-      # This is an example of how the database connection setup could look like, 
-      # but it should be handled externally in the actual application setup.
-      def self.setup_database_connection
-        ActiveRecord::Base.establish_connection(
-          adapter: 'sqlite3',
-          database: 'prompts.db'
-        )
-      end
+  def validate_columns
+    columns = model.column_names # Array of Strings
+    [prompt_id_column, prompt_text_column, parameters_column].each do |column|
+      raise ArgumentError, "#{column} is not a valid column for model #{model}" unless columns.include?(column.to_s)
     end
   end
+
+
+  def method_missing(method_name, *args, &block)
+    if @record.respond_to?(method_name)
+      @record.send(method_name, args.first, &block)
+    else
+      super
+    end
+  end
+
+
+  def respond_to_missing?(method_name, include_private = false)
+    @record.respond_to?(method_name, include_private) || super
+  end
 end
-
-# After this, you would need to create a database migration to generate the required tables.
-# Additionally, you have to establish an ActiveRecord connection before using this adapter,
-# typically in the environment setup of your application.
-
-# Keep in mind you need to create migrations for both the Prompt and PromptParameter models,
-# and manage the database schema using ActiveRecord migrations. This adapter assumes that the
-# database structure is already in place and follows the schema inferred by the models in the adapter.
-
 
