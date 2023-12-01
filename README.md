@@ -84,10 +84,10 @@ Use a `config` block to establish the configuration for the class.
 
 ```ruby
 PromptManager::Storage::FileSystemAdapter.config do |o|
-  o.prompts_dir = "path/to/prompts_directory" 
-  o.search_proc = -> (q) { "ag -l #{q} #{prompts_dir} | reformat" } 
-  o.prompt_extension = '.txt' # default
-  o.params_extension = '.json' # the default
+  o.prompts_dir       = "path/to/prompts_directory" 
+  o.search_proc       = nil     # default 
+  o.prompt_extension  = '.txt'  # default
+  o.params_extension  = '.json' # default
 end
 ```
 
@@ -110,7 +110,7 @@ An `ArgumentError` will be raised when `prompts_dir` does not exist or if it is 
 
 ##### search_proc
 
-The default for `search_proc` is nil.  In this case the search will be preformed by a default `search` method which is basically reading all the prompt files to see which ones contain the search term.  There are faster ways to do this kind of thing using CLI=based utilities.
+The default for `search_proc` is nil.  In this case the search will be preformed by a default `search` method which is basically reading all the prompt files to see which ones contain the search term.  There are faster ways to do this kind of thing using CLI-based utilities.
 
 TODO: add a example to the examples directory on how to integrate with command line utilities.
 
@@ -193,7 +193,7 @@ PromptManager::Prompt
 ```
 
 ##### model
-The `model` configuration parameter is the actual class name of the `ActiveRecordLLBase` or `ApplicationRecord` (if you are using a rails application) that contains the content used for prompts.
+The `model` configuration parameter is the actual class name of the `ActiveRecord::Base` or `ApplicationRecord` (if you are using a rails application) that contains the content used for prompts.
 
 ##### id_column
 The `id_column` contains the name of the column that contains the "prompt ID" content.  It can be either a `String` or `Symbol` value.
