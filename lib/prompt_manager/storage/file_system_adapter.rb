@@ -211,8 +211,8 @@ class PromptManager::Storage::FileSystemAdapter
   def search(for_what)
     search_term = for_what.downcase
 
-    if @search_proc
-      @search_proc.call(search_term)
+    if search_proc.is_a? Proc
+      search_proc.call(search_term)
     else
       search_prompts(search_term)
     end

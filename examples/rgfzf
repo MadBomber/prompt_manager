@@ -21,14 +21,16 @@ selected_file=$(
   rg  --files-with-matches \
       --no-messages \
       --smart-case "$search_term" "$directory_path" |
+  sed "s#^$directory_path/##" | # Strip out the directory path
   fzf --ansi \
       --color "hl:-1:underline,hl+:-1:underline:reverse" \
-      --preview "cat {}" \
+      --preview "cat $directory_path/{}" \
       --preview-window "up,60%,border-bottom" \
       --no-multi \
       --exit-0 \
       --query "$search_term"
 )
+
 
 # If no file was selected, exit the script
 if [[ -z "$selected_file" ]]; then
@@ -36,7 +38,7 @@ if [[ -z "$selected_file" ]]; then
   exit 0
 fi
 
-# Remove the file extension and replace the initial part of the path
-prompt_id=$(echo "$selected_file" | sed "s#^$directory_path/##;s/\.[^.]*$//")
+# Remove the file extension
+prompt_id=$(echo "$selected_file" | sed "s/\.[^.]*$//")
 
 echo "$prompt_id"

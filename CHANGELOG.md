@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+## [0.3.3] = 2023-12-01
+- Added example of using the `search_proc` config parameter with the FileSystemAdapter.
+
 ## [0.3.2] = 2023-12-01
 
 - The ActiveRecordAdapter is passing its unit tests

@@ -142,18 +142,21 @@ class FileSystemAdapterTest < Minitest::Test
   ############################################
   def test_search_proc
     search_term = "MadBomber"
+    saved_search_proc = @adapter.class.search_proc
 
     # search_proc is a way to use command line tools like
     # grep, rg, aq, ack, etc or anything else that makes
     # sense that will return a list of prompt IDs.
     # In the case of the FileSystemAdapter the ID is
     # the basename of the file snns its extension.
-    @adapter.instance_variable_set(:@search_proc, ->(q) { ["hello #{q}"] })
+    @adapter.class.search_proc = ->(q) { ["hello #{q}"] }
     
     expected  = ["hello madbomber"] # NOTE: query term is all lowercase
     results   = @adapter.search(search_term)
 
-    assert_equal results, expected
+    assert_equal expected, results
+
+    @adapter.class.search_proc = saved_search_proc
   end
 
 
