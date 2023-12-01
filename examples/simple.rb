@@ -9,9 +9,6 @@
 ##  By:   Dewayne VanHoozer (dvanhoozer@gmail.com)
 ##
 #
-# TODO: Add `list` to get an Array of prompt IDs
-# TODO: Add `path` to get a path to the prompt file
-#
 
 require 'prompt_manager'
 require 'prompt_manager/storage/file_system_adapter'
@@ -140,3 +137,23 @@ puts <<~EOS
 EOS
 
 puts PromptManager::Prompt.path('toy/8-ball')
+
+puts
+
+puts "Default Search for Prompts"
+puts "=========================="
+
+print "Search Proc Class: "
+puts PromptManager::Prompt.storage_adapter.search_proc.class
+
+search_term = "txt"  # some comment lines show the file name example: todo.txt
+
+puts "Search for '#{search_term}' ..."
+
+prompt_ids = PromptManager::Prompt.search search_term
+
+# NOTE: prompt+ids is an Array of prompt IDs even if there is only one entry.
+#       or and empty array if there are no prompts have the search term.
+
+puts "Found: #{prompt_ids}"
+
