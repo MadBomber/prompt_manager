@@ -60,5 +60,12 @@ prompt_id = PromptManager::Prompt.search search_term
 #       case only one selected prompt ID that matches the search
 #       term will be returned.
 
-puts "Found: #{prompt_id}"
+puts "Found: '#{prompt_id}' which is a #{prompt_id.class}. empty? #{prompt_id.empty?}"
+
+puts <<~EOS
+  
+  When the rgfzf bash script does not find a prompt ID or if the 
+  ESC key is pressed, the prompt ID that is returned will be an empty String.
+
+EOS
 

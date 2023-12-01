@@ -50,6 +50,8 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 See [examples/simple.rb](examples/simple.rb)
 
+See also [examples/using_search_proc.rb](examples/using_search_proc.rb)
+
 ## Overview
 
 ### Generative AI (gen-AI)
@@ -110,9 +112,11 @@ An `ArgumentError` will be raised when `prompts_dir` does not exist or if it is 
 
 ##### search_proc
 
-The default for `search_proc` is nil.  In this case the search will be preformed by a default `search` method which is basically reading all the prompt files to see which ones contain the search term.  There are faster ways to do this kind of thing using CLI-based utilities.
+The default for `search_proc` is nil which means that the search will be preformed by a default `search` method which is basically reading all the prompt files to see which ones contain the search term. It will return an Array of prompt IDs for each prompt file found that contains the search term.  Its up to the application to select which returned prompt ID to use. 
 
-TODO: add a example to the examples directory on how to integrate with command line utilities.
+There are faster ways to search and select files.  For example there are specialized search and selection utilities that are available for the command line. The `examples` directory contains a `bash` script named `rgfzf` that uses `rg` (aka `ripgrep`) to do the searching and `fzf` to do the selecting.
+
+See [examples/using_search_proc.rb](examples/using_search_proc.rb)
 
 ##### File Extensions
 
