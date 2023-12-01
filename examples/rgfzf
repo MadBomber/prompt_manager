@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Refactored examples/rgfzf to take search term and directory path as parameters
+
+search_term="$1"
+directory_path="${2:-$(pwd)}" # Use given directory path, or current working directory if not provided
+
+# Verify that a search term is provided
+if [[ -z "$search_term" ]]; then
+  echo "Usage: $0 search_term [directory_path]"
+  exit 1
+fi
+
+# Ensure ripgrep (rg) and fzf are installed
+if ! command -v rg &> /dev/null || ! command -v fzf &> /dev/null; then
+  echo "Please ensure ripgrep and fzf are installed before running this script."
+  exit 1
+fi
+
+# Perform the file search using ripgrep and selection using fzf
+selected_file=$(
+  rg  --files-with-matches \
+      --no-messages \
+      --smart-case "$search_term" "$directory_path" |
+  fzf --ansi \
+      --color "hl:-1:underline,hl+:-1:underline:reverse" \
+      --preview "cat {}" \
+      --preview-window "up,60%,border-bottom" \
+      --no-multi \
+      --exit-0 \
+      --query "$search_term"
+)
+
+# If no file was selected, exit the script
+if [[ -z "$selected_file" ]]; then
+  # echo "No file selected."
+  exit 0
+fi
+
+# Remove the file extension and replace the initial part of the path
+prompt_id=$(echo "$selected_file" | sed "s#^$directory_path/##;s/\.[^.]*$//")
+
+echo "$prompt_id"

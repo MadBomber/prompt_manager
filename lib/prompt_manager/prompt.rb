@@ -47,8 +47,8 @@ class PromptManager::Prompt
   
   # SMELL:  Does the db (aka storage adapter) really need
   #         to be accessible by the main program?
-  attr_accessor :db, :id, :text, :parameters, :keywords
-  
+  attr_accessor :db, :id, :text, :parameters
+
 
   # Retrieve the specific prompt ID from the Storage system.
   def initialize(
@@ -119,6 +119,7 @@ class PromptManager::Prompt
   def keywords
     update_keywords
   end
+
 
   ######################################
   private
