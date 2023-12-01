@@ -7,8 +7,16 @@ require_relative '../../test_helper'
 
 require 'prompt_manager/storage/active_record_adapter'
 
+############################################################
+###
+##  Setup the database from the application's point of view
+#
 
-ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: ':memory:')
+ActiveRecord::Base
+  .establish_connection(
+    adapter:  'sqlite3', 
+    database: ':memory:'
+  )
 
 ActiveRecord::Schema.define do
   create_table :db_prompts do |t|
@@ -19,9 +27,15 @@ ActiveRecord::Schema.define do
 end
 
 
+# Within a Rails application this could be ApplicationRecord
 class DbPrompt < ActiveRecord::Base
   serialize :prompt_params, JSON
 end
+
+#
+##  database setyo frin aookucatuib's POV
+###
+############################################################
 
 
 class TestActiveRecordAdapter < Minitest::Test
@@ -29,10 +43,10 @@ class TestActiveRecordAdapter < Minitest::Test
     # The @storage_adapter object used by the PromptManager::Prompt class
     # is an instance of the storage adapter class.
     @adapter = PromptManager::Storage::ActiveRecordAdapter.config do |config|
-      config.model                  = DbPrompt
-      config.prompt_id_column       = :prompt_name
-      config.prompt_text_column     = :prompt_text
-      config.parameters_column      = :prompt_params
+      config.model              = DbPrompt
+      config.id_column          = :prompt_name
+      config.text_column        = :prompt_text
+      config.parameters_column  = :prompt_params
     end.new
   end
 
@@ -41,8 +55,8 @@ class TestActiveRecordAdapter < Minitest::Test
 
   def test_config
     assert_equal DbPrompt,        @adapter.model
-    assert_equal :prompt_name,    @adapter.prompt_id_column
-    assert_equal :prompt_text,    @adapter.prompt_text_column
+    assert_equal :prompt_name,    @adapter.id_column
+    assert_equal :prompt_text,    @adapter.text_column
     assert_equal :prompt_params,  @adapter.parameters_column
   end
 

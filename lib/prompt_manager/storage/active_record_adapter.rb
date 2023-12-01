@@ -9,8 +9,8 @@ class PromptManager::Storage::ActiveRecordAdapter
   
   class << self
     attr_accessor :model, 
-                  :prompt_id_column, 
-                  :prompt_text_column, 
+                  :id_column, 
+                  :text_column, 
                   :parameters_column
 
     def config
@@ -39,7 +39,7 @@ class PromptManager::Storage::ActiveRecordAdapter
 
     def validate_columns
       columns = model.column_names # Array of Strings
-      [prompt_id_column, prompt_text_column, parameters_column].each do |column|
+      [id_column, text_column, parameters_column].each do |column|
         raise ArgumentError, "#{column} is not a valid column for model #{model}" unless columns.include?(column.to_s)
       end
     end
@@ -67,8 +67,8 @@ class PromptManager::Storage::ActiveRecordAdapter
 
   # Avoid code littered with self.class prefixes ...
   def model               = self.class.model
-  def prompt_id_column    = self.class.prompt_id_column
-  def prompt_text_column  = self.class.prompt_text_column
+  def id_column    = self.class.id_column
+  def text_column  = self.class.text_column
   def parameters_column   = self.class.parameters_column
 
 
@@ -79,7 +79,7 @@ class PromptManager::Storage::ActiveRecordAdapter
 
 
   def get(id:)
-    @record = model.find_by(prompt_id_column => id)
+    @record = model.find_by(id_column => id)
     raise ArgumentError, "Prompt not found with id: #{id}" unless @record
 
     # kludge? testing showed that parameters was being
@@ -93,36 +93,36 @@ class PromptManager::Storage::ActiveRecordAdapter
     end
 
     {
-      id:         id, # same as the prompt_id_column
-      text:       @record[prompt_text_column],
+      id:         id, # same as the id_column
+      text:       @record[text_column],
       parameters: parameters
     }
   end
 
 
   def save(id:, text: "", parameters: {})
-    @record = model.find_or_initialize_by(prompt_id_column => id) 
+    @record = model.find_or_initialize_by(id_column => id) 
 
-    @record[prompt_text_column] = text
+    @record[text_column] = text
     @record[parameters_column]  = parameters
     @record.save!
   end
 
 
   def delete(id:)
-    @record = model.find_by(prompt_id_column => id)
+    @record = model.find_by(id_column => id)
     @record&.destroy
   end
 
 
   
   def list(*)
-    model.all.pluck(prompt_id_column)
+    model.all.pluck(id_column)
   end
 
 
   def search(for_what)
-    model.where("#{prompt_text_column} LIKE ?", "%#{for_what}%").pluck(prompt_id_column)
+    model.where("#{text_column} LIKE ?", "%#{for_what}%").pluck(id_column)
   end
 
 

@@ -40,10 +40,10 @@ Gem::Specification.new do |spec|
   spec.executables    = []
   spec.require_paths  = ["lib"]
 
-  # TODO: Use these in the Storage Adapters that are TBD
+  # Expect the application to have ActiveRecord in its Gemfile
   # spec.add_dependency "activerecord"
-  # spec.add_dependency "sqlite3"
 
+  spec.add_development_dependency 'activerecord'
   spec.add_development_dependency 'amazing_print'
   spec.add_development_dependency 'debug_me'
   spec.add_development_dependency "minitest"

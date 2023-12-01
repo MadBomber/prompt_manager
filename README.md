@@ -9,26 +9,30 @@ Manage the parameterized prompts (text) used in generative AI (aka chatGPT, Open
 
 ## Table of Contents
 
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [Overview](#overview)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Overview](#overview)
     - [Generative AI (gen-AI)](#generative-ai-gen-ai)
       - [What does a keyword look like?](#what-does-a-keyword-look-like)
-    - [Storage Adapters](#storage-adapters)
-      - [FileSystemAdapter](#filesystemadapter)
+- [Storage Adapters](#storage-adapters)
+    - [FileSystemAdapter](#filesystemadapter)
         - [Configuration](#configuration)
-          - [prompts_dir](#prompts_dir)
-          - [search_proc](#search_proc)
-          - [File Extensions](#file-extensions)
+            - [prompts_dir](#prompts_dir)
+            - [search_proc](#search_proc)
+            - [File Extensions](#file-extensions)
         - [Example Prompt Text File](#example-prompt-text-file)
         - [Example Prompt Parameters JSON File](#example-prompt-parameters-json-file)
         - [Extra Functionality](#extra-functionality)
-      - [SqliteAdapter](#sqliteadapter)
-      - [ActiveRecordAdapter](#activerecordadapter)
-      - [Other Potential Storage Adapters](#other-potential-storage-adapters)
-  - [Development](#development)
-  - [Contributing](#contributing)
-  - [License](#license)
+    - [ActiveRecordAdapter](#activerecordadapter)
+        - [Configuration](#configuration-1)
+            - [model](#model)
+            - [id_column](#id_column)
+            - [text_column](#text_column)
+            - [parameters_column](#parameters_column)
+    - [Other Potential Storage Adapters](#other-potential-storage-adapters)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
 
@@ -60,13 +64,13 @@ The current hard-coded REGEX for a [KEYWORD] identifies any all [UPPERCASE_TEXT]
 
 This is just the initial convention adopted by prompt_manager. It is intended that this REGEX be configurable so that the prompt_manager can be used with other conventions.
 
-### Storage Adapters
+## Storage Adapters
 
 A storage adapter is a class instance that ties the `PromptManager::Prompt` class to a storage facility that holds the actual prompts. Currently there are 3 storage adapters planned for implementation.
 
 The `PromptManager::Prompt` to support a small set of methods.  A storage adapter can provide "extra" class or instance methods that can be used through the Prompt class.  See the `test/prompt_manager/prompt_test.rb` for guidance on creating a new storage adapter.
 
-#### FileSystemAdapter
+### FileSystemAdapter
 
 This is the first storage adapter developed. It saves prompts as text files within the file system inside a designated `prompts_dir` (directory) such as `~/.prompts` or where it makes the most sense to you.  Another example would be to have your directory on a shared file system so that others can use the same prompts.
 
@@ -74,7 +78,7 @@ The `prompt ID` is the basename of the text file. For example `todo.txt` is the 
 
 The parameters for the `todo` prompt ID are saved in the same directory as `todo.txt` in a JSON file named `todo.json` (also in the examples directory.)
 
-##### Configuration
+#### Configuration
 
 Use a `config` block to establish the configuration for the class.
 
@@ -98,19 +102,19 @@ PromptManager::Prompt
       end.new
 ```
 
-###### prompts_dir
+##### prompts_dir
 
 This is either a `String` or a `Pathname` object.  All file paths are maintained in the class as `Pathname` objects.  If you provide a `String` it will be converted.  Relative paths will be converted to absolute paths.
 
 An `ArgumentError` will be raised when `prompts_dir` does not exist or if it is not a directory.
 
-###### search_proc
+##### search_proc
 
 The default for `search_proc` is nil.  In this case the search will be preformed by a default `search` method which is basically reading all the prompt files to see which ones contain the search term.  There are faster ways to do this kind of thing using CLI=based utilities.
 
 TODO: add a example to the examples directory on how to integrate with command line utilities.
 
-###### File Extensions
+##### File Extensions
 
 These two configuration options are `String` objects that must start with a period "." utherwise an `ArgumentError` will be raised.
 
@@ -121,7 +125,7 @@ Currently the `FileSystemAdapter` only supports a JSON serializer for its parame
 
 They exist so that there is a platform on to which other storage adapters can be built or serializers added.  This is not currently on the roadmap.
 
-##### Example Prompt Text File
+#### Example Prompt Text File
 
 ```text
 # ~/.prompts/joke.txt
@@ -132,7 +136,7 @@ Tell me a few [KIND] jokes about [SUBJECT]
 
 Note the command lines at the top.  This is a convention I use.  It is not part of the software.  I find it helpful in documenting the prompt.
 
-##### Example Prompt Parameters JSON File
+#### Example Prompt Parameters JSON File
 
 ```json
 {
@@ -151,7 +155,7 @@ Note the command lines at the top.  This is a convention I use.  It is not part 
 
 The last value in the keyword's Array is the most recent value used for that keyword.  This is a functionality established since v0.3.0.  Its purpose is to provide a history of values from which a user can select to repeat a previous value or to select ta previous value and edit it into something new.
 
-##### Extra Functionality
+#### Extra Functionality
 
 The `FileSystemAdapter` adds two new methods for use by the `Prompt` class:
 * list - returns an Array of prompt IDs
@@ -160,15 +164,50 @@ The `FileSystemAdapter` adds two new methods for use by the `Prompt` class:
 Use the `path(prompt_id)` form against the `Prompt` class
 Use `prompt.path` when you have an instance of a `Prompt`
 
-#### SqliteAdapter
+### ActiveRecordAdapter
 
-TODO: This may be the next adapter to be implemented.
+The `ActiveRecordAdapter` assumes that there is a database already configured by the application program that is requiring `prompt_manager` which has a model that contains prompt content.  This model must have at least three columns which contain content for:
 
-#### ActiveRecordAdapter
+- a prompt ID
+- prompt text
+- prompt parameters
 
-TODO: Still looking for requirements on how to integrate with an existing `rails` app.  Looking for ideas.
+The model and the columns for these three elements can have any name.  Those names are provided to the `ActiveRecordAdapter` in its config block.
 
-#### Other Potential Storage Adapters
+
+#### Configuration
+
+Use a `config` block to establish the configuration for the class.
+
+The `PromptManager::Prompt` class expects an instance of a storage adapter class.  By convention storage adapter class config methods will return `self` so that a simple `new` after the config will establish the instance.
+
+```ruby
+PromptManager::Prompt
+  .storage_adapter = 
+    PromptManager::Storage::ActiveRecordAdapter.config do |config|
+      config.model              = DbPromptModel # any ActiveRecord::Base model
+      config.id_column          = :prompt_name
+      config.text_column        = :prompt_text
+      config.parameters_column  = :prompt_params
+    end.new # adapters an instances of the adapter class
+```
+
+##### model
+The `model` configuration parameter is the actual class name of the `ActiveRecordLLBase` or `ApplicationRecord` (if you are using a rails application) that contains the content used for prompts.
+
+##### id_column
+The `id_column` contains the name of the column that contains the "prompt ID" content.  It can be either a `String` or `Symbol` value.
+
+##### text_column
+The `text_column` contains name of the column that contains the actual raw text of the prompt.  This raw text can include the keywords which will be replaced by values from the parameters Hash.  The column name value can be either a `String` or a `Symbol`.
+
+##### parameters_column
+The `parameters_column` contains the name of the column that contains the parameters used to replace keywords in the prompt text.  This column in the database model is expected to be serialized.  The `ActiveRecordAdapter` currently has a kludge bit of code that assumes that the serialization is done with JSON.  The value of the parameters_column can be either a `String` or a `Symbol`.
+
+TODO: fix the kludge so that any serialization can be used.
+
+
+### Other Potential Storage Adapters
 
 There are many possibilities to example this plugin concept of the storage adapter.  Here are some for consideration:
 
