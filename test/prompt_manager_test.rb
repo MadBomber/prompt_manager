@@ -13,3 +13,6 @@ class TestPromptManager < Minitest::Test
     assert true
   end
 end
+
+__END__
+

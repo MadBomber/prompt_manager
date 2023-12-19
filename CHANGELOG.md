@@ -1,4 +1,5 @@
-## [Unreleased]
+## [0.4.0] = 2023-12-19
+- Add "//directives param(s)" with keywords just like the prompt text.
 
 ## [0.3.3] = 2023-12-01
 - Added example of using the `search_proc` config parameter with the FileSystemAdapter.

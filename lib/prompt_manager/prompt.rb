@@ -5,9 +5,20 @@
 # as well as building prompts with replacement of parameterized values and 
 # comment removal. It communicates with a storage system through a storage 
 # adapter.
+#
+# Directives can be anything required by the backend
+# prompt processing functionality.  Directives are
+# available along with the prompt text w/o comments.
+# Keywords can be used in the directives.
+#
+# It is expected that the backend prompt processes will
+# act on and remove the directives before passing the
+# prompt text on through the LLM.
 
 class PromptManager::Prompt
-  PARAMETER_REGEX   = /(\[[A-Z _|]+\])/ # NOTE: old from aip.rb
+  COMMENT_SIGNAL    = '#'   # lines beginning with this are a comment
+  DIRECTIVE_SIGNAL  = '//'  # Like the old IBM JCL
+  PARAMETER_REGEX   = /(\[[A-Z _|]+\])/
   @storage_adapter  = nil
 
   class << self
@@ -64,9 +75,12 @@ class PromptManager::Prompt
     @record     = db.get(id: id)
     @text       = @record[:text]
     @parameters = @record[:parameters]
-    @keywords   = []
+    @keywords   = []  # Array of String
+    @directives = {}  # Hash with directive as key, parameters as value
 
     update_keywords
+    update_directives
+
     build
   end
 
@@ -121,6 +135,11 @@ class PromptManager::Prompt
   end
 
 
+  def directives
+    update_directives    
+  end
+
+
   ######################################
   private
 
@@ -134,10 +153,26 @@ class PromptManager::Prompt
   end
 
 
+  def update_directives
+    @text.split("\n").each do |a_line|
+      line = a_line.strip
+      next unless line.start_with?(DIRECTIVE_SIGNAL)
+      
+      parts     = line.split(' ')
+      directive = parts.shift()[DIRECTIVE_SIGNAL.length..] # drop the directive signal
+      @directives[directive] = parts.join(' ')
+    end
+
+    @directives
+  end
+
+
   def remove_comments
     lines           = @prompt
                         .split("\n")
-                        .reject{|a_line| a_line.strip.start_with?('#')}
+                        .reject{|a_line| 
+                          a_line.strip.start_with?(COMMENT_SIGNAL)
+                        }
 
     # Remove empty lines at the start of the prompt
     #

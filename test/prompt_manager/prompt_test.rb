@@ -69,11 +69,27 @@ class PromptTest < Minitest::Test
 
     @storage_adapter.save(
       id:         'test_prompt', 
-      text:       "Hello, [NAME]!", 
-      parameters: {'[NAME]' => ['World']}
+      parameters: {
+        '[NAME]'      => ['World'],
+        '[LANGUAGE]'  => ['English']
+      },
+      text: <<~EOS
+        # First Comment
+        //TextToSpeech [LANGUAGE] [NAME]
+        Hello, [NAME]!
+        __END__
+        Last Comment
+      EOS
     )
 
     PromptManager::Prompt.storage_adapter = @storage_adapter
+  end
+
+
+  ##########################################
+  def test_class_constants
+    assert_equal '#',   PromptManager::Prompt::COMMENT_SIGNAL
+    assert_equal '//',  PromptManager::Prompt::DIRECTIVE_SIGNAL
   end
 
 
@@ -98,10 +114,31 @@ class PromptTest < Minitest::Test
 
   ##########################################
   def test_prompt_interpolates_parameters_correctly
-    prompt = PromptManager::Prompt.new(id: 'test_prompt')
-    assert_equal "Hello, World!", prompt.to_s
+    prompt    = PromptManager::Prompt.new(id: 'test_prompt')
+    expected  = "//TextToSpeech English World\nHello, World!"
+
+    assert_equal expected, prompt.to_s
   end
 
+
+  def test_access_to_keywords
+    prompt = PromptManager::Prompt.new(id: 'test_prompt')
+    assert_equal ['[LANGUAGE]', '[NAME]'], prompt.keywords
+  end
+
+
+  def test_access_to_directives
+    prompt    = PromptManager::Prompt.new(id: 'test_prompt')
+    expected  = {
+      'TextToSpeech' => '[LANGUAGE] [NAME]'
+    }
+
+    # NOTE: parameter substitution for directives only
+    #       happens during the build method which
+    #       is invoked for `prompt.to_s`
+
+    assert_equal expected, prompt.directives
+  end
 
   ##########################################
   def test_prompt_saves_to_storage
