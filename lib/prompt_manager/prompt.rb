@@ -5,6 +5,15 @@
 # as well as building prompts with replacement of parameterized values and 
 # comment removal. It communicates with a storage system through a storage 
 # adapter.
+#
+# Directives can be anything required by the backend
+# prompt processing functionality.  Directives are
+# available along with the prompt text w/o comments.
+# Keywords can be used in the directives.
+#
+# It is expected that the backend prompt processes will
+# act on and remove the directives before passing the
+# prompt text on through the LLM.
 
 class PromptManager::Prompt
   COMMENT_SIGNAL    = '#'   # lines beginning with this are a comment
@@ -158,13 +167,11 @@ class PromptManager::Prompt
   end
 
 
-  # Also treat directives as comments
   def remove_comments
     lines           = @prompt
                         .split("\n")
                         .reject{|a_line| 
-                          a_line.strip.start_with?(COMMENT_SIGNAL)   ||
-                          a_line.strip.start_with?(DIRECTIVE_SIGNAL)
+                          a_line.strip.start_with?(COMMENT_SIGNAL)
                         }
 
     # Remove empty lines at the start of the prompt

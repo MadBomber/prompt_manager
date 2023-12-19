@@ -9,30 +9,32 @@ Manage the parameterized prompts (text) used in generative AI (aka chatGPT, Open
 
 ## Table of Contents
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Overview](#overview)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Overview](#overview)
     - [Generative AI (gen-AI)](#generative-ai-gen-ai)
       - [What does a keyword look like?](#what-does-a-keyword-look-like)
-- [Storage Adapters](#storage-adapters)
+      - [All about directives](#all-about-directives)
+      - [Comments Are Ignored](#comments-are-ignored)
+  - [Storage Adapters](#storage-adapters)
     - [FileSystemAdapter](#filesystemadapter)
-        - [Configuration](#configuration)
-            - [prompts_dir](#prompts_dir)
-            - [search_proc](#search_proc)
-            - [File Extensions](#file-extensions)
-        - [Example Prompt Text File](#example-prompt-text-file)
-        - [Example Prompt Parameters JSON File](#example-prompt-parameters-json-file)
-        - [Extra Functionality](#extra-functionality)
+      - [Configuration](#configuration)
+        - [prompts_dir](#prompts_dir)
+        - [search_proc](#search_proc)
+        - [File Extensions](#file-extensions)
+      - [Example Prompt Text File](#example-prompt-text-file)
+      - [Example Prompt Parameters JSON File](#example-prompt-parameters-json-file)
+      - [Extra Functionality](#extra-functionality)
     - [ActiveRecordAdapter](#activerecordadapter)
-        - [Configuration](#configuration-1)
-            - [model](#model)
-            - [id_column](#id_column)
-            - [text_column](#text_column)
-            - [parameters_column](#parameters_column)
+      - [Configuration](#configuration-1)
+        - [model](#model)
+        - [id_column](#id_column)
+        - [text_column](#text_column)
+        - [parameters_column](#parameters_column)
     - [Other Potential Storage Adapters](#other-potential-storage-adapters)
-- [Development](#development)
-- [Contributing](#contributing)
-- [License](#license)
+  - [Development](#development)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
 
@@ -54,6 +56,8 @@ See also [examples/using_search_proc.rb](examples/using_search_proc.rb)
 
 ## Overview
 
+The `prompt_manager` gem provides functionality to manage prompts that have keywords and directives for use with generative AI processes.
+
 ### Generative AI (gen-AI)
 
 Gen-AI deals with the conversion (some would say execution) of a human natural language text (the "prompt") into somthing else using what are known as large language models (LLM) such as those available from OpenAI.  A parameterized prompt is one in which there are embedded keywords (parameters) which are place holders for other text to be inserted into the prompt.
@@ -65,6 +69,46 @@ The prompt_manager uses a regular expression to identify these keywords within t
 The current hard-coded REGEX for a [KEYWORD] identifies any all [UPPERCASE_TEXT] enclosed in square brackets as a keyword. [KEYWORDS CAN ALSO HAVE SPACES] as well as the underscore character.
 
 This is just the initial convention adopted by prompt_manager. It is intended that this REGEX be configurable so that the prompt_manager can be used with other conventions.
+
+#### All about directives
+
+A directive is a line in the prompt text that starts with the two characters '//' - slash slash - just like in the old days of IBM JCL - Job Control Language.  A prompt can have zero or more directives.  Directives can have parameters and can make use of keywords.
+
+The `prompt_manager` only collections directives.  It extracts keywords from directive lines and provides the substitution of those keywords with other text just like it does for the prompt.  Remember a directive is part of the prompt.
+
+Here is an example problem with comments, directives and keywords:
+
+```
+# prompts/sing_a_song.txt
+# Desc: Has the computer sing a song
+
+//TextToSpeech [LANGUAGE] [VOICE NAME]
+
+Say the lyrics to the song [SONG NAME].  Please provide only the lyrics without commentary.
+
+__END__
+Computers will never replace Frank Sinatra
+```
+
+Getting directives from a prompt is as easy as getting the kewyords:
+
+```ruby
+prompt = PromptManager::Prompt.new(...)
+prompt.keywords   #=> an Array
+prompt.directives #=> a Hash
+
+# to_s builds the prompt by substituting
+# values for keywords amd removing comments.
+# The resulting text contains directives and
+# prompt text ready for the LLM process.
+puts prompt.to_s  
+```
+
+#### Comments Are Ignored
+
+The `prompt_manager` gem ignores comments.  A line that begins with the '#' - pound (aka hash) character - is a line comment.  Any lines that follow a line that is '__END__ at the end of a file are considered comments.  Basically the '__END__' the end of the file.  Nothing is process following that line.
+
+The gem also ignores blank lines.
 
 ## Storage Adapters
 
