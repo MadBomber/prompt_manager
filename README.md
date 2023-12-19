@@ -104,6 +104,10 @@ prompt.directives #=> a Hash
 puts prompt.to_s  
 ```
 
+The Hash returned by the `prompt.directives` method has as its key the directive name (without the double-slash).  Its also case-sensitive.  So any typo made in editing the prompt with regard to the case of the directive's name will impact the backend processing of the prompt.
+
+The value for each key is a String exactly as entered in the prompt file.
+
 #### Comments Are Ignored
 
 The `prompt_manager` gem ignores comments.  A line that begins with the '#' - pound (aka hash) character - is a line comment.  Any lines that follow a line that is '__END__ at the end of a file are considered comments.  Basically the '__END__' the end of the file.  Nothing is process following that line.
