@@ -69,11 +69,24 @@ class PromptTest < Minitest::Test
 
     @storage_adapter.save(
       id:         'test_prompt', 
-      text:       "Hello, [NAME]!", 
-      parameters: {'[NAME]' => ['World']}
+      parameters: {'[NAME]' => ['World']},
+      text: <<~EOS
+        # First Comment
+        //TextToSpeech param1 param2
+        Hello, [NAME]!
+        __END__
+        Last Comment
+      EOS
     )
 
     PromptManager::Prompt.storage_adapter = @storage_adapter
+  end
+
+
+  ##########################################
+  def test_class_constants
+    assert_equal '#',   PromptManager::Prompt::COMMENT_SIGNAL
+    assert_equal '//',  PromptManager::Prompt::DIRECTIVE_SIGNAL
   end
 
 
@@ -102,6 +115,21 @@ class PromptTest < Minitest::Test
     assert_equal "Hello, World!", prompt.to_s
   end
 
+
+  def test_access_to_keywords
+    prompt = PromptManager::Prompt.new(id: 'test_prompt')
+    assert_equal ['[NAME]'], prompt.keywords
+  end
+
+
+  def test_access_to_directives
+    prompt    = PromptManager::Prompt.new(id: 'test_prompt')
+    expected  = {
+      'TextToSpeech' => 'param1 param2'
+    }
+
+    assert_equal expected, prompt.directives
+  end
 
   ##########################################
   def test_prompt_saves_to_storage

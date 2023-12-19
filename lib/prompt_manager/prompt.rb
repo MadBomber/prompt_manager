@@ -7,7 +7,9 @@
 # adapter.
 
 class PromptManager::Prompt
-  PARAMETER_REGEX   = /(\[[A-Z _|]+\])/ # NOTE: old from aip.rb
+  COMMENT_SIGNAL    = '#'   # lines beginning with this are a comment
+  DIRECTIVE_SIGNAL  = '//'  # Like the old IBM JCL
+  PARAMETER_REGEX   = /(\[[A-Z _|]+\])/
   @storage_adapter  = nil
 
   class << self
@@ -64,9 +66,12 @@ class PromptManager::Prompt
     @record     = db.get(id: id)
     @text       = @record[:text]
     @parameters = @record[:parameters]
-    @keywords   = []
+    @keywords   = []  # Array of String
+    @directives = {}  # Hash with directive as key, parameters as value
 
     update_keywords
+    update_directives
+
     build
   end
 
@@ -121,6 +126,11 @@ class PromptManager::Prompt
   end
 
 
+  def directives
+    update_directives    
+  end
+
+
   ######################################
   private
 
@@ -134,10 +144,28 @@ class PromptManager::Prompt
   end
 
 
+  def update_directives
+    @text.split("\n").each do |a_line|
+      line = a_line.strip
+      next unless line.start_with?(DIRECTIVE_SIGNAL)
+      
+      parts     = line.split(' ')
+      directive = parts.shift()[DIRECTIVE_SIGNAL.length..] # drop the directive signal
+      @directives[directive] = parts.join(' ')
+    end
+
+    @directives
+  end
+
+
+  # Also treat directives as comments
   def remove_comments
     lines           = @prompt
                         .split("\n")
-                        .reject{|a_line| a_line.strip.start_with?('#')}
+                        .reject{|a_line| 
+                          a_line.strip.start_with?(COMMENT_SIGNAL)   ||
+                          a_line.strip.start_with?(DIRECTIVE_SIGNAL)
+                        }
 
     # Remove empty lines at the start of the prompt
     #
