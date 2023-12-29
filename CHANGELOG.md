@@ -1,3 +1,7 @@
+## [0.4.1] = 2023-12-29
+- Changed @directives from Hash to an Array
+- Fixed keywords not being substituted in directives
+
 ## [0.4.0] = 2023-12-19
 - Add "//directives param(s)" with keywords just like the prompt text.
 
