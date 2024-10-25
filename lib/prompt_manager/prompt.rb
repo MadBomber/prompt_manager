@@ -21,11 +21,12 @@
 class PromptManager::Prompt
   COMMENT_SIGNAL    = '#'   # lines beginning with this are a comment
   DIRECTIVE_SIGNAL  = '//'  # Like the old IBM JCL
-  PARAMETER_REGEX   = /(\[[A-Z _|]+\])/
+  DEFAULT_PARAMETER_REGEX = /(\[[A-Z _|]+\])/
   @storage_adapter  = nil
+  @parameter_regex  = DEFAULT_PARAMETER_REGEX
 
   class << self
-    attr_accessor :storage_adapter
+    attr_accessor :storage_adapter, :parameter_regex
 
     alias_method :get, :new
 
@@ -123,7 +124,7 @@ class PromptManager::Prompt
   # the comments.
   #  
   def build
-    @prompt = text.gsub(PARAMETER_REGEX) do |match|
+    @prompt = text.gsub(self.class.parameter_regex) do |match|
                 param_name = match
                 Array(parameters[param_name]).last || match
               end
@@ -142,7 +143,7 @@ class PromptManager::Prompt
   private
 
   def update_keywords
-    @keywords = @text.scan(PARAMETER_REGEX).flatten.uniq
+    @keywords = @text.scan(self.class.parameter_regex).flatten.uniq
     @keywords.each do |kw|
       @parameters[kw] = [] unless @parameters.has_key?(kw)
     end

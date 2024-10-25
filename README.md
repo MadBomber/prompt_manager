@@ -70,10 +70,16 @@ The prompt_manager uses a regular expression to identify these keywords within t
 
 #### What does a keyword look like?
 
-The current hard-coded REGEX for a [KEYWORD] identifies any all [UPPERCASE_TEXT] enclosed in square brackets as a keyword. [KEYWORDS CAN ALSO HAVE SPACES] as well as the underscore character.
+By default, any text matching `[UPPERCASE_TEXT]` enclosed in square brackets is treated as a keyword. [KEYWORDS CAN ALSO HAVE SPACES] as well as the underscore character.
 
-This is just the initial convention adopted by prompt_manager. It is intended that this REGEX be configurable so that the prompt_manager can be used with other conventions.
+You can customize the keyword pattern by setting a different regular expression:
 
+```ruby
+# Use {{param}} style instead of [PARAM]
+PromptManager::Prompt.parameter_regex = /(\{\{[A-Za-z_]+\}\})/
+```
+
+The regex must include capturing parentheses () to extract the keyword. The default regex is `/(\[[A-Z _|]+\])/`.
 #### All about directives
 
 A directive is a line in the prompt text that starts with the two characters '//' - slash slash - just like in the old days of IBM JCL - Job Control Language.  A prompt can have zero or more directives.  Directives can have parameters and can make use of keywords.
