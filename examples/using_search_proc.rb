@@ -10,9 +10,6 @@
 ##
 #
 
-require 'debug_me'
-include DebugMe
-
 require 'prompt_manager'
 require 'prompt_manager/storage/file_system_adapter'
 

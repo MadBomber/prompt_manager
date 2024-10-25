@@ -2,6 +2,8 @@
 #
 # frozen_string_literal: true
 
+require 'ostruct'
+
 require_relative "prompt_manager/version"
 require_relative "prompt_manager/storage"
 require_relative "prompt_manager/prompt"

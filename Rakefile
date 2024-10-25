@@ -8,7 +8,6 @@ end
 
 Tocer::Rake::Register.call
 
-
 require "bundler/gem_tasks"
 require "rake/testtask"
 
