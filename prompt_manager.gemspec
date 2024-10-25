@@ -42,6 +42,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "ostruct"
   spec.add_development_dependency 'tocer'
   spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'sqlite3'
+
 
   # Add runtime dependencies if necessary
   # spec.add_dependency "some_runtime_dependency"
