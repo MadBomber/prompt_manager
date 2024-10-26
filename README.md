@@ -15,6 +15,10 @@ Manage the parameterized prompts (text) used in generative AI (aka chatGPT, Open
     - [Generative AI (gen-AI)](#generative-ai-gen-ai)
       - [What does a keyword look like?](#what-does-a-keyword-look-like)
       - [All about directives](#all-about-directives)
+        - [Example Prompt with Directives](#example-prompt-with-directives)
+        - [Accessing Directives](#accessing-directives)
+        - [Dynamic Directives](#dynamic-directives)
+        - [Executing Directives](#executing-directives)
       - [Comments Are Ignored](#comments-are-ignored)
   - [Storage Adapters](#storage-adapters)
     - [FileSystemAdapter](#filesystemadapter)
@@ -66,17 +70,25 @@ The prompt_manager uses a regular expression to identify these keywords within t
 
 #### What does a keyword look like?
 
-The current hard-coded REGEX for a [KEYWORD] identifies any all [UPPERCASE_TEXT] enclosed in square brackets as a keyword. [KEYWORDS CAN ALSO HAVE SPACES] as well as the underscore character.
+By default, any text matching `[UPPERCASE_TEXT]` enclosed in square brackets is treated as a keyword. [KEYWORDS CAN ALSO HAVE SPACES] as well as the underscore character.
 
-This is just the initial convention adopted by prompt_manager. It is intended that this REGEX be configurable so that the prompt_manager can be used with other conventions.
+You can customize the keyword pattern by setting a different regular expression:
 
+```ruby
+# Use {{param}} style instead of [PARAM]
+PromptManager::Prompt.parameter_regex = /(\{\{[A-Za-z_]+\}\})/
+```
+
+The regex must include capturing parentheses () to extract the keyword. The default regex is `/(\[[A-Z _|]+\])/`.
 #### All about directives
 
 A directive is a line in the prompt text that starts with the two characters '//' - slash slash - just like in the old days of IBM JCL - Job Control Language.  A prompt can have zero or more directives.  Directives can have parameters and can make use of keywords.
 
-The `prompt_manager` only collections directives.  It extracts keywords from directive lines and provides the substitution of those keywords with other text just like it does for the prompt.  Remember a directive is part of the prompt.
+The `prompt_manager` only collects directives.  It extracts keywords from directive lines and provides the substitution of those keywords with other text just like it does for the prompt.  
 
-Here is an example problem with comments, directives and keywords:
+##### Example Prompt with Directives
+
+Here is an example prompt text file with comments, directives and keywords:
 
 ```
 # prompts/sing_a_song.txt
@@ -90,12 +102,14 @@ __END__
 Computers will never replace Frank Sinatra
 ```
 
+##### Accessing Directives
+
 Getting directives from a prompt is as easy as getting the kewyords:
 
 ```ruby
 prompt = PromptManager::Prompt.new(...)
 prompt.keywords   #=> an Array
-prompt.directives #=> a Hash
+prompt.directives #=> an Array of entries like: ['directive', 'parameters']
 
 # to_s builds the prompt by substituting
 # values for keywords amd removing comments.
@@ -103,6 +117,34 @@ prompt.directives #=> a Hash
 # prompt text ready for the LLM process.
 puts prompt.to_s  
 ```
+
+The entries in the Array returned by the `prompt.directives` method is in the order that the directives were defined within the prompt.  Each entry has two elements:
+
+- directive name (without the // characters)
+- parameter string for the directive
+
+##### Dynamic Directives
+
+Since directies are collected after the keywords in the prompt have been substituted for their values, it is possible to have dynamically generated directives as part of a prompt.  For example:
+
+```
+//[COMMAND] [OPTIONS]
+# or
+[SOMETHING]
+```
+... where [COMMAND] gets replaced by some directive name.  [SOMETHING] could be replaced by "//directive options"
+
+##### Executing Directives
+
+The `prompt_manager` gem only collects directives.  Executing those directives is left up to some down stream process.  Here are some ideas on how directives could be used in prompt downstream process:
+
+- "//model gpt-5" could be used to set the LLM model to be used for a specific prompt.  
+- "//backend mods" could be used to set the backend prompt processor on the command line to be the `mods` utility.
+- "//include path_to_file" could be used to add the contents of a file to the prompt.
+- "//chat" could be used to send the prompts and then start up a chat session about the prompt and its response.
+
+Its all up to how your application wants to support directives or not.
+
 
 #### Comments Are Ignored
 

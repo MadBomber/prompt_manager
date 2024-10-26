@@ -6,23 +6,27 @@
 # comment removal. It communicates with a storage system through a storage 
 # adapter.
 #
-# Directives can be anything required by the backend
-# prompt processing functionality.  Directives are
-# available along with the prompt text w/o comments.
-# Keywords can be used in the directives.
+# Directives are collected into an Array where each entry is an Array
+# of two elements.  The first is the directive name as a String. The 
+# second is a string of parameters used by the directive.
+# 
+# Directives are collected from the prompt after keyword
+# substitution has occured.  This means that directives within a
+# prompt can be dynamic.
 #
-# It is expected that the backend prompt processes will
-# act on and remove the directives before passing the
-# prompt text on through the LLM.
+# PromptManager does not execute directives.  They
+# are made available to be passed on to down stream
+# process.
 
 class PromptManager::Prompt
   COMMENT_SIGNAL    = '#'   # lines beginning with this are a comment
   DIRECTIVE_SIGNAL  = '//'  # Like the old IBM JCL
-  PARAMETER_REGEX   = /(\[[A-Z _|]+\])/
+  DEFAULT_PARAMETER_REGEX = /(\[[A-Z _|]+\])/
   @storage_adapter  = nil
+  @parameter_regex  = DEFAULT_PARAMETER_REGEX
 
   class << self
-    attr_accessor :storage_adapter
+    attr_accessor :storage_adapter, :parameter_regex
 
     alias_method :get, :new
 
@@ -58,7 +62,7 @@ class PromptManager::Prompt
   
   # SMELL:  Does the db (aka storage adapter) really need
   #         to be accessible by the main program?
-  attr_accessor :db, :id, :text, :parameters
+  attr_accessor :db, :id, :text, :parameters, :directives
 
 
   # Retrieve the specific prompt ID from the Storage system.
@@ -76,10 +80,9 @@ class PromptManager::Prompt
     @text       = @record[:text]
     @parameters = @record[:parameters]
     @keywords   = []  # Array of String
-    @directives = {}  # Hash with directive as key, parameters as value
+    @directives = []  # Array of arrays. directive is first entry, rest are parameters
 
     update_keywords
-    update_directives
 
     build
   end
@@ -121,11 +124,12 @@ class PromptManager::Prompt
   # the comments.
   #  
   def build
-    @prompt = text.gsub(PARAMETER_REGEX) do |match|
+    @prompt = text.gsub(self.class.parameter_regex) do |match|
                 param_name = match
                 Array(parameters[param_name]).last || match
               end
-
+              
+    save_directives(@prompt)
     remove_comments
   end
 
@@ -135,16 +139,11 @@ class PromptManager::Prompt
   end
 
 
-  def directives
-    update_directives    
-  end
-
-
   ######################################
   private
 
   def update_keywords
-    @keywords = @text.scan(PARAMETER_REGEX).flatten.uniq
+    @keywords = @text.scan(self.class.parameter_regex).flatten.uniq
     @keywords.each do |kw|
       @parameters[kw] = [] unless @parameters.has_key?(kw)
     end
@@ -153,14 +152,16 @@ class PromptManager::Prompt
   end
 
 
-  def update_directives
-    @text.split("\n").each do |a_line|
+  def save_directives(keyword_substituted_string)
+    @directives = []
+
+    keyword_substituted_string.split("\n").each do |a_line|
       line = a_line.strip
       next unless line.start_with?(DIRECTIVE_SIGNAL)
       
-      parts     = line.split(' ')
-      directive = parts.shift()[DIRECTIVE_SIGNAL.length..] # drop the directive signal
-      @directives[directive] = parts.join(' ')
+      parts       = line.split(' ')
+      directive   = parts.shift[DIRECTIVE_SIGNAL.length..] # drop the directive signal
+      @directives << [directive, parts.join(' ')]
     end
 
     @directives
@@ -171,7 +172,8 @@ class PromptManager::Prompt
     lines           = @prompt
                         .split("\n")
                         .reject{|a_line| 
-                          a_line.strip.start_with?(COMMENT_SIGNAL)
+                          a_line.strip.start_with?(COMMENT_SIGNAL)  ||
+                          a_line.strip.start_with?(DIRECTIVE_SIGNAL)
                         }
 
     # Remove empty lines at the start of the prompt

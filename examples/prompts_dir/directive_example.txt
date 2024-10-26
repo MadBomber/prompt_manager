@@ -1,0 +1,14 @@
+# directive_example.txt
+# Desc: Shows how directives work
+
+//good_directive  param1 param2
+//bad_directive   param3 param4
+
+say hello to me in {language} as well as English.
+
+# The default parameter is delimited by square brackets
+# and is all uppercase
+
+write a [PROGRAMMING LANGUAGE] program that predicts the lottery.
+
+

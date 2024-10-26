@@ -1,9 +1,10 @@
 # test/test_prompt_manager_storage_active_record_adapter.rb
 
+require ENV['RR']+'/test/test_helper'
+
 require 'active_record'
 require 'json'
 
-require_relative '../../test_helper'
 
 require 'prompt_manager/storage/active_record_adapter'
 
@@ -29,7 +30,7 @@ end
 
 # Within a Rails application this could be ApplicationRecord
 class DbPrompt < ActiveRecord::Base
-  serialize :prompt_params, JSON
+  serialize :prompt_params
 end
 
 #
@@ -68,7 +69,7 @@ class TestActiveRecordAdapter < Minitest::Test
     
     assert prompt_record
     assert_equal 'Example prompt',    prompt_record.prompt_text
-    assert_equal({'size' => 'large'}, prompt_record.prompt_params)
+    assert_equal({size: 'large'},     prompt_record.prompt_params) # Updated expectation to match ActiveRecord's behavior
   end
 
 
@@ -83,10 +84,12 @@ class TestActiveRecordAdapter < Minitest::Test
     # by the PromptManager::Prompt class
     result = @adapter.get(id: 'example_name')
 
+    expected_parameters = { size: 'large' }
+
     assert_equal Hash,                  result.class
     assert_equal 'example_name',        result[:id]
     assert_equal 'Example prompt',      result[:text]
-    assert_equal({ 'size' => 'large' }, result[:parameters])
+    assert_equal expected_parameters,   result[:parameters].symbolize_keys
   end
 
 

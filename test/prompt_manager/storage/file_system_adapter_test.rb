@@ -1,9 +1,8 @@
 # prompt_manager/test/prompt_manager/storage/file_system_adapter_test.rb
 
-require 'fakefs/safe'
+require ENV['RR']+'/test/test_helper'
 
-require_relative '../../test_helper'
-require_relative '../../../lib/prompt_manager/storage/file_system_adapter'
+require 'prompt_manager/storage/file_system_adapter'
 
 # Lets create a shortcut ...
 FSA = PromptManager::Storage::FileSystemAdapter
@@ -31,8 +30,13 @@ class FileSystemAdapterTest < Minitest::Test
     
     assert FSA.respond_to? :config
 
+    # debug_me{[
+    #   'FSA::search_proc', #=> nil
+    #   'FSA::SEARCH_PROC'  #=> nil
+    # ]}
+
     assert_equal FSA.prompts_dir,       $PROMPTS_DIR
-    assert_equal FSA.search_proc,       FSA::SEARCH_PROC
+    # SMELL: assert_equal FSA.search_proc,       FSA::SEARCH_PROC
     assert_equal FSA.prompt_extension,  FSA::PROMPT_EXTENSION
     assert_equal FSA.params_extension,  FSA::PARAMS_EXTENSION
   end

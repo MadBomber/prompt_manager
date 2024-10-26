@@ -1,6 +1,6 @@
 # prompt_manager/test/prompt_manager/prompt_test.rb
 
-require_relative '../test_helper'
+require ENV['RR']+'/test/test_helper'
 
 class PromptTest < Minitest::Test
   # Mock storage adapter that will act as a fake database in tests
@@ -115,7 +115,7 @@ class PromptTest < Minitest::Test
   ##########################################
   def test_prompt_interpolates_parameters_correctly
     prompt    = PromptManager::Prompt.new(id: 'test_prompt')
-    expected  = "//TextToSpeech English World\nHello, World!"
+    expected  = "Hello, World!"
 
     assert_equal expected, prompt.to_s
   end
@@ -129,13 +129,11 @@ class PromptTest < Minitest::Test
 
   def test_access_to_directives
     prompt    = PromptManager::Prompt.new(id: 'test_prompt')
-    expected  = {
-      'TextToSpeech' => '[LANGUAGE] [NAME]'
-    }
+    expected  = [
+      ['TextToSpeech', 'English World']
+    ]
 
-    # NOTE: parameter substitution for directives only
-    #       happens during the build method which
-    #       is invoked for `prompt.to_s`
+    # NOTE: directives are collected after parameter substitution
 
     assert_equal expected, prompt.directives
   end
