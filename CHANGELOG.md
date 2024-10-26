@@ -1,9 +1,9 @@
 ## Unreleased
 
-### [0.4.2] = 2024-10-24
-- Added configurable parameter_regex to customize keyword pattern
-
 ## Released
+
+### [0.4.2] = 2024-10-26
+- Added configurable parameter_regex to customize keyword pattern
 
 ### [0.4.1] = 2023-12-29
 - Changed @directives from Hash to an Array
