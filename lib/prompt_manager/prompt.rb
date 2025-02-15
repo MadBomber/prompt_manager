@@ -7,16 +7,16 @@
 # adapter.
 #
 # Directives are collected into an Array where each entry is an Array
-# of two elements.  The first is the directive name as a String. The 
+# of two elements. The first is the directive name as a String. The 
 # second is a string of parameters used by the directive.
 # 
 # Directives are collected from the prompt after keyword
-# substitution has occured.  This means that directives within a
+# substitution has occurred. This means that directives within a
 # prompt can be dynamic.
 #
-# PromptManager does not execute directives.  They
-# are made available to be passed on to down stream
-# process.
+# PromptManager does not execute directives. They
+# are made available to be passed on to downstream
+# processes.
 
 class PromptManager::Prompt
   COMMENT_SIGNAL    = '#'   # lines beginning with this are a comment
@@ -25,19 +25,29 @@ class PromptManager::Prompt
   @storage_adapter  = nil
   @parameter_regex  = DEFAULT_PARAMETER_REGEX
 
+  # Public class methods
   class << self
     attr_accessor :storage_adapter, :parameter_regex
 
     alias_method :get, :new
 
     def create(id:, text: "", parameters: {})
-      storage_adapter.save(
+      prompt = storage_adapter.save(
         id:         id,
         text:       text,
         parameters: parameters
       )
 
       new(id: id)
+    end
+
+    def find(id)
+      new(id: id)
+    end
+
+    def destroy(id)
+      prompt = find(id)
+      prompt.delete
     end
 
 
@@ -59,6 +69,9 @@ class PromptManager::Prompt
       storage_adapter.respond_to?(method_name, include_private) || super
     end
   end
+  
+  ##############################################
+  ## Public Instance Methods
   
   # SMELL:  Does the db (aka storage adapter) really need
   #         to be accessible by the main program?
