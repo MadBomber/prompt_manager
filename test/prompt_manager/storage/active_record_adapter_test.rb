@@ -1,6 +1,6 @@
 # test/test_prompt_manager_storage_active_record_adapter.rb
 
-require ENV['RR']+'/test/test_helper'
+require 'test_helper'
 
 require 'active_record'
 require 'json'

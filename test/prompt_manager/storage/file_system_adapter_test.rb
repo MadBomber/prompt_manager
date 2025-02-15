@@ -1,6 +1,6 @@
 # prompt_manager/test/prompt_manager/storage/file_system_adapter_test.rb
 
-require ENV['RR']+'/test/test_helper'
+require 'test_helper'
 
 require 'prompt_manager/storage/file_system_adapter'
 

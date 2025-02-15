@@ -1,6 +1,6 @@
 # prompt_manager/test/prompt_manager/prompt_test.rb
 
-require ENV['RR']+'/test/test_helper'
+require 'test_helper'
 
 class PromptTest < Minitest::Test
   # Mock storage adapter that will act as a fake database in tests
