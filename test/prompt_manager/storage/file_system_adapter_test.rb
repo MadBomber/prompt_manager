@@ -17,6 +17,9 @@ class FileSystemAdapterTest < Minitest::Test
     @adapter  = FSA.config do |o|
                   o.prompts_dir = $PROMPTS_DIR   
                 end.new
+    directive_example_filename = 'directive_example' + PromptManager::Storage::FileSystemAdapter::PROMPT_EXTENSION
+    directive_example_file     = File.join(@prompts_dir, directive_example_filename)
+    File.delete(directive_example_file) if File.exist?(directive_example_file)
   end
 
 
@@ -170,7 +173,8 @@ class FileSystemAdapterTest < Minitest::Test
     search_term         = 'hello'
     included_text       = 'this contains hello'
     also_included_text  = "Hello Dolly!\nWell HELLO Freddy"  # NOTE: case difference to search term
-    excluded_text       = 'this does not'
+    directive_example_text = 'directive example with hello'
+    excluded_text          = 'this does not'
 
     file_ext = PromptManager::Storage::FileSystemAdapter::PROMPT_EXTENSION
 
@@ -181,13 +185,16 @@ class FileSystemAdapterTest < Minitest::Test
     also_included_file     = File.join(@prompts_dir, also_included_filename)
 
     excluded_filename = 'excluded' + file_ext
-    excluded_file     = File.join(@prompts_dir, excluded_filename)
+    directive_example_filename = 'directive_example' + file_ext
+    directive_example_file     = File.join(@prompts_dir, directive_example_filename)
+    excluded_file              = File.join(@prompts_dir, excluded_filename)
 
     File.write(included_file,       included_text)
-    File.write(excluded_file,       excluded_text)
+    File.write(directive_example_file, directive_example_text)
+    File.write(excluded_file,          excluded_text)
     File.write(also_included_file,  also_included_text)
 
-    expected = ["also_included", "included"]
+    expected = ["also_included", "directive_example", "included"]
 
     # Exercise
     results = @adapter.search(search_term)
