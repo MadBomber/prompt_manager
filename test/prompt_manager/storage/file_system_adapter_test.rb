@@ -22,6 +22,24 @@ class FileSystemAdapterTest < Minitest::Test
     File.delete(directive_example_file) if File.exist?(directive_example_file)
   end
 
+  def test_get_non_existent_prompt
+    assert_raises ArgumentError do
+      @adapter.get(id: 'non_existent')
+    end
+  end
+
+  def test_delete_non_existent_prompt
+    assert_raises Errno::ENOENT do
+      @adapter.delete(id: 'non_existent')
+    end
+  end
+
+  def test_save_with_invalid_id
+    assert_raises Errno::ENOENT do
+      @adapter.save(id: 'invalid/id', text: 'text', parameters: {})
+    end
+  end
+
 
   def teardown
     # what should be torn down?

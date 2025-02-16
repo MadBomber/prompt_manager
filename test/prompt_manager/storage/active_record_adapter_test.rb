@@ -25,6 +25,22 @@ ActiveRecord::Schema.define do
     t.string  :prompt_text
     t.text    :prompt_params
   end
+
+  def test_get_non_existent_prompt
+    assert_raises ArgumentError do
+      @adapter.get(id: 'non_existent')
+    end
+  end
+
+  def test_delete_non_existent_prompt
+    assert_nil @adapter.delete(id: 'non_existent')
+  end
+
+  def test_save_with_invalid_parameters
+    assert_raises ActiveRecord::RecordInvalid do
+      @adapter.save(id: 'invalid', text: nil, parameters: nil)
+    end
+  end
 end
 
 
@@ -74,21 +90,25 @@ class TestActiveRecordAdapter < Minitest::Test
 
 
   def test_get
+    prompt_id = "example_name_#{rand(10000)}"
+
+    DbPrompt.destroy(id: prompt_id) rescue 
+
     DbPrompt.create(
-              prompt_name:    'example_name', 
-              prompt_text:    'Example prompt', 
+              prompt_name:    prompt_id, 
+              prompt_text:    'Updated prompt', 
               prompt_params:  { size: 'large' }.to_json
             )
 
     # The result is a Hash having the three keys expected
     # by the PromptManager::Prompt class
-    result = @adapter.get(id: 'example_name')
+    result = @adapter.get(id: prompt_id)
 
     expected_parameters = { size: 'large' }
 
     assert_equal Hash,                  result.class
-    assert_equal 'example_name',        result[:id]
-    assert_equal 'Example prompt',      result[:text]
+    assert_equal prompt_id,             result[:id]
+    assert_equal 'Updated prompt',      result[:text]
     assert_equal expected_parameters,   result[:parameters].symbolize_keys
   end
 

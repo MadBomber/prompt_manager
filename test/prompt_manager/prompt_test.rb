@@ -62,6 +62,20 @@ class PromptTest < Minitest::Test
     end
   end
 
+  def test_prompt_initialization_with_invalid_id
+    assert_raises ArgumentError do
+      PromptManager::Prompt.new(id: nil)
+    end
+  end
+
+  def test_prompt_delete_non_existent
+    prompt = PromptManager::Prompt.new(id: 'test_prompt')
+    prompt.db.delete(id: 'test_prompt') # Ensure the prompt is deleted
+    assert_raises RuntimeError do
+      prompt.delete
+    end
+  end
+
 
   ##########################################
   def setup
@@ -123,10 +137,6 @@ class PromptTest < Minitest::Test
     assert_equal "Hello, World!", prompt.to_s
   end
 
-  def test_access_to_keywords
-    prompt = PromptManager::Prompt.new(id: 'test_prompt')
-    assert_equal ['[LANGUAGE]', '[NAME]'], prompt.keywords
-  end
 
 
   def test_access_to_keywords

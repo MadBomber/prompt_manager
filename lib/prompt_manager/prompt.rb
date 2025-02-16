@@ -32,7 +32,7 @@ class PromptManager::Prompt
     alias_method :get, :new
 
     def create(id:, text: "", parameters: {})
-      prompt = storage_adapter.save(
+      storage_adapter.save(
         id:         id,
         text:       text,
         parameters: parameters
@@ -98,6 +98,8 @@ class PromptManager::Prompt
     update_keywords
 
     build
+
+    @record
   end
 
 

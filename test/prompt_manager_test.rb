@@ -7,6 +7,12 @@ class TestPromptManager < Minitest::Test
     refute_nil ::PromptManager::VERSION
   end
 
+  def test_prompt_manager_error_handling_with_custom_error
+    assert_raises(PromptManager::Error) do
+      raise PromptManager::Error, "Custom error message"
+    end
+  end
+
   def test_prompt_manager_error_handling
     assert_raises(PromptManager::Error) do
       raise PromptManager::Error, "This is a test error"
