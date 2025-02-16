@@ -119,7 +119,15 @@ class TestActiveRecordAdapter < Minitest::Test
   end
 
 
-  def test_search
+  def test_save_with_existing_record
+    @adapter.save(id: 'example_name', text: 'Updated prompt', parameters: { size: 'small' })
+    prompt_record = DbPrompt.find_by(prompt_name: 'example_name')
+    assert_equal 'Updated prompt', prompt_record.prompt_text
+    assert_equal({ size: 'small' }, prompt_record.prompt_params)
+  end
+
+
+  def test_create
     DbPrompt.create(prompt_name: 'example_name_1', prompt_text: 'Example prompt 1')
     DbPrompt.create(prompt_name: 'example_name_2', prompt_text: 'Another example 2')
 

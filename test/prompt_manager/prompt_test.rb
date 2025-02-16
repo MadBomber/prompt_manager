@@ -113,11 +113,19 @@ class PromptTest < Minitest::Test
 
 
   ##########################################
-  def test_prompt_interpolates_parameters_correctly
-    prompt    = PromptManager::Prompt.new(id: 'test_prompt')
-    expected  = "Hello, World!"
+  def test_prompt_initialization_with_valid_id
+    prompt = PromptManager::Prompt.new(id: 'test_prompt')
+    assert_equal 'test_prompt', prompt.id
+  end
 
-    assert_equal expected, prompt.to_s
+  def test_prompt_to_s_method
+    prompt = PromptManager::Prompt.new(id: 'test_prompt')
+    assert_equal "Hello, World!", prompt.to_s
+  end
+
+  def test_access_to_keywords
+    prompt = PromptManager::Prompt.new(id: 'test_prompt')
+    assert_equal ['[LANGUAGE]', '[NAME]'], prompt.keywords
   end
 
 

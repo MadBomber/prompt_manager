@@ -7,8 +7,10 @@ class TestPromptManager < Minitest::Test
     refute_nil ::PromptManager::VERSION
   end
 
-  def test_it_does_something_useful
-    assert true
+  def test_prompt_manager_error_handling
+    assert_raises(PromptManager::Error) do
+      raise PromptManager::Error, "This is a test error"
+    end
   end
 end
 
