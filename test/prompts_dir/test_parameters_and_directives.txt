@@ -1,0 +1,13 @@
+# test/prompts_dir/test_parameters_and_directives.txt
+# Desc: Test parameters and directives for prompt manager
+
+//TextToSpeech [LANGUAGE] [VOICE NAME]
+
+//model gpt-5
+//include path_to_file
+
+Tell me a few [KIND] jokes about [SUBJECT]
+
+//[COMMAND] [OPTIONS]
+
+__END__

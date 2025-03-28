@@ -5,8 +5,10 @@
 require 'ostruct'
 
 require_relative "prompt_manager/version"
-require_relative "prompt_manager/storage"
 require_relative "prompt_manager/prompt"
+require_relative "prompt_manager/storage"
+require_relative "prompt_manager/storage_adapter_base" 
+require_relative "prompt_manager/file_storage_adapter"
 
 # The PromptManager module provides functionality for managing, storing,
 # retrieving, and parameterizing text prompts used with generative AI systems.
