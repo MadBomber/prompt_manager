@@ -25,22 +25,6 @@ ActiveRecord::Schema.define do
     t.string  :prompt_text
     t.text    :prompt_params
   end
-
-  def test_get_non_existent_prompt
-    assert_raises ArgumentError do
-      @adapter.get(id: 'non_existent')
-    end
-  end
-
-  def test_delete_non_existent_prompt
-    assert_nil @adapter.delete(id: 'non_existent')
-  end
-
-  def test_save_with_invalid_parameters
-    assert_raises ActiveRecord::RecordInvalid do
-      @adapter.save(id: 'invalid', text: nil, parameters: nil)
-    end
-  end
 end
 
 

@@ -20,6 +20,7 @@
 
 require 'json'      # basic serialization of parameters
 require 'pathname'
+require 'fileutils'
 
 class PromptManager::Storage::FileSystemAdapter
   # Placeholder for search proc
@@ -33,7 +34,7 @@ class PromptManager::Storage::FileSystemAdapter
 
   class << self
     # Accessors for configuration options
-    attr_accessor :prompts_dir, :search_proc, 
+    attr_accessor :prompts_dir, :search_proc,
                   :params_extension, :prompt_extension
 
     # Configure the adapter
@@ -73,22 +74,27 @@ class PromptManager::Storage::FileSystemAdapter
 
     # Validate the prompts directory
     def validate_prompts_dir
-      # This is a work around for a Ruby scope issue where the 
-      # class getter/setter method is becoming confused with a 
-      # local variable when anything other than plain 'ol get and 
+      # This is a work around for a Ruby scope issue where the
+      # class getter/setter method is becoming confused with a
+      # local variable when anything other than plain 'ol get and
       # set are used. This error is in both Ruby v3.2.2 and
       # v3.3.0-preview3.
       #
       prompts_dir_local = self.prompts_dir
 
+      raise ArgumentError, "prompts_dir must be set" if prompts_dir_local.nil? || prompts_dir_local.to_s.strip.empty?
+
       unless prompts_dir_local.is_a?(Pathname)
-        prompts_dir_local = Pathname.new(prompts_dir_local) unless prompts_dir_local.nil?
+        prompts_dir_local = Pathname.new(prompts_dir_local)
       end
 
       prompts_dir_local = prompts_dir_local.expand_path
 
-      raise(ArgumentError, "prompts_dir: #{prompts_dir_local}") unless prompts_dir_local.exist? && prompts_dir_local.directory?
-      
+      unless prompts_dir_local.exist?
+        FileUtils.mkdir_p(prompts_dir_local)
+      end
+      raise(ArgumentError, "prompts_dir: #{prompts_dir_local} is not a directory") unless prompts_dir_local.directory?
+
       self.prompts_dir = prompts_dir_local
     end
 
@@ -176,7 +182,7 @@ class PromptManager::Storage::FileSystemAdapter
   # Retrieve parameter values by its id
   def parameter_values(prompt_id)
     params_path = file_path(prompt_id, params_extension)
-    
+
     if params_path.exist?
       parms_content = read_file(params_path)
       deserialize(parms_content)
@@ -187,15 +193,15 @@ class PromptManager::Storage::FileSystemAdapter
 
   # Save prompt text and parameter values to corresponding files
   def save(
-      id:, 
-      text: "", 
+      id:,
+      text: "",
       parameters: {}
     )
     validate_id(id)
 
     prompt_filepath = file_path(id, prompt_extension)
     params_filepath = file_path(id, params_extension)
-    
+
     write_with_error_handling(prompt_filepath, text)
     write_with_error_handling(params_filepath, serialize(parameters))
   end
@@ -206,7 +212,7 @@ class PromptManager::Storage::FileSystemAdapter
 
     prompt_filepath = file_path(id, prompt_extension)
     params_filepath = file_path(id, params_extension)
-    
+
     delete_with_error_handling(prompt_filepath)
     delete_with_error_handling(params_filepath)
   end
@@ -225,7 +231,7 @@ class PromptManager::Storage::FileSystemAdapter
   # Return an Array of prompt IDs
   def list(*)
     prompt_ids = []
-    
+
     Pathname.glob(prompts_dir.join("**/*#{prompt_extension}")).each do |file_path|
       prompt_id = file_path.relative_path_from(prompts_dir).to_s.gsub(prompt_extension, '')
       prompt_ids << prompt_id
@@ -238,7 +244,7 @@ class PromptManager::Storage::FileSystemAdapter
   # However, it is possible that the file does not exist.
   def path(id)
     validate_id(id)
-    file_path(id, prompt_extension) 
+    file_path(id, prompt_extension)
   end
 
   ##########################################
@@ -290,15 +296,15 @@ class PromptManager::Storage::FileSystemAdapter
   # Search for prompts
   def search_prompts(search_term)
     prompt_ids = []
-    
+
     Pathname.glob(prompts_dir.join("**/*#{prompt_extension}")).each do |prompt_path|
       if prompt_path.read.downcase.include?(search_term)
-        prompt_id = prompt_path.relative_path_from(prompts_dir).to_s.gsub(prompt_extension, '')    
+        prompt_id = prompt_path.relative_path_from(prompts_dir).to_s.gsub(prompt_extension, '')
         prompt_ids << prompt_id
       end
     end
 
-    prompt_ids
+    prompt_ids.sort
   end
 
   # Serialize data to JSON

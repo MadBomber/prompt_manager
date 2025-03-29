@@ -1,0 +1,4 @@
+# prompt_manager/examples/prompts_dir/toy/8-ball.txt
+# Desc: In the late 1940s the toy "Magic 8 Ball" came to market
+
+As a magic 8-ball, provide me with a terse answer to what you suspect that I am thinking about.

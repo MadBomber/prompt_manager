@@ -18,8 +18,6 @@ $TEST_DIR     = Pathname.new(__dir__)
 $PROMPTS_DIR  = $TEST_DIR.join("prompts_dir")
 
 require "prompt_manager"
-require "minitest/autorun"
-require 'minitest/pride'
 
 # All non-storage tests are going to use the FileSystemAdapter
 PromptManager::Prompt
@@ -28,3 +26,6 @@ PromptManager::Prompt
       .config do |config|
         config.prompts_dir = $PROMPTS_DIR
       end.new
+
+require "minitest/autorun"
+require 'minitest/pride'

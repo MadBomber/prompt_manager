@@ -1,0 +1,4 @@
+# test/prompts_dir/hello_prompt.txt
+# Desc: This prompt says hello
+
+Hello, how are you?  Are you ready to assist me with some research?

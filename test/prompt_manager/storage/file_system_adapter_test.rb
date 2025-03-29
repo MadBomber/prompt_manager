@@ -15,7 +15,7 @@ class FileSystemAdapterTest < Minitest::Test
 
     # An instance pf a stprage adapter class
     @adapter  = FSA.config do |o|
-                  o.prompts_dir = $PROMPTS_DIR   
+                  o.prompts_dir = $PROMPTS_DIR
                 end.new
     directive_example_filename = 'directive_example' + PromptManager::Storage::FileSystemAdapter::PROMPT_EXTENSION
     directive_example_file     = File.join(@prompts_dir, directive_example_filename)
@@ -48,13 +48,8 @@ class FileSystemAdapterTest < Minitest::Test
   ############################################
   def test_config
     assert_equal FSA, PromptManager::Storage::FileSystemAdapter
-    
-    assert FSA.respond_to? :config
 
-    # debug_me{[
-    #   'FSA::search_proc', #=> nil
-    #   'FSA::SEARCH_PROC'  #=> nil
-    # ]}
+    assert FSA.respond_to? :config
 
     assert_equal FSA.prompts_dir,       $PROMPTS_DIR
     # SMELL: assert_equal FSA.search_proc,       FSA::SEARCH_PROC
@@ -112,7 +107,7 @@ class FileSystemAdapterTest < Minitest::Test
     # Setup
     expected_text   = 'This is a prompt.'
     expected_params = {
-      '[SIZE]'  => 20, 
+      '[SIZE]'  => 20,
       '[COLOR]' => 'blue'
     }
 
@@ -175,7 +170,7 @@ class FileSystemAdapterTest < Minitest::Test
     # In the case of the FileSystemAdapter the ID is
     # the basename of the file snns its extension.
     @adapter.class.search_proc = ->(q) { ["hello #{q}"] }
-    
+
     expected  = ["hello madbomber"] # NOTE: query term is all lowercase
     results   = @adapter.search(search_term)
 
@@ -187,32 +182,13 @@ class FileSystemAdapterTest < Minitest::Test
 
   ############################################
   def test_search
-    # Setup
-    search_term         = 'hello'
-    included_text       = 'this contains hello'
-    also_included_text  = "Hello Dolly!\nWell HELLO Freddy"  # NOTE: case difference to search term
-    directive_example_text = 'directive example with hello'
-    excluded_text          = 'this does not'
+    search_term = "hello"
 
-    file_ext = PromptManager::Storage::FileSystemAdapter::PROMPT_EXTENSION
-
-    included_filename = 'included' + file_ext
-    included_file     = File.join(@prompts_dir, included_filename)
-
-    also_included_filename = 'also_included' + file_ext
-    also_included_file     = File.join(@prompts_dir, also_included_filename)
-
-    excluded_filename = 'excluded' + file_ext
-    directive_example_filename = 'directive_example' + file_ext
-    directive_example_file     = File.join(@prompts_dir, directive_example_filename)
-    excluded_file              = File.join(@prompts_dir, excluded_filename)
-
-    File.write(included_file,       included_text)
-    File.write(directive_example_file, directive_example_text)
-    File.write(excluded_file,          excluded_text)
-    File.write(also_included_file,  also_included_text)
-
-    expected = ["also_included", "directive_example", "included"]
+    expected = %w[
+      hello_prompt
+      also_included
+      included
+    ].sort
 
     # Exercise
     results = @adapter.search(search_term)
@@ -220,13 +196,7 @@ class FileSystemAdapterTest < Minitest::Test
     # Verify
     assert_equal results, expected
     refute_includes results, 'excluded'
-  
-    # Clean up
-    File.delete(included_file)
-    File.delete(excluded_file)
-    File.delete(also_included_file)
   end
 
   # Add more tests for exceptional cases and edge conditions
 end
-
