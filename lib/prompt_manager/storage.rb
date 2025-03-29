@@ -27,6 +27,8 @@
 module PromptManager
   # The Storage module provides adapters for different storage backends.
   # Each adapter implements a common interface for managing prompts.
+  # Note: PromptManager::Prompt uses one of these adapters as its storage backend to
+  # perform all CRUD operations on prompt data.
   module Storage
   end
 end

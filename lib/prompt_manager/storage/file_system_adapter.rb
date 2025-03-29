@@ -14,6 +14,9 @@
 # of the prompts_dir.
 #
 # There can be many layers of categories (sub-directories)
+#
+# This adapter serves as the file-based storage backend for PromptManager::Prompt,
+# enabling prompt retrieval and persistence using file system operations.
 
 require 'json'      # basic serialization of parameters
 require 'pathname'
@@ -228,7 +231,7 @@ class PromptManager::Storage::FileSystemAdapter
       prompt_ids << prompt_id
     end
 
-    prompt_ids
+    prompt_ids.sort
   end
 
   # Returns a Pathname object for a prompt ID text file

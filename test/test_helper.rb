@@ -15,7 +15,7 @@ $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 # Define test directory and prompts directory
 $TEST_DIR     = Pathname.new(__dir__)
-$PROMPTS_DIR  = $TEST_DIR.join("/prompts_dir")
+$PROMPTS_DIR  = $TEST_DIR.join("prompts_dir")
 
 require "prompt_manager"
 require "minitest/autorun"

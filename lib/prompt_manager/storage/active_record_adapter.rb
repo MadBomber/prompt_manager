@@ -1,6 +1,7 @@
 # prompt_manager/lib/prompt_manager/storage/active_record_adapter.rb
 
 # This class acts as an adapter for interacting with an ActiveRecord model
+require 'active_record'
 # to manage storage operations for PromptManager::Prompt instances. It defines
 # methods that allow for saving, searching, retrieving by ID, and deleting
 # prompts.
@@ -8,6 +9,8 @@
 # To use this adapter, you must configure it with an ActiveRecord model and
 # the column names for ID, text content, and parameters. The adapter will
 # handle serialization and deserialization of parameters.
+#
+# This adapter is used by PromptManager::Prompt as its storage backend, enabling CRUD operations on persistent prompt data.
 
 class PromptManager::Storage::ActiveRecordAdapter
   

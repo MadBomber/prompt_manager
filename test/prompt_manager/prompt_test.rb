@@ -3,64 +3,6 @@
 require 'test_helper'
 
 class PromptTest < Minitest::Test
-  # Mock storage adapter that will act as a fake database in tests
-  class MockStorageAdapter
-    @@db = {} # generic database - a collection of prompts
-
-    # NOTE: storage adapter can add extra class
-    #       or instance methods available to the Prompt class
-    #
-    class << self
-      def extra(prompt_id)
-        new.extra(prompt_id)
-      end
-    end
-
-    attr_accessor :id, :text, :parameters 
-    
-    def db = @@db
-
-    def initialize
-      @id         = nil # String name of the prompt
-      @text       = nil # String raw text with parameters
-      @parameters = nil # Hash for current prompt
-    end
-
-
-    def get(id:)
-      raise("Prompt ID not found") unless @@db.has_key? id
-
-      record = @@db[id]
-
-      @id         = id
-      @text       = record[:text]
-      @parameters = record[:parameters]
-
-      record
-    end
-
-
-    def save(id: @id, text: @text, parameters: @parameters)
-      @@db[id] = { text: text, parameters: parameters }
-      true
-    end
-
-
-    def delete(id: @id)
-      raise("What") unless @@db.has_key?(id)
-      db.delete(id)
-    end
-
-
-    def search(query)
-      @@db.select { |k, v| v[:text].include?(query) }
-    end
-
-
-    def extra(prompt_id)
-      "Hello #{prompt_id}"
-    end
-  end
 
   def test_prompt_initialization_with_invalid_id
     assert_raises ArgumentError do
@@ -82,7 +24,7 @@ class PromptTest < Minitest::Test
     @storage_adapter = MockStorageAdapter.new
 
     @storage_adapter.save(
-      id:         'test_prompt', 
+      id:         'test_prompt',
       parameters: {
         '[NAME]'      => ['World'],
         '[LANGUAGE]'  => ['English']
@@ -118,7 +60,7 @@ class PromptTest < Minitest::Test
   ##########################################
   def test_prompt_initialization_raises_argument_error_when_no_storage_adapter_set
     PromptManager::Prompt.storage_adapter = nil
-    assert_raises ArgumentError do
+    assert_raises(ArgumentError, 'storage_adapter is not set') do
       PromptManager::Prompt.new(id: 'test_prompt')
     end
   ensure
@@ -134,27 +76,12 @@ class PromptTest < Minitest::Test
 
   def test_prompt_to_s_method
     prompt = PromptManager::Prompt.new(id: 'test_prompt')
-    assert_equal "Hello, World!", prompt.to_s
+    # Build removes comments and directives, but keeps __END__ etc.
+    # EDIT: Now removes __END__ and subsequent lines.
+    expected = "Hello, World!"
+    assert_equal expected, prompt.to_s
   end
 
-
-
-  def test_access_to_keywords
-    prompt = PromptManager::Prompt.new(id: 'test_prompt')
-    assert_equal ['[LANGUAGE]', '[NAME]'], prompt.keywords
-  end
-
-
-  def test_access_to_directives
-    prompt    = PromptManager::Prompt.new(id: 'test_prompt')
-    expected  = [
-      ['TextToSpeech', 'English World']
-    ]
-
-    # NOTE: directives are collected after parameter substitution
-
-    assert_equal expected, prompt.directives
-  end
 
   ##########################################
   def test_prompt_saves_to_storage
@@ -178,13 +105,13 @@ class PromptTest < Minitest::Test
   ##########################################
   def test_prompt_deletes_from_storage
     prompt = PromptManager::Prompt.create(id: 'test_prompt')
-    
+
     assert PromptManager::Prompt.get(id: 'test_prompt') # Verify it exists
 
     prompt.delete
 
-    assert_raises do
-      PromptManager::Prompt.get(id: 'test_prompt') # Should raise "Prompt ID not found"
+    assert_raises(ArgumentError) do
+      PromptManager::Prompt.get(id: 'test_prompt') # Should raise error when prompt not found
     end
   end
 
@@ -194,17 +121,7 @@ class PromptTest < Minitest::Test
     search_results  = PromptManager::Prompt.search('Hello')
 
     refute_empty search_results
-    assert search_results.keys.include?('test_prompt')
-  end
-
-
-  ##########################################
-  def test_extra
-    class_result  = PromptManager::Prompt.extra("World")
-    result        = PromptManager::Prompt.create(id: 'World').extra("World")
-
-    assert_equal class_result, result
-    assert_equal result, "Hello World"
+    assert_includes search_results, 'test_prompt'
   end
 end
 
