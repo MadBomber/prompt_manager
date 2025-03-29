@@ -185,16 +185,17 @@ class FileSystemAdapterTest < Minitest::Test
     search_term = "hello"
 
     expected = %w[
-      hello_prompt
       also_included
+      hello_prompt
       included
+      test2_prompt
     ].sort
 
     # Exercise
     results = @adapter.search(search_term)
 
     # Verify
-    assert_equal results, expected
+    assert_equal expected, results
     refute_includes results, 'excluded'
   end
 
