@@ -1,32 +1,5 @@
 # prompt_manager/lib/prompt_manager/prompt.rb
 
-=begin
-  This class is responsible for managing prompts which can be utilized by
-  generative AI processes. This includes creation, retrieval, storage
-  management, as well as building prompts with replacement of parameterized
-  values and comment removal. It communicates with a storage system through a
-  storage adapter.
-
-  NOTE: PromptManager::Prompt relies on a configured storage adapter (such as
-  FileSystemAdapter or ActiveRecordAdapter) to persist and retrieve prompt text
-  and parameters.
-
-  Directives are collected into a Hash where each key is the original directive
-  line (String). The value is initially an empty String, intended to be
-  populated with the directive's response later.
-
-  Directives are collected from the prompt after parameter substitution has occurred. This means that directives within a
-  prompt can be dynamic.
-
-  PromptManager does not execute directives. They
-  are made available to be passed on to downstream
-  processes such as the example PrompManager::DirectiveProcessor
-  which implements the //include directive.
-
-=end
-
-
-
 require_relative "directive_processor"
 
 class PromptManager::Prompt
@@ -36,11 +9,15 @@ class PromptManager::Prompt
   # @storage_adapter        = nil
   @parameter_regex        = DEFAULT_PARAMETER_REGEX
 
-  # Public class methods
+  ##############################################
+  ## Public class methods
+
   class << self
     attr_accessor :storage_adapter, :parameter_regex
 
-    alias_method :get, :new
+    def get(id:)
+      storage_adapter.get(id: id)  # Return the hash directly from storage
+    end
 
     def create(id:, text: "", parameters: {})
       storage_adapter.save(
@@ -49,23 +26,21 @@ class PromptManager::Prompt
         parameters: parameters
       )
 
-      new(id: id)
+      ::PromptManager::Prompt.new(id: id, context: [], directives_processor: PromptManager::DirectiveProcessor.new)
     end
 
-    def find(id)
-      new(id: id)
+    def find(id:)
+      ::PromptManager::Prompt.new(id: id, context: [], directives_processor: PromptManager::DirectiveProcessor.new)
     end
 
-    def destroy(id)
-      prompt = find(id)
+    def destroy(id:)
+      prompt = find(id: id)
       prompt.delete
     end
-
 
     def search(for_what)
       storage_adapter.search(for_what)
     end
-
 
     def method_missing(method_name, *args, &block)
       if storage_adapter.respond_to?(method_name)
@@ -74,7 +49,6 @@ class PromptManager::Prompt
         super
       end
     end
-
 
     def respond_to_missing?(method_name, include_private = false)
       storage_adapter.respond_to?(method_name, include_private) || super
@@ -86,7 +60,7 @@ class PromptManager::Prompt
 
   attr_accessor :id,          # String name for the prompt
                 :text,        # String, full text of the prompt
-                :parameters,  # Hash, Key and Value are Strings
+                :parameters  # Hash, Key and Value are Strings
 
 
   def initialize(
