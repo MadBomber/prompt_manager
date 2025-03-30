@@ -43,6 +43,12 @@ Manage the parameterized prompts (text) used in generative AI (aka chatGPT, Open
   - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
+### Latest Capabilities
+- **Directive Processing:** Processes directives such as `//include` (aliased as `//import`) with loop protection.
+- **ERB Processing:** Supports ERB templating within prompts.
+- **Environment Variable Embedding:** Automatically substitutes system environment variables in prompts.
+- **Improved Parameter Handling:** Refactored to maintain a history of parameter values.
+- **ActiveRecord Adapter:** Facilitates storing and retrieving prompts via an ActiveRecord model.
 
 ## Installation
 
@@ -61,6 +67,14 @@ See [examples/simple.rb](examples/simple.rb)
 See also [examples/using_search_proc.rb](examples/using_search_proc.rb)
 
 ## Overview
+
+### Prompt Initialization Options
+- `id`: A String name for the prompt.
+- `context`: An Array for additional context.
+- `directives_processor`: An instance of PromptManager::DirectiveProcessor (default), can be customized.
+- `external_binding`: A Ruby binding to be used for ERB processing.
+- `erb_flag`: Boolean flag to enable ERB processing in the prompt text.
+- `envar_flag`: Boolean flag to enable environment variable substitution in the prompt text.
 
 The `prompt_manager` gem provides functionality to manage prompts that have keywords and directives for use with generative AI processes.
 
