@@ -15,6 +15,7 @@ class PromptTest < Minitest::Test
   def setup
     # Save original settings
     @original_prompts_dir = PromptManager::Storage::FileSystemAdapter.prompts_dir
+    @original_env = ENV.to_hash
 
     # Create a dedicated test directory for each test
     @test_dir = Dir.mktmpdir('prompt_test_')
@@ -29,6 +30,8 @@ class PromptTest < Minitest::Test
   def teardown
     # Restore original adapter settings and clean up test directory
     PromptManager::Storage::FileSystemAdapter.prompts_dir = @original_prompts_dir
+    ENV.replace(@original_env)
+
     FileUtils.remove_entry(@test_dir) if @test_dir && File.exist?(@test_dir)
   end
 
@@ -142,6 +145,31 @@ class PromptTest < Minitest::Test
     File.write(prompt_path, text)
     File.write(params_path, parameters.to_json)
   end
+
+
+  def test_env_variable_replacement
+      ENV['GREETING'] = 'Hello'
+      prompt_text = 'Say $GREETING to world!'
+      prompt = PromptManager::Prompt.new(prompt_text)
+      result = prompt.process
+      assert_equal 'Say Hello to world!', result
+    end
+
+    def test_erb_processing
+      prompt_text = '2+2 is <%= 2+2 %>'
+      prompt = PromptManager::Prompt.new(prompt_text)
+      result = prompt.process
+      assert_equal '2+2 is 4', result
+    end
+
+    def test_combined_features
+      ENV['NAME'] = 'Alice'
+      prompt_text = 'Hi, $NAME! Today, 3*3 equals <%= 3*3 %>.'
+      prompt = PromptManager::Prompt.new(prompt_text)
+      result = prompt.process
+      assert_equal 'Hi, Alice! Today, 3*3 equals 9.', result
+    end
+
 end
 
 __END__

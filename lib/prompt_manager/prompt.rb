@@ -6,7 +6,6 @@ class PromptManager::Prompt
   COMMENT_SIGNAL          = '#'   # lines beginning with this are a comment
   DIRECTIVE_SIGNAL        = '//'  # Like the old IBM JCL
   DEFAULT_PARAMETER_REGEX = /(\[[A-Z _|]+\])/
-  # @storage_adapter        = nil
   @parameter_regex        = DEFAULT_PARAMETER_REGEX
 
   ##############################################
@@ -58,15 +57,18 @@ class PromptManager::Prompt
   ##############################################
   ## Public Instance Methods
 
-  attr_accessor :id,          # String name for the prompt
-                :text,        # String, full text of the prompt
-                :parameters  # Hash, Key and Value are Strings
+  attr_accessor :id,           # String name for the prompt
+                :text,         # String, full text of the prompt
+                :parameters    # Hash, Key and Value are Strings
 
 
   def initialize(
       id:       nil,    # A String name for the prompt
       context:  [],     # TODO: Array of Strings or Pathname?
-      directives_processor: PromptManager::DirectiveProcessor.new
+      directives_processor: PromptManager::DirectiveProcessor.new,
+      external_binding:     binding,
+      erb_flag:             false,    # replace $ENVAR and ${ENVAR} when true
+      envar_flag:           false     # process ERB against the external_binding when true
     )
 
     @id  = id
@@ -74,10 +76,13 @@ class PromptManager::Prompt
 
     validate_arguments(@id)
 
-    @record         = db.get(id: id)
-    @text           = @record[:text]        || ""
-    @parameters     = @record[:parameters]  || {}
-    @directives     = {}
+    @record           = db.get(id: id)
+    @text             = @record[:text]        || ""
+    @parameters       = @record[:parameters]  || {}
+    @directives       = {}
+    @external_binding = external_binding
+    @erb_flag         = erb_flag
+    @envar_flag       = envar_flag
   end
 
   def validate_arguments(prompt_id, prompts_db=db)
@@ -88,7 +93,9 @@ class PromptManager::Prompt
   def to_s
     processed_text = remove_comments
     processed_text = substitute_values(processed_text, @parameters)
-    process_directives(processed_text)
+    processed_text = substitute_env_vars(processed_text)
+    processed_text = process_directives(processed_text)
+    process_erb(processed_text)
   end
 
   def save
@@ -122,10 +129,28 @@ class PromptManager::Prompt
     input_text
   end
 
+  def erb?      = @erb_flag
+  def envvar?   = @envvar_flag
+
+  def substitute_env_vars(input_text)
+    return input_text unless envvar?
+
+    input_text.gsub(/\$(\w+)|\$\{(\w+)\}/) do |match|
+      env_var = $1 || $2
+      ENV[env_var] || match
+    end
+  end
+
   def process_directives(input_text)
     directive_lines = input_text.split("\n").select { |line| line.strip.start_with?(DIRECTIVE_SIGNAL) }
     @directives = directive_lines.each_with_object({}) { |line, hash| hash[line.strip] = "" }
     @directives = @directives_processor.run(@directives)
     substitute_values(input_text, @directives)
+  end
+
+  def process_erb(input_text)
+    return input_text unless erb?
+
+    ERB.new(input_text).result(@external_binding)
   end
 end
