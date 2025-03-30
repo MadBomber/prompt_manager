@@ -1,6 +1,13 @@
 ## Unreleased
 
 ## Released
+### [0.5.0] = 2025-03-29
+- Major refactoring of to improve processing of parameters and directives.
+- Added PromptManager::DirectiveProcessor as an example of how to implement custom directives.
+- Added support for //include directive that protects against loops.
+- Added support for embedding system environment variables.
+- Added support for ERB processing within a prompt.
+- Improved test coverage.
 
 ### [0.4.2] = 2024-10-26
 - Added configurable parameter_regex to customize keyword pattern
