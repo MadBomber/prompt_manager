@@ -1,34 +1,22 @@
 # prompt_manager/lib/prompt_manager/prompt.rb
 
-# This class is responsible for managing prompts which can be utilized by
-# generative AI processes. This includes creation, retrieval, storage management,
-# as well as building prompts with replacement of parameterized values and 
-# comment removal. It communicates with a storage system through a storage 
-# adapter.
-#
-# Directives are collected into an Array where each entry is an Array
-# of two elements.  The first is the directive name as a String. The 
-# second is a string of parameters used by the directive.
-# 
-# Directives are collected from the prompt after keyword
-# substitution has occured.  This means that directives within a
-# prompt can be dynamic.
-#
-# PromptManager does not execute directives.  They
-# are made available to be passed on to down stream
-# process.
+require_relative "directive_processor"
 
 class PromptManager::Prompt
-  COMMENT_SIGNAL    = '#'   # lines beginning with this are a comment
-  DIRECTIVE_SIGNAL  = '//'  # Like the old IBM JCL
+  COMMENT_SIGNAL          = '#'   # lines beginning with this are a comment
+  DIRECTIVE_SIGNAL        = '//'  # Like the old IBM JCL
   DEFAULT_PARAMETER_REGEX = /(\[[A-Z _|]+\])/
-  @storage_adapter  = nil
-  @parameter_regex  = DEFAULT_PARAMETER_REGEX
+  @parameter_regex        = DEFAULT_PARAMETER_REGEX
+
+  ##############################################
+  ## Public class methods
 
   class << self
     attr_accessor :storage_adapter, :parameter_regex
 
-    alias_method :get, :new
+    def get(id:)
+      storage_adapter.get(id: id)  # Return the hash directly from storage
+    end
 
     def create(id:, text: "", parameters: {})
       storage_adapter.save(
@@ -37,14 +25,21 @@ class PromptManager::Prompt
         parameters: parameters
       )
 
-      new(id: id)
+      ::PromptManager::Prompt.new(id: id, context: [], directives_processor: PromptManager::DirectiveProcessor.new)
     end
 
+    def find(id:)
+      ::PromptManager::Prompt.new(id: id, context: [], directives_processor: PromptManager::DirectiveProcessor.new)
+    end
+
+    def destroy(id:)
+      prompt = find(id: id)
+      prompt.delete
+    end
 
     def search(for_what)
       storage_adapter.search(for_what)
     end
-
 
     def method_missing(method_name, *args, &block)
       if storage_adapter.respond_to?(method_name)
@@ -54,176 +49,108 @@ class PromptManager::Prompt
       end
     end
 
-
     def respond_to_missing?(method_name, include_private = false)
       storage_adapter.respond_to?(method_name, include_private) || super
     end
   end
-  
-  # SMELL:  Does the db (aka storage adapter) really need
-  #         to be accessible by the main program?
-  attr_accessor :db, :id, :text, :parameters, :directives
+
+  ##############################################
+  ## Public Instance Methods
+
+  attr_accessor :id,           # String name for the prompt
+                :text,         # String, full text of the prompt
+                :parameters    # Hash, Key and Value are Strings
 
 
-  # Retrieve the specific prompt ID from the Storage system.
   def initialize(
-      id:       nil,  # A String name for the prompt
-      context:  []    # FIXME: Array of Strings or Pathname?
+      id:       nil,    # A String name for the prompt
+      context:  [],     # TODO: Array of Strings or Pathname?
+      directives_processor: PromptManager::DirectiveProcessor.new,
+      external_binding:     binding,
+      erb_flag:             false,    # replace $ENVAR and ${ENVAR} when true
+      envar_flag:           false     # process ERB against the external_binding when true
     )
 
     @id  = id
-    @db  = self.class.storage_adapter
-    
-    validate_arguments(@id, @db)
+    @directives_processor = directives_processor
 
-    @record     = db.get(id: id)
-    @text       = @record[:text]
-    @parameters = @record[:parameters]
-    @keywords   = []  # Array of String
-    @directives = []  # Array of arrays. directive is first entry, rest are parameters
+    validate_arguments(@id)
 
-    update_keywords
-
-    build
+    @record           = db.get(id: id)
+    @text             = @record[:text]        || ""
+    @parameters       = @record[:parameters]  || {}
+    @directives       = {}
+    @external_binding = external_binding
+    @erb_flag         = erb_flag
+    @envar_flag       = envar_flag
   end
 
-
-  # Make sure the ID and DB are good-to-go
-  def validate_arguments(prompt_id, prompts_db)
-    raise ArgumentError, 'id cannot be blank'           if prompt_id.nil? || id.strip.empty?
+  def validate_arguments(prompt_id, prompts_db=db)
+    raise ArgumentError, 'id cannot be blank'           if prompt_id.nil? || prompt_id.strip.empty?
     raise(ArgumentError, 'storage_adapter is not set')  if prompts_db.nil?
   end
 
-
-  # Return tje prompt text suitable for passing to a
-  # gen-AI process.
   def to_s
-    build
+    processed_text = remove_comments
+    processed_text = substitute_values(processed_text, @parameters)
+    processed_text = substitute_env_vars(processed_text)
+    processed_text = process_directives(processed_text)
+    process_erb(processed_text)
   end
-  alias_method :prompt, :to_s
 
-
-  # Save the prompt to the Storage system
   def save
     db.save(
-      id:         id, 
-      text:       text, 
+      id:         id,
+      text:       text,       # Save the original text
       parameters: parameters
-    )    
+    )
   end
 
-
-  # Delete this prompt from the Storage system
-  def delete
-    db.delete(id: id)  
-  end
-
-
-  # Build the @prompt String by replacing the keywords
-  # with there parameterized values and removing all
-  # the comments.
-  #  
-  def build
-    @prompt = text.gsub(self.class.parameter_regex) do |match|
-                param_name = match
-                Array(parameters[param_name]).last || match
-              end
-              
-    save_directives(@prompt)
-    remove_comments
-  end
-
-
-  def keywords
-    update_keywords
-  end
+  def delete = db.delete(id: id)
 
 
   ######################################
   private
 
-  def update_keywords
-    @keywords = @text.scan(self.class.parameter_regex).flatten.uniq
-    @keywords.each do |kw|
-      @parameters[kw] = [] unless @parameters.has_key?(kw)
-    end
-
-    @keywords
-  end
-
-
-  def save_directives(keyword_substituted_string)
-    @directives = []
-
-    keyword_substituted_string.split("\n").each do |a_line|
-      line = a_line.strip
-      next unless line.start_with?(DIRECTIVE_SIGNAL)
-      
-      parts       = line.split(' ')
-      directive   = parts.shift[DIRECTIVE_SIGNAL.length..] # drop the directive signal
-      @directives << [directive, parts.join(' ')]
-    end
-
-    @directives
-  end
-
+  def db = self.class.storage_adapter
 
   def remove_comments
-    lines           = @prompt
-                        .split("\n")
-                        .reject{|a_line| 
-                          a_line.strip.start_with?(COMMENT_SIGNAL)  ||
-                          a_line.strip.start_with?(DIRECTIVE_SIGNAL)
-                        }
-
-    # Remove empty lines at the start of the prompt
-    #
-    lines = lines.drop_while(&:empty?)
-
-    # Drop all the lines at __END__ and after
-    #
-    logical_end_inx = lines.index("__END__")
-
-    @prompt = if logical_end_inx
-                lines[0...logical_end_inx] # NOTE: ... means to not include last index
-              else
-                lines
-              end.join("\n") 
-  end
-  
-
-  # Handle storage errors
-  # SMELL:  Just raise them or get out of their way and let the
-  #         main program do tje job.
-  def handle_storage_error(error)
-    # Log the error message, notify, or take appropriate action
-    log_error("Storage operation failed: #{error.message}")
-    # Re-raise the error if necessary, or define recovery steps
-    raise error
+    lines = @text.split("\n")
+    end_index = lines.index("__END__") || lines.size
+    lines[0...end_index].reject { |line| line.strip.start_with?(COMMENT_SIGNAL) }.join("\n")
   end
 
+  def substitute_values(input_text, values_hash)
+    if values_hash.is_a?(Hash) && !values_hash.empty?
+      values_hash.each do |key, value|
+        input_text = input_text.gsub(key, value)
+      end
+    end
+    input_text
+  end
 
-  # Let the storage adapter instance take a crake at
-  # these unknown methods.  Don't care what the args
-  # are, just pass the prompt's ID.
-  def method_missing(method_name, *args, &block)
-    if db.respond_to?(method_name)
-      db.send(method_name, id, &block)
-    else
-      super
+  def erb?      = @erb_flag
+  def envvar?   = @envvar_flag
+
+  def substitute_env_vars(input_text)
+    return input_text unless envvar?
+
+    input_text.gsub(/\$(\w+)|\$\{(\w+)\}/) do |match|
+      env_var = $1 || $2
+      ENV[env_var] || match
     end
   end
 
-
-  def respond_to_missing?(method_name, include_private = false)
-    db.respond_to?(method_name, include_private) || super
+  def process_directives(input_text)
+    directive_lines = input_text.split("\n").select { |line| line.strip.start_with?(DIRECTIVE_SIGNAL) }
+    @directives = directive_lines.each_with_object({}) { |line, hash| hash[line.strip] = "" }
+    @directives = @directives_processor.run(@directives)
+    substitute_values(input_text, @directives)
   end
 
+  def process_erb(input_text)
+    return input_text unless erb?
 
-  # SMELL:  should this gem log errors or is that a function of
-  #         main program?  I believe its the main program's job.
-  def log_error(message)
-    puts "ERROR: #{message}"
+    ERB.new(input_text).result(@external_binding)
   end
 end
-

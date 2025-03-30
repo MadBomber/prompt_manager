@@ -1,0 +1,10 @@
+# test/prompts_dir/test_parameters.txt
+# Desc: Test parameters for prompt manager
+
+default prompt regex: [PARAMETER]
+user supplied prompt regex: {{parameter two}}
+
+__END__
+
+Testing both the default regex and the example user supplied
+regex.

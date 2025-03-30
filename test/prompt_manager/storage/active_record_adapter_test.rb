@@ -1,6 +1,6 @@
 # test/test_prompt_manager_storage_active_record_adapter.rb
 
-require ENV['RR']+'/test/test_helper'
+require 'test_helper'
 
 require 'active_record'
 require 'json'
@@ -74,21 +74,25 @@ class TestActiveRecordAdapter < Minitest::Test
 
 
   def test_get
+    prompt_id = "example_name_#{rand(10000)}"
+
+    DbPrompt.destroy(id: prompt_id) rescue 
+
     DbPrompt.create(
-              prompt_name:    'example_name', 
-              prompt_text:    'Example prompt', 
+              prompt_name:    prompt_id, 
+              prompt_text:    'Updated prompt', 
               prompt_params:  { size: 'large' }.to_json
             )
 
     # The result is a Hash having the three keys expected
     # by the PromptManager::Prompt class
-    result = @adapter.get(id: 'example_name')
+    result = @adapter.get(id: prompt_id)
 
     expected_parameters = { size: 'large' }
 
     assert_equal Hash,                  result.class
-    assert_equal 'example_name',        result[:id]
-    assert_equal 'Example prompt',      result[:text]
+    assert_equal prompt_id,             result[:id]
+    assert_equal 'Updated prompt',      result[:text]
     assert_equal expected_parameters,   result[:parameters].symbolize_keys
   end
 
@@ -119,7 +123,15 @@ class TestActiveRecordAdapter < Minitest::Test
   end
 
 
-  def test_search
+  def test_save_with_existing_record
+    @adapter.save(id: 'example_name', text: 'Updated prompt', parameters: { size: 'small' })
+    prompt_record = DbPrompt.find_by(prompt_name: 'example_name')
+    assert_equal 'Updated prompt', prompt_record.prompt_text
+    assert_equal({ size: 'small' }, prompt_record.prompt_params)
+  end
+
+
+  def test_create
     DbPrompt.create(prompt_name: 'example_name_1', prompt_text: 'Example prompt 1')
     DbPrompt.create(prompt_name: 'example_name_2', prompt_text: 'Another example 2')
 

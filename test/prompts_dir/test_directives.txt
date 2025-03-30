@@ -1,0 +1,12 @@
+# test/prompts_dir/test_directives.txt
+# Desc: Test directives for prompt manager
+
+//TextToSpeech English Frank
+
+Say the lyrics to the song "My Way". Please provide only the lyrics without commentary.
+
+//model gpt-5
+//include path_to_file
+
+__END__
+Computers will never replace Frank Sinatra

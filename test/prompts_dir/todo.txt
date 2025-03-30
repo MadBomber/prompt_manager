@@ -1,0 +1,7 @@
+# prompts_dir/todo.txt
+# Desc: Let the robot fix the TODO items.
+#
+
+As an experienced [LANGUAGE] software engineer write some [LANGUAGE] source code. Consider the following [LANGUAGE] file.  For each comment line that contains the word "[KEYWORD_AKA_TODO]" take the text that follows that word as a requirement to be implemented in [LANGUAGE].  Remove the "[KEYWORD_AKA_TODO]" word from the comment line.  After the line insert the [LANGUAGE] code that implements the requirement.
+
+__END__

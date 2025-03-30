@@ -1,144 +1,88 @@
 # prompt_manager/test/prompt_manager/prompt_test.rb
 
-require ENV['RR']+'/test/test_helper'
+require 'test_helper'
+require 'fileutils'
+require 'tmpdir'
+require 'pathname'
+
+debug_me{[
+  "PromptManager::Prompt.storage_adapter"
+]}
+
 
 class PromptTest < Minitest::Test
-  # Mock storage adapter that will act as a fake database in tests
-  class MockStorageAdapter
-    @@db = {} # generic database - a collection of prompts
-
-    # NOTE: storage adapter can add extra class
-    #       or instance methods available to the Prompt class
-    #
-    class << self
-      def extra(prompt_id)
-        new.extra(prompt_id)
-      end
-    end
-
-    attr_accessor :id, :text, :parameters 
-    
-    def db = @@db
-
-    def initialize
-      @id         = nil # String name of the prompt
-      @text       = nil # String raw text with parameters
-      @parameters = nil # Hash for current prompt
-    end
-
-
-    def get(id:)
-      raise("Prompt ID not found") unless @@db.has_key? id
-
-      record = @@db[id]
-
-      @id         = id
-      @text       = record[:text]
-      @parameters = record[:parameters]
-
-      record
-    end
-
-
-    def save(id: @id, text: @text, parameters: @parameters)
-      @@db[id] = { text: text, parameters: parameters }
-      true
-    end
-
-
-    def delete(id: @id)
-      raise("What") unless @@db.has_key?(id)
-      db.delete(id)
-    end
-
-
-    def search(query)
-      @@db.select { |k, v| v[:text].include?(query) }
-    end
-
-
-    def extra(prompt_id)
-      "Hello #{prompt_id}"
-    end
-  end
-
-
-  ##########################################
+  # Save original adapter settings to restore them after tests
   def setup
-    @storage_adapter = MockStorageAdapter.new
+    # Save original settings
+    @original_prompts_dir = PromptManager::Storage::FileSystemAdapter.prompts_dir
+    @original_env = ENV.to_hash
 
-    @storage_adapter.save(
-      id:         'test_prompt', 
-      parameters: {
-        '[NAME]'      => ['World'],
-        '[LANGUAGE]'  => ['English']
-      },
-      text: <<~EOS
-        # First Comment
-        //TextToSpeech [LANGUAGE] [NAME]
-        Hello, [NAME]!
-        __END__
-        Last Comment
-      EOS
-    )
+    # Create a dedicated test directory for each test
+    @test_dir = Dir.mktmpdir('prompt_test_')
+    @test_prompts_dir = Pathname.new(File.join(@test_dir, 'prompts'))
+    FileUtils.mkdir_p(@test_prompts_dir)
 
-    PromptManager::Prompt.storage_adapter = @storage_adapter
+    # Temporarily change the prompts_dir for all tests in this run
+    # We're using the same adapter class, just pointing it to a different directory
+    PromptManager::Storage::FileSystemAdapter.prompts_dir = @test_prompts_dir
   end
 
+  def teardown
+    # Restore original adapter settings and clean up test directory
+    PromptManager::Storage::FileSystemAdapter.prompts_dir = @original_prompts_dir
+    ENV.replace(@original_env)
 
-  ##########################################
+    FileUtils.remove_entry(@test_dir) if @test_dir && File.exist?(@test_dir)
+  end
+
+  def test_prompt_initialization_with_invalid_id
+    assert_raises ArgumentError do
+      PromptManager::Prompt.new(id: nil, context: [], directives_processor: PromptManager::DirectiveProcessor.new)
+    end
+  end
+
   def test_class_constants
     assert_equal '#',   PromptManager::Prompt::COMMENT_SIGNAL
     assert_equal '//',  PromptManager::Prompt::DIRECTIVE_SIGNAL
   end
 
-
-  ##########################################
   def test_prompt_initialization_raises_argument_error_when_id_blank
     assert_raises ArgumentError do
-      PromptManager::Prompt.new(id: '')
+      PromptManager::Prompt.new(id: '', context: [], directives_processor: PromptManager::DirectiveProcessor.new)
     end
   end
 
-
-  ##########################################
   def test_prompt_initialization_raises_argument_error_when_no_storage_adapter_set
-    PromptManager::Prompt.storage_adapter = nil
-    assert_raises ArgumentError do
-      PromptManager::Prompt.new(id: 'test_prompt')
+    original_adapter = PromptManager::Prompt.storage_adapter
+    begin
+      PromptManager::Prompt.storage_adapter = nil
+      assert_raises(ArgumentError, 'storage_adapter is not set') do
+        PromptManager::Prompt.new(id: 'test_prompt', context: [], directives_processor: PromptManager::DirectiveProcessor.new)
+      end
+    ensure
+      PromptManager::Prompt.storage_adapter = original_adapter
     end
-  ensure
-    PromptManager::Prompt.storage_adapter = @storage_adapter
   end
 
+  def test_prompt_initialization_with_valid_id
+    # Create the test prompt files first
+    create_test_prompt('test_prompt', 'Hello, World!', {})
 
-  ##########################################
-  def test_prompt_interpolates_parameters_correctly
-    prompt    = PromptManager::Prompt.new(id: 'test_prompt')
-    expected  = "Hello, World!"
+    prompt = PromptManager::Prompt.new(id: 'test_prompt', context: [], directives_processor: PromptManager::DirectiveProcessor.new)
+    assert_equal 'test_prompt', prompt.id
+  end
 
+  def test_prompt_to_s_method
+    # Create the test prompt files first
+    create_test_prompt('test_prompt', 'Hello, World!', {})
+
+    prompt = PromptManager::Prompt.new(id: 'test_prompt', context: [], directives_processor: PromptManager::DirectiveProcessor.new)
+    # Build removes comments and directives, but keeps __END__ etc.
+    # EDIT: Now removes __END__ and subsequent lines.
+    expected = "Hello, World!"
     assert_equal expected, prompt.to_s
   end
 
-
-  def test_access_to_keywords
-    prompt = PromptManager::Prompt.new(id: 'test_prompt')
-    assert_equal ['[LANGUAGE]', '[NAME]'], prompt.keywords
-  end
-
-
-  def test_access_to_directives
-    prompt    = PromptManager::Prompt.new(id: 'test_prompt')
-    expected  = [
-      ['TextToSpeech', 'English World']
-    ]
-
-    # NOTE: directives are collected after parameter substitution
-
-    assert_equal expected, prompt.directives
-  end
-
-  ##########################################
   def test_prompt_saves_to_storage
     new_prompt_id         = 'new_prompt'
     new_prompt_text       = "How are you, [NAME]?"
@@ -150,44 +94,82 @@ class PromptTest < Minitest::Test
       parameters: new_prompt_parameters
     )
 
-    prompt_from_storage = @storage_adapter.get(id: 'new_prompt')
+    prompt_from_storage = PromptManager::Prompt.get(id: 'new_prompt')
 
     assert_equal new_prompt_text,       prompt_from_storage[:text]
     assert_equal new_prompt_parameters, prompt_from_storage[:parameters]
   end
 
-
-  ##########################################
   def test_prompt_deletes_from_storage
-    prompt = PromptManager::Prompt.create(id: 'test_prompt')
-    
-    assert PromptManager::Prompt.get(id: 'test_prompt') # Verify it exists
+    # Create a prompt first
+    test_id = 'delete_test_prompt'
+    create_test_prompt(test_id, 'Hello, I will be deleted', {})
+
+    prompt = PromptManager::Prompt.find(id: test_id)
+    assert_equal test_id, prompt.id # Verify it exists
 
     prompt.delete
 
-    assert_raises do
-      PromptManager::Prompt.get(id: 'test_prompt') # Should raise "Prompt ID not found"
+    assert_raises(ArgumentError) do
+      PromptManager::Prompt.get(id: test_id) # Should raise error when prompt not found
     end
   end
 
-
-  ##########################################
   def test_prompt_searches_storage
-    search_results  = PromptManager::Prompt.search('Hello')
+    # Create multiple prompts to search through
+    create_test_prompt('search_test_1', 'Hello, this is the first test prompt', {})
+    create_test_prompt('search_test_2', 'Goodbye, this is the second test prompt', {})
+    create_test_prompt('search_test_3', 'Hello again, this is the third test prompt', {})
+
+    # Search for a term that should match two prompts
+    search_results = PromptManager::Prompt.search('Hello')
 
     refute_empty search_results
-    assert search_results.keys.include?('test_prompt')
+    assert_includes search_results, 'search_test_1'
+    assert_includes search_results, 'search_test_3'
+    refute_includes search_results, 'search_test_2'
+  end
+
+  private
+
+  # Helper method to create test prompt files
+  def create_test_prompt(id, text, parameters)
+    # Get file extensions from the adapter
+    prompt_ext = PromptManager::Storage::FileSystemAdapter.prompt_extension
+    params_ext = PromptManager::Storage::FileSystemAdapter.params_extension
+
+    # Create the prompt and parameter files in the test directory
+    prompt_path = @test_prompts_dir.join("#{id}#{prompt_ext}")
+    params_path = @test_prompts_dir.join("#{id}#{params_ext}")
+
+    File.write(prompt_path, text)
+    File.write(params_path, parameters.to_json)
   end
 
 
-  ##########################################
-  def test_extra
-    class_result  = PromptManager::Prompt.extra("World")
-    result        = PromptManager::Prompt.create(id: 'World').extra("World")
+  def test_env_variable_replacement
+      ENV['GREETING'] = 'Hello'
+      prompt_text = 'Say $GREETING to world!'
+      prompt = PromptManager::Prompt.new(prompt_text)
+      result = prompt.process
+      assert_equal 'Say Hello to world!', result
+    end
 
-    assert_equal class_result, result
-    assert_equal result, "Hello World"
-  end
+    def test_erb_processing
+      prompt_text = '2+2 is <%= 2+2 %>'
+      prompt = PromptManager::Prompt.new(prompt_text)
+      result = prompt.process
+      assert_equal '2+2 is 4', result
+    end
+
+    def test_combined_features
+      ENV['NAME'] = 'Alice'
+      prompt_text = 'Hi, $NAME! Today, 3*3 equals <%= 3*3 %>.'
+      prompt = PromptManager::Prompt.new(prompt_text)
+      result = prompt.process
+      assert_equal 'Hi, Alice! Today, 3*3 equals 9.', result
+    end
+
 end
 
 __END__

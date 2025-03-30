@@ -9,6 +9,8 @@ Manage the parameterized prompts (text) used in generative AI (aka chatGPT, Open
 
 ## Table of Contents
 
+- [PromptManager](#promptmanager)
+  - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Usage](#usage)
   - [Overview](#overview)
@@ -16,15 +18,15 @@ Manage the parameterized prompts (text) used in generative AI (aka chatGPT, Open
       - [What does a keyword look like?](#what-does-a-keyword-look-like)
       - [All about directives](#all-about-directives)
         - [Example Prompt with Directives](#example-prompt-with-directives)
-        - [Accessing Directives](#accessing-directives)
+        - [Accessing Directives and Setting Parameter Values](#accessing-directives-and-setting-parameter-values)
         - [Dynamic Directives](#dynamic-directives)
         - [Executing Directives](#executing-directives)
       - [Comments Are Ignored](#comments-are-ignored)
   - [Storage Adapters](#storage-adapters)
     - [FileSystemAdapter](#filesystemadapter)
       - [Configuration](#configuration)
-        - [prompts_dir](#prompts_dir)
-        - [search_proc](#search_proc)
+        - [prompts\_dir](#prompts_dir)
+        - [search\_proc](#search_proc)
         - [File Extensions](#file-extensions)
       - [Example Prompt Text File](#example-prompt-text-file)
       - [Example Prompt Parameters JSON File](#example-prompt-parameters-json-file)
@@ -32,15 +34,21 @@ Manage the parameterized prompts (text) used in generative AI (aka chatGPT, Open
     - [ActiveRecordAdapter](#activerecordadapter)
       - [Configuration](#configuration-1)
         - [model](#model)
-        - [id_column](#id_column)
-        - [text_column](#text_column)
-        - [parameters_column](#parameters_column)
+        - [id\_column](#id_column)
+        - [text\_column](#text_column)
+        - [parameters\_column](#parameters_column)
     - [Other Potential Storage Adapters](#other-potential-storage-adapters)
   - [Development](#development)
   - [Contributing](#contributing)
   - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
+### Latest Capabilities
+- **Directive Processing:** Processes directives such as `//include` (aliased as `//import`) with loop protection.
+- **ERB Processing:** Supports ERB templating within prompts.
+- **Environment Variable Embedding:** Automatically substitutes system environment variables in prompts.
+- **Improved Parameter Handling:** Refactored to maintain a history of parameter values.
+- **ActiveRecord Adapter:** Facilitates storing and retrieving prompts via an ActiveRecord model.
 
 ## Installation
 
@@ -60,11 +68,19 @@ See also [examples/using_search_proc.rb](examples/using_search_proc.rb)
 
 ## Overview
 
+### Prompt Initialization Options
+- `id`: A String name for the prompt.
+- `context`: An Array for additional context.
+- `directives_processor`: An instance of PromptManager::DirectiveProcessor (default), can be customized.
+- `external_binding`: A Ruby binding to be used for ERB processing.
+- `erb_flag`: Boolean flag to enable ERB processing in the prompt text.
+- `envar_flag`: Boolean flag to enable environment variable substitution in the prompt text.
+
 The `prompt_manager` gem provides functionality to manage prompts that have keywords and directives for use with generative AI processes.
 
 ### Generative AI (gen-AI)
 
-Gen-AI deals with the conversion (some would say execution) of a human natural language text (the "prompt") into somthing else using what are known as large language models (LLM) such as those available from OpenAI.  A parameterized prompt is one in which there are embedded keywords (parameters) which are place holders for other text to be inserted into the prompt.
+Gen-AI deals with the conversion (some would say execution) of a human natural language text (the "prompt") into something else using what are known as large language models (LLM) such as those available from OpenAI.  A parameterized prompt is one in which there are embedded keywords (parameters) which are place holders for other text to be inserted into the prompt.
 
 The prompt_manager uses a regular expression to identify these keywords within the prompt. It uses the keywords as keys in a `parameters` Hash which is stored with the prompt text in a serialized form - for example as JSON.
 
@@ -84,7 +100,7 @@ The regex must include capturing parentheses () to extract the keyword. The defa
 
 A directive is a line in the prompt text that starts with the two characters '//' - slash slash - just like in the old days of IBM JCL - Job Control Language.  A prompt can have zero or more directives.  Directives can have parameters and can make use of keywords.
 
-The `prompt_manager` only collects directives.  It extracts keywords from directive lines and provides the substitution of those keywords with other text just like it does for the prompt.  
+The `prompt_manager` only collects directives.  It extracts keywords from directive lines and provides the substitution of those keywords with other text just like it does for the prompt.
 
 ##### Example Prompt with Directives
 
@@ -102,20 +118,30 @@ __END__
 Computers will never replace Frank Sinatra
 ```
 
-##### Accessing Directives
+##### Accessing Directives and Setting Parameter Values
 
-Getting directives from a prompt is as easy as getting the kewyords:
+Getting directives and keywords from a prompt is straightforward:
 
 ```ruby
-prompt = PromptManager::Prompt.new(...)
-prompt.keywords   #=> an Array
+prompt = PromptManager::Prompt.new(id: 'some_id')
+prompt.keywords   #=> an Array of keywords found in the prompt text
 prompt.directives #=> an Array of entries like: ['directive', 'parameters']
 
+# Or directly update the parameters hash
+prompt.parameters = {
+  "[KEYWORD1]" => "value1",
+  "[KEYWORD2]" => "value2"
+}
+
+# After setting parameter values, call to_s to build the final prompt
 # to_s builds the prompt by substituting
-# values for keywords amd removing comments.
+# values for keywords and removing comments.
 # The resulting text contains directives and
 # prompt text ready for the LLM process.
-puts prompt.to_s  
+final_text = prompt.to_s
+
+# To persist any parameter changes to storage
+prompt.save
 ```
 
 The entries in the Array returned by the `prompt.directives` method is in the order that the directives were defined within the prompt.  Each entry has two elements:
@@ -138,7 +164,7 @@ Since directies are collected after the keywords in the prompt have been substit
 
 The `prompt_manager` gem only collects directives.  Executing those directives is left up to some down stream process.  Here are some ideas on how directives could be used in prompt downstream process:
 
-- "//model gpt-5" could be used to set the LLM model to be used for a specific prompt.  
+- "//model gpt-5" could be used to set the LLM model to be used for a specific prompt.
 - "//backend mods" could be used to set the backend prompt processor on the command line to be the `mods` utility.
 - "//include path_to_file" could be used to add the contents of a file to the prompt.
 - "//chat" could be used to send the prompts and then start up a chat session about the prompt and its response.
@@ -172,8 +198,8 @@ Use a `config` block to establish the configuration for the class.
 
 ```ruby
 PromptManager::Storage::FileSystemAdapter.config do |o|
-  o.prompts_dir       = "path/to/prompts_directory" 
-  o.search_proc       = nil     # default 
+  o.prompts_dir       = "path/to/prompts_directory"
+  o.search_proc       = nil     # default
   o.prompt_extension  = '.txt'  # default
   o.params_extension  = '.json' # default
 end
@@ -183,7 +209,7 @@ The `config` block returns `self` so that means you can do this to setup the sto
 
 ```ruby
 PromptManager::Prompt
-  .storage_adapter = 
+  .storage_adapter =
     PromptManager::Storage::FileSystemAdapter
       .config do |config|
         config.prompts_dir = 'path/to/prompts_dir'
@@ -198,7 +224,7 @@ An `ArgumentError` will be raised when `prompts_dir` does not exist or if it is 
 
 ##### search_proc
 
-The default for `search_proc` is nil which means that the search will be preformed by a default `search` method which is basically reading all the prompt files to see which ones contain the search term. It will return an Array of prompt IDs for each prompt file found that contains the search term.  Its up to the application to select which returned prompt ID to use. 
+The default for `search_proc` is nil which means that the search will be preformed by a default `search` method which is basically reading all the prompt files to see which ones contain the search term. It will return an Array of prompt IDs for each prompt file found that contains the search term.  Its up to the application to select which returned prompt ID to use.
 
 There are faster ways to search and select files.  For example there are specialized search and selection utilities that are available for the command line. The `examples` directory contains a `bash` script named `rgfzf` that uses `rg` (aka `ripgrep`) to do the searching and `fzf` to do the selecting.
 
@@ -273,7 +299,7 @@ The `PromptManager::Prompt` class expects an instance of a storage adapter class
 
 ```ruby
 PromptManager::Prompt
-  .storage_adapter = 
+  .storage_adapter =
     PromptManager::Storage::ActiveRecordAdapter.config do |config|
       config.model              = DbPromptModel # any ActiveRecord::Base model
       config.id_column          = :prompt_name
