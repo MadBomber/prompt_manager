@@ -181,14 +181,28 @@ class PromptManager::Storage::FileSystemAdapter
 
   # Retrieve parameter values by its id
   def parameter_values(prompt_id)
-    params_path = file_path(prompt_id, params_extension)
+    # Parse parameters from the prompt text
+    prompt_text_content = prompt_text(prompt_id)
+    parsed_parameters = parse_parameters_from_text(prompt_text_content)
 
-    if params_path.exist?
-      parms_content = read_file(params_path)
-      deserialize(parms_content)
-    else
-      {}
+    # Load parameters from JSON file if it exists
+    params_path = file_path(prompt_id, params_extension)
+    file_parameters = params_path.exist? ? deserialize(read_file(params_path)) : {}
+
+    # Merge parsed parameters with file parameters
+    parsed_parameters.merge(file_parameters)
+  end
+
+  # Parse parameters from the prompt text
+  def parse_parameters_from_text(text)
+    parameters = {}
+
+    text.scan(PromptManager::Prompt.parameter_regex).each do |match|
+      variable_name = match.shift
+      parameters[variable_name] = [] unless parameters.key?(variable_name)
     end
+
+    parameters
   end
 
   # Save prompt text and parameter values to corresponding files
