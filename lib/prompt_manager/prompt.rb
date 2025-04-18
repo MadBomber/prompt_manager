@@ -114,11 +114,34 @@ class PromptManager::Prompt
 
   def db = self.class.storage_adapter
 
+
   def remove_comments
-    lines = @text.split("\n")
+    lines = @text.gsub(/<!--.*?-->/m, '').lines(chomp: true)
+    markdown_block_depth = 0
+    filtered_lines = []
     end_index = lines.index("__END__") || lines.size
-    lines[0...end_index].reject { |line| line.strip.start_with?(COMMENT_SIGNAL) }.join("\n")
+
+    lines[0...end_index].each do |line|
+      trimmed_line = line.strip
+
+      if trimmed_line.start_with?('```')
+        if trimmed_line == '```markdown'
+          markdown_block_depth += 1
+        elsif markdown_block_depth > 0
+          markdown_block_depth -= 1
+        end
+      end
+
+      if markdown_block_depth > 0 || !trimmed_line.start_with?(COMMENT_SIGNAL)
+        filtered_lines << line
+      end
+    end
+
+    filtered_lines.join("\n")
   end
+
+
+
 
   def substitute_values(input_text, values_hash)
     if values_hash.is_a?(Hash) && !values_hash.empty?
