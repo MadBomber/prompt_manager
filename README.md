@@ -47,7 +47,7 @@ Manage the parameterized prompts (text) used in generative AI (aka chatGPT, Open
 - **Directive Processing:** Processes directives such as `//include` (aliased as `//import`) with loop protection.
 - **ERB Processing:** Supports ERB templating within prompts.
 - **Environment Variable Embedding:** Automatically substitutes system environment variables in prompts.
-- **Improved Parameter Handling:** Refactored to maintain a history of parameter values.
+- **Improved Parameter Handling:** Refactored to maintain a history of parameter values and added error handling for parameter substitution.
 - **ActiveRecord Adapter:** Facilitates storing and retrieving prompts via an ActiveRecord model.
 
 ## Installation

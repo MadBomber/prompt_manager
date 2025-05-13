@@ -17,8 +17,12 @@ module PromptManager
   # Base error class for all PromptManager-specific errors
   class Error < StandardError; end
 
-  # TODO: Add additional module-specific error classes such as:
-  # - StorageError - For issues with storing or retrieving prompts
-  # - ParameterError - For issues with parameter substitution
-  # - ConfigurationError - For setup and configuration issues
+  # Error class for storage-related issues
+  class StorageError < Error; end
+
+  # Error class for parameter substitution issues
+  class ParameterError < Error; end
+
+  # Error class for configuration issues
+  class ConfigurationError < Error; end
 end

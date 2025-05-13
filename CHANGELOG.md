@@ -1,5 +1,10 @@
 ## Unreleased
 
+### [0.5.3] = 2025-05-13
+- Updated documentation and versioning.
+- Added new error classes for better error handling.
+- Improved parameter handling and directive processing.
+
 ## Released
 ### [0.5.0] = 2025-03-29
 - Major refactoring of to improve processing of parameters and directives.
