@@ -1,32 +1,33 @@
 # PromptManager
 
-Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, _et.al._) using storage adapters such as FileSystemAdapter, SqliteAdapter and ActiveRecordAdapter.
+Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, _et.al._) using storage adapters such as FileSystemAdapter and ActiveRecordAdapter.
+
+**Current Version**: 0.5.3
 
 **Breaking Change** in version 0.3.0 - The value of the parameters Hash for a keyword is now an Array instead of a single value.  The last value in the Array is always the most recent value used for the given keyword.  This was done to support the use of a Readline::History object editing in the [aia](https://github.com/MadBomber/aia) CLI tool
-
-
+### Latest Capabilities
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
 ## Table of Contents
 
-- [PromptManager](#promptmanager)
-  - [Table of Contents](#table-of-contents)
+    - [Latest Capabilities](#latest-capabilities)
   - [Installation](#installation)
   - [Usage](#usage)
   - [Overview](#overview)
+    - [Prompt Initialization Options](#prompt-initialization-options)
     - [Generative AI (gen-AI)](#generative-ai-gen-ai)
       - [What does a keyword look like?](#what-does-a-keyword-look-like)
       - [All about directives](#all-about-directives)
         - [Example Prompt with Directives](#example-prompt-with-directives)
-        - [Accessing Directives and Setting Parameter Values](#accessing-directives-and-setting-parameter-values)
+        - [Accessing and Setting Parameter Values](#accessing-and-setting-parameter-values)
         - [Dynamic Directives](#dynamic-directives)
         - [Executing Directives](#executing-directives)
       - [Comments Are Ignored](#comments-are-ignored)
   - [Storage Adapters](#storage-adapters)
     - [FileSystemAdapter](#filesystemadapter)
       - [Configuration](#configuration)
-        - [prompts\_dir](#prompts_dir)
-        - [search\_proc](#search_proc)
+        - [prompts_dir](#prompts_dir)
+        - [search_proc](#search_proc)
         - [File Extensions](#file-extensions)
       - [Example Prompt Text File](#example-prompt-text-file)
       - [Example Prompt Parameters JSON File](#example-prompt-parameters-json-file)
@@ -34,21 +35,24 @@ Manage the parameterized prompts (text) used in generative AI (aka chatGPT, Open
     - [ActiveRecordAdapter](#activerecordadapter)
       - [Configuration](#configuration-1)
         - [model](#model)
-        - [id\_column](#id_column)
-        - [text\_column](#text_column)
-        - [parameters\_column](#parameters_column)
+        - [id_column](#id_column)
+        - [text_column](#text_column)
+        - [parameters_column](#parameters_column)
     - [Other Potential Storage Adapters](#other-potential-storage-adapters)
   - [Development](#development)
   - [Contributing](#contributing)
   - [License](#license)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
-### Latest Capabilities
+
+
 - **Directive Processing:** Processes directives such as `//include` (aliased as `//import`) with loop protection.
 - **ERB Processing:** Supports ERB templating within prompts.
 - **Environment Variable Embedding:** Automatically substitutes system environment variables in prompts.
 - **Improved Parameter Handling:** Refactored to maintain a history of parameter values and added error handling for parameter substitution.
 - **ActiveRecord Adapter:** Facilitates storing and retrieving prompts via an ActiveRecord model.
+- **Enhanced Error Handling:** Added specific error classes for better error handling, including StorageError, ParameterError, and ConfigurationError.
+- **Customizable Keyword Pattern:** Ability to customize the pattern used for detecting keywords in prompts.
 
 ## Installation
 
@@ -100,13 +104,13 @@ The regex must include capturing parentheses () to extract the keyword. The defa
 
 A directive is a line in the prompt text that starts with the two characters '//' - slash slash - just like in the old days of IBM JCL - Job Control Language.  A prompt can have zero or more directives.  Directives can have parameters and can make use of keywords.
 
-The `prompt_manager` only collects directives.  It extracts keywords from directive lines and provides the substitution of those keywords with other text just like it does for the prompt.
+The `prompt_manager` collects directives and provides a DirectiveProcessor class that currently implements the `//include` directive (also aliased as `//import`), which allows including content from other files with loop protection. It extracts keywords from directive lines and provides the substitution of those keywords with other text just like it does for the prompt.
 
 ##### Example Prompt with Directives
 
 Here is an example prompt text file with comments, directives and keywords:
 
-```
+```text
 # prompts/sing_a_song.txt
 # Desc: Has the computer sing a song
 
@@ -118,42 +122,36 @@ __END__
 Computers will never replace Frank Sinatra
 ```
 
-##### Accessing Directives and Setting Parameter Values
+##### Accessing and Setting Parameter Values
 
-Getting directives and keywords from a prompt is straightforward:
+Getting and setting keywords from a prompt is straightforward:
 
 ```ruby
 prompt = PromptManager::Prompt.new(id: 'some_id')
 prompt.keywords   #=> an Array of keywords found in the prompt text
-prompt.directives #=> an Array of entries like: ['directive', 'parameters']
 
-# Or directly update the parameters hash
+# Update the parameters hash with keyword values
 prompt.parameters = {
   "[KEYWORD1]" => "value1",
   "[KEYWORD2]" => "value2"
 }
 
-# After setting parameter values, call to_s to build the final prompt
-# to_s builds the prompt by substituting
-# values for keywords and removing comments.
-# The resulting text contains directives and
-# prompt text ready for the LLM process.
+# Build the final prompt text
+# This substitutes values for keywords and processes directives
+# Comments are removed and the result is ready for the LLM
 final_text = prompt.to_s
 
-# To persist any parameter changes to storage
+# Save any parameter changes back to storage
 prompt.save
 ```
 
-The entries in the Array returned by the `prompt.directives` method is in the order that the directives were defined within the prompt.  Each entry has two elements:
-
-- directive name (without the // characters)
-- parameter string for the directive
+Internally, directives are stored in a Hash where each key is the full directive line (including the // characters) and the value is the result string from executing that directive. The directives are processed in the order they appear in the prompt text.
 
 ##### Dynamic Directives
 
 Since directies are collected after the keywords in the prompt have been substituted for their values, it is possible to have dynamically generated directives as part of a prompt.  For example:
 
-```
+```text
 //[COMMAND] [OPTIONS]
 # or
 [SOMETHING]
@@ -162,11 +160,12 @@ Since directies are collected after the keywords in the prompt have been substit
 
 ##### Executing Directives
 
-The `prompt_manager` gem only collects directives.  Executing those directives is left up to some down stream process.  Here are some ideas on how directives could be used in prompt downstream process:
+The `prompt_manager` gem provides a basic DirectiveProcessor class that handles the `//include` directive (aliased as `//import`), which adds the contents of a file to the prompt with loop protection to prevent circular includes.
+
+Additionally, you can extend with your own directives or downstream processes. Here are some ideas on how directives could be used in prompt downstream process:
 
 - "//model gpt-5" could be used to set the LLM model to be used for a specific prompt.
 - "//backend mods" could be used to set the backend prompt processor on the command line to be the `mods` utility.
-- "//include path_to_file" could be used to add the contents of a file to the prompt.
 - "//chat" could be used to send the prompts and then start up a chat session about the prompt and its response.
 
 Its all up to how your application wants to support directives or not.
@@ -180,7 +179,7 @@ The gem also ignores blank lines.
 
 ## Storage Adapters
 
-A storage adapter is a class instance that ties the `PromptManager::Prompt` class to a storage facility that holds the actual prompts. Currently there are 3 storage adapters planned for implementation.
+A storage adapter is a class instance that ties the `PromptManager::Prompt` class to a storage facility that holds the actual prompts. Currently there are 2 storage adapters implemented: FileSystemAdapter and ActiveRecordAdapter.
 
 The `PromptManager::Prompt` to support a small set of methods.  A storage adapter can provide "extra" class or instance methods that can be used through the Prompt class.  See the `test/prompt_manager/prompt_test.rb` for guidance on creating a new storage adapter.
 
@@ -274,8 +273,9 @@ The last value in the keyword's Array is the most recent value used for that key
 #### Extra Functionality
 
 The `FileSystemAdapter` adds two new methods for use by the `Prompt` class:
-* list - returns an Array of prompt IDs
-* path and path(prompt_id) - returns a `Pathname` object to the prompt file
+
+- list - returns an Array of prompt IDs
+- path and path(prompt_id) - returns a `Pathname` object to the prompt file
 
 Use the `path(prompt_id)` form against the `Prompt` class
 Use `prompt.path` when you have an instance of a `Prompt`
@@ -322,13 +322,13 @@ The `parameters_column` contains the name of the column that contains the parame
 
 TODO: fix the kludge so that any serialization can be used.
 
-
 ### Other Potential Storage Adapters
 
-There are many possibilities to example this plugin concept of the storage adapter.  Here are some for consideration:
+There are many possibilities to expand this plugin concept of the storage adapter.  Here are some for consideration:
 
-* RedisAdapter - Not sure; isn't redis more temporary oriented?
-* ApiAdapter - use some end-point to CRUD a prompt
+- RedisAdapter - For caching prompts or temporary storage
+- ApiAdapter - Use some end-point to CRUD a prompt
+- CloudStorageAdapter - Store prompts in cloud storage services
 
 ## Development
 
@@ -336,7 +336,7 @@ Looking for feedback and contributors to enhance the capability of prompt_manage
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/MadBomber/prompt_manager.
+Bug reports and pull requests are welcome on GitHub at [https://github.com/MadBomber/prompt_manager](https://github.com/MadBomber/prompt_manager).
 
 ## License
 

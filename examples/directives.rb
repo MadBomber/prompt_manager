@@ -56,28 +56,25 @@ end
 PromptManager::Prompt.storage_adapter = PromptManager::Storage::FileSystemAdapter.new
 
 # Use {parameter name} brackets to define a parameter
-PromptManager::Prompt.parameter_regex =  /\{[A-Za-z _|]+\}/ 
+# Note: must include capturing parentheses to make scan return arrays
+PromptManager::Prompt.parameter_regex =  /(\{[A-Za-z _|]+\})/ 
 
 # Retrieve a prompt
-prompt = PromptManager::Prompt.get(id: 'directive_example')
+# Note: The 'get' method returns a Hash, not a Prompt object
+# Use 'find' instead to get a Prompt object with methods
+prompt = PromptManager::Prompt.find(id: 'directive_example')
 
 # Shows prompt without comments or directives
 # It still has its parameter placeholders
 puts prompt
 concept_break
 
-puts "Directives in the prompt:"
-ap prompt.directives
+puts "Directives are processed automatically when you call to_s on a prompt"
+puts "The DirectiveProcessor class handles directives like //include"
+puts "You don't need to process them manually"
 
-puts "Processing directives ..."
-prompt.directives.each do |entry|
-  if MyDirectives.respond_to? entry.first.to_sym
-    ruby = "MyDirectives.#{entry.first}(#{entry.last.gsub(' ', ',')})"
-    eval "#{ruby}"
-  else
-    puts "ERROR: there is no method: #{entry.first}"
-  end
-end
+puts "Custom directive processing can be done by creating a custom DirectiveProcessor"
+puts "and setting it when creating a Prompt instance:"
 
 concept_break
 
@@ -87,12 +84,19 @@ puts "Parameters in the prompt:"
 ap prompt.parameters
 puts "-"*16
 
-puts "keywords:"
-ap prompt.keywords
+# Extract parameters from the prompt text using the parameter_regex
+puts "Parameters identified in the prompt text:"
+# With a capturing group, scan returns an array of arrays, so we need to flatten
+prompt_params = prompt.text.scan(PromptManager::Prompt.parameter_regex).flatten
+ap prompt_params
 concept_break
 
-prompt.parameters['{language}'] << 'French'
+# Set a parameter value (should be a string, not appending to an array)
+prompt.parameters['{language}'] = 'French'
 
 puts "After Substitution"
 puts prompt
+
+# Save the updated parameters
+prompt.save
 

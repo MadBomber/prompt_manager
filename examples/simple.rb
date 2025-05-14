@@ -40,8 +40,10 @@ end
 PromptManager::Prompt.storage_adapter = PromptManager::Storage::FileSystemAdapter.new
 
 # Get a prompt
+# Note: The 'get' method returns a Hash, not a Prompt object
+# Use 'find' instead to get a Prompt object with methods
 
-todo = PromptManager::Prompt.get(id: 'todo')
+todo = PromptManager::Prompt.find(id: 'todo')
 
 # This sequence simulates presenting each of the previously
 # used values for each keyword to the user to accept or
@@ -55,10 +57,9 @@ todo = PromptManager::Prompt.get(id: 'todo')
 
 todo.parameters["[KEYWORD_AKA_TODO]"] = "TODO"
 
-# When the parameter values change, the prompt must 
-# must be rebuilt using the build method.
-
-todo.build 
+# When the parameter values change, the prompt must
+# be saved to persist the changes
+todo.save
 
 
 puts <<~EOS
@@ -98,7 +99,7 @@ puts <<~EOS
 
 EOS
 
-magic = PromptManager::Prompt.get( id: 'toy/8-ball' )
+magic = PromptManager::Prompt.find(id: 'toy/8-ball')
 
 puts "The magic PROMPT is:"
 puts magic
@@ -110,9 +111,9 @@ puts "="*64
 
 puts <<~EOS
 
-  The FileSystemAdapter also adds two new methods to the Prompt class:
+  The FileSystemAdapter also adds two new class methods to the Prompt class:
 
-    list - provides an Array of pompt IDs
+    list - provides an Array of prompt IDs
     path(prompt_id) - Returns a Pathname object to the prompt file
 
 EOS
@@ -126,7 +127,7 @@ puts <<~EOS
 
   And the path to the "toy/8-ball" prompt file is:
 
-  #{magic.path}
+  #{PromptManager::Prompt.path('toy/8-ball')}
 
   Use "your_prompt.path" for when you want to do something with the
   the prompt file like send it to a text editor.

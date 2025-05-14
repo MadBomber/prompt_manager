@@ -1,11 +1,13 @@
 ## Unreleased
 
-### [0.5.3] = 2025-05-13
+## Released
+
+### [0.5.3] = 2025-05-14
+- fixed issue were directives were not getting their content added to the prompt text
 - Updated documentation and versioning.
 - Added new error classes for better error handling.
 - Improved parameter handling and directive processing.
 
-## Released
 ### [0.5.0] = 2025-03-29
 - Major refactoring of to improve processing of parameters and directives.
 - Added PromptManager::DirectiveProcessor as an example of how to implement custom directives.
