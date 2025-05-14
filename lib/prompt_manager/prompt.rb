@@ -146,7 +146,7 @@ class PromptManager::Prompt
   def substitute_values(input_text, values_hash)
     if values_hash.is_a?(Hash) && !values_hash.empty?
       values_hash.each do |key, value|
-        input_text = input_text.gsub(key, value.last)
+        input_text = input_text.gsub(key, value)
       end
     end
     input_text
