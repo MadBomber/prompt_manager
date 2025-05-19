@@ -153,10 +153,10 @@ class PromptManager::Prompt
   end
 
   def erb?      = @erb_flag
-  def envvar?   = @envvar_flag
+  def envar?    = @envar_flag
 
   def substitute_env_vars(input_text)
-    return input_text unless envvar?
+    return input_text unless envar?
 
     input_text.gsub(/\$(\w+)|\$\{(\w+)\}/) do |match|
       env_var = $1 || $2

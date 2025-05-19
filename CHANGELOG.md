@@ -1,6 +1,8 @@
 ## Unreleased
 
 ## Released
+### [0.5.4] = 2025-05-18
+- fixed typo in the Prompt class envvar should have been envar which prevented shell integration from taking place.
 
 ### [0.5.3] = 2025-05-14
 - fixed issue were directives were not getting their content added to the prompt text
