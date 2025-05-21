@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    prompt_manager (0.5.3)
+    prompt_manager (0.5.5)
 
 GEM
   remote: https://rubygems.org/

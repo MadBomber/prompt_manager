@@ -1,6 +1,9 @@
 ## Unreleased
 
 ## Released
+### [0.5.5] = 2025-05-21
+- fixed bug in parameter substitution when value is an Array now uses last entry
+
 ### [0.5.4] = 2025-05-18
 - fixed typo in the Prompt class envvar should have been envar which prevented shell integration from taking place.
 
