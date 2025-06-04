@@ -159,6 +159,21 @@ class PromptManager::Prompt
   def substitute_env_vars(input_text)
     return input_text unless envar?
 
+    # First, handle shell command substitution $(command)
+    input_text = input_text.gsub(/\$\(([^\)]+)\)/) do |match|
+      cmd = $1.strip
+      begin
+        # Execute the shell command and capture its output
+        result = `#{cmd}`.chomp
+        result.empty? ? match : result
+      rescue => e
+        # If command execution fails, log the error and keep the original text
+        warn "Shell command execution failed: #{e.message}"
+        match
+      end
+    end
+
+    # Then handle environment variables as before
     input_text.gsub(/\$(\w+)|\$\{(\w+)\}/) do |match|
       env_var = $1 || $2
       ENV[env_var] || match

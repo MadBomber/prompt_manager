@@ -1,6 +1,9 @@
 ## Unreleased
 
 ## Released
+### [0.5.6] = 2025-06-04
+- fixed a problem where shell integration was not working correctly for $(shell command)
+
 ### [0.5.5] = 2025-05-21
 - fixed bug in parameter substitution when value is an Array now uses last entry
 
