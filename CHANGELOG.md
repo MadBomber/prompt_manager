@@ -1,6 +1,10 @@
 ## Unreleased
 
 ## Released
+### [0.5.7] = 2025-06-25
+- fixed a problem when the value of a parameter is an empty array
+- fixed a failing test
+
 ### [0.5.6] = 2025-06-04
 - fixed a problem where shell integration was not working correctly for $(shell command)
 

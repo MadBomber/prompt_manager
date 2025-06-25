@@ -147,7 +147,7 @@ class PromptManager::Prompt
     if values_hash.is_a?(Hash) && !values_hash.empty?
       values_hash.each do |key, value|
         value = value.last if value.is_a?(Array)
-        input_text = input_text.gsub(key, value)
+        input_text = input_text.gsub(key, value.nil? ? '' : value)
       end
     end
     input_text

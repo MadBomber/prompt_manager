@@ -86,7 +86,7 @@ class PromptTest < Minitest::Test
   def test_prompt_saves_to_storage
     new_prompt_id         = 'new_prompt'
     new_prompt_text       = "How are you, [NAME]?"
-    new_prompt_parameters = { 'name' => 'Rubyist' }
+    new_prompt_parameters = { '[NAME]' => ['Rubyist'] }
 
     PromptManager::Prompt.create(
       id:         new_prompt_id,
