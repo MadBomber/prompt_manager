@@ -1,58 +1,69 @@
 # PromptManager
 
-Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, _et.al._) using storage adapters such as FileSystemAdapter and ActiveRecordAdapter.
+<div align="left">
+  <img src="prompt_manager_logo.png" alt="PromptManager - The Enchanted Librarian of AI Prompts" width="1200"
+      align="left" style="margin-right: 20px; margin-bottom: 20px;">
 
-**Current Version**: 0.5.3
+  **Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, _et.al._) using storage adapters such as FileSystemAdapter and ActiveRecordAdapter.**
 
-**Breaking Change** in version 0.3.0 - The value of the parameters Hash for a keyword is now an Array instead of a single value.  The last value in the Array is always the most recent value used for the given keyword.  This was done to support the use of a Readline::History object editing in the [aia](https://github.com/MadBomber/aia) CLI tool
-### Latest Capabilities
+  Like an enchanted librarian organizing floating books of knowledge, PromptManager helps you masterfully orchestrate and organize your AI prompts through wisdom and experience. Each prompt becomes a living entity that can be categorized, parameterized, and interconnected with golden threads of relationships.
+
+  ## Key Features
+
+  - **📚 Multiple Storage Adapters** - FileSystem and ActiveRecord storage with extensible adapter architecture
+  - **🔧 Parameterized Prompts** - Use `[KEYWORDS]` or `{{params}}` for dynamic content substitution
+  - **📋 Directive Processing** - Support for `//include` and `//import` directives with loop protection
+  - **🎨 ERB Integration** - Full ERB support for complex prompt generation
+  - **🌍 Shell Integration** - Full integration supporting scripts and envars
+  - **📖 Inline Documentation** - Support for line and block comments__`
+  - **📊 Parameter History** - Maintains history of parameter values for easy reuse
+  - **⚡ Error Handling** - Comprehensive error classes for better debugging
+  - **🔌 Extensible Architecture** - Easy to extend with custom adapters and processors
+</div>
+
+<div style="clear: both;"></div>
+
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
 ## Table of Contents
 
-    - [Latest Capabilities](#latest-capabilities)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [Overview](#overview)
-    - [Prompt Initialization Options](#prompt-initialization-options)
-    - [Generative AI (gen-AI)](#generative-ai-gen-ai)
-      - [What does a keyword look like?](#what-does-a-keyword-look-like)
-      - [All about directives](#all-about-directives)
-        - [Example Prompt with Directives](#example-prompt-with-directives)
-        - [Accessing and Setting Parameter Values](#accessing-and-setting-parameter-values)
-        - [Dynamic Directives](#dynamic-directives)
-        - [Executing Directives](#executing-directives)
-      - [Comments Are Ignored](#comments-are-ignored)
-  - [Storage Adapters](#storage-adapters)
-    - [FileSystemAdapter](#filesystemadapter)
-      - [Configuration](#configuration)
-        - [prompts_dir](#prompts_dir)
-        - [search_proc](#search_proc)
-        - [File Extensions](#file-extensions)
-      - [Example Prompt Text File](#example-prompt-text-file)
-      - [Example Prompt Parameters JSON File](#example-prompt-parameters-json-file)
-      - [Extra Functionality](#extra-functionality)
-    - [ActiveRecordAdapter](#activerecordadapter)
-      - [Configuration](#configuration-1)
-        - [model](#model)
-        - [id_column](#id_column)
-        - [text_column](#text_column)
-        - [parameters_column](#parameters_column)
-    - [Other Potential Storage Adapters](#other-potential-storage-adapters)
-  - [Development](#development)
-  - [Contributing](#contributing)
-  - [License](#license)
+  * [Installation](#installation)
+  * [Usage](#usage)
+  * [Overview](#overview)
+    * [Prompt Initialization Options](#prompt-initialization-options)
+    * [Generative AI (gen\-AI)](#generative-ai-gen-ai)
+      * [What does a keyword look like?](#what-does-a-keyword-look-like)
+      * [All about directives](#all-about-directives)
+        * [Example Prompt with Directives](#example-prompt-with-directives)
+        * [Accessing and Setting Parameter Values](#accessing-and-setting-parameter-values)
+        * [Dynamic Directives](#dynamic-directives)
+        * [Executing Directives](#executing-directives)
+      * [Comments Are Ignored](#comments-are-ignored)
+  * [Storage Adapters](#storage-adapters)
+    * [FileSystemAdapter](#filesystemadapter)
+      * [Configuration](#configuration)
+        * [prompts\_dir](#prompts_dir)
+        * [search\_proc](#search_proc)
+        * [File Extensions](#file-extensions)
+      * [Example Prompt Text File](#example-prompt-text-file)
+      * [Example Prompt Parameters JSON File](#example-prompt-parameters-json-file)
+      * [Extra Functionality](#extra-functionality)
+    * [ActiveRecordAdapter](#activerecordadapter)
+      * [Configuration](#configuration-1)
+        * [model](#model)
+        * [id\_column](#id_column)
+        * [text\_column](#text_column)
+        * [parameters\_column](#parameters_column)
+    * [Other Potential Storage Adapters](#other-potential-storage-adapters)
+  * [Roadmap](#roadmap)
+    * [v0\.9\.0 \- Modern Prompt Format (Breaking Changes)](#v090---modern-prompt-format-breaking-changes)
+    * [v1\.0\.0 \- Stability Release](#v100---stability-release)
+    * [Future Enhancements](#future-enhancements)
+    * [What's Staying the Same](#whats-staying-the-same)
+  * [Development](#development)
+  * [Contributing](#contributing)
+  * [License](#license)
 
-<!-- Tocer[finish]: Auto-generated, don't remove. -->
-
-
-- **Directive Processing:** Processes directives such as `//include` (aliased as `//import`) with loop protection.
-- **ERB Processing:** Supports ERB templating within prompts.
-- **Environment Variable Embedding:** Automatically substitutes system environment variables in prompts.
-- **Improved Parameter Handling:** Refactored to maintain a history of parameter values and added error handling for parameter substitution.
-- **ActiveRecord Adapter:** Facilitates storing and retrieving prompts via an ActiveRecord model.
-- **Enhanced Error Handling:** Added specific error classes for better error handling, including StorageError, ParameterError, and ConfigurationError.
-- **Customizable Keyword Pattern:** Ability to customize the pattern used for detecting keywords in prompts.
 
 ## Installation
 
@@ -329,6 +340,38 @@ There are many possibilities to expand this plugin concept of the storage adapte
 - RedisAdapter - For caching prompts or temporary storage
 - ApiAdapter - Use some end-point to CRUD a prompt
 - CloudStorageAdapter - Store prompts in cloud storage services
+
+## Roadmap
+
+The PromptManager gem is actively evolving to meet the changing needs of the AI development community. Here's what's coming:
+
+### v0.9.0 - Modern Prompt Format (Breaking Changes)
+- **Markdown Support**: Full `.md` file support with YAML front matter for metadata and LLM configuration
+- **Modern Parameter Syntax**: Support for `{{keyword}}` format alongside existing `[KEYWORD]` format
+- **Enhanced API**: New `set_parameter()` and `get_parameter()` methods for cleaner parameter management
+- **Parameter Validation**: Built-in validation based on parameter specifications in front matter
+- **HTML Comments**: Support for `<!-- comments -->` that are stripped before sending to LLMs
+- **Migration Tools**: Automated conversion from current format to new Markdown-based format
+- **Preserving `__END__`**: Continued support for the `__END__` marker for developer notes
+
+### v1.0.0 - Stability Release
+- Performance optimizations and bug fixes
+- Complete documentation with migration guides
+- Production hardening based on v0.9.0 feedback
+
+### Future Enhancements
+- Additional storage adapters (Redis, S3, PostgreSQL)
+- Enhanced directive system with plugin architecture
+- Prompt versioning and template inheritance
+- Performance optimizations for large prompt collections
+
+### What's Staying the Same
+- JCL-style directives (`//include`, `//import`)
+- JSON serialization as the default
+- Internal parameter storage format for backward compatibility
+- All existing functionality continues to work
+
+For detailed information about planned improvements, implementation strategies, and technical specifications, see our comprehensive [Improvement Plan](improvement_plan.md).
 
 ## Development
 
