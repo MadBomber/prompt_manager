@@ -1,6 +1,10 @@
 ## Unreleased
 
 ## Released
+### [0.5.8] = 2025-09-01
+- fixed issue where removed keywords from prompt text were still being included in parameters if they existed in the JSON file (addresses AIA issue #105)
+- parameters now only include keywords currently present in the prompt text, while preserving historical values for existing keywords
+
 ### [0.5.7] = 2025-06-25
 - fixed a problem when the value of a parameter is an empty array
 - fixed a failing test

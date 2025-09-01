@@ -105,10 +105,10 @@ class FileSystemAdapterTest < Minitest::Test
   ############################################
   def test_get
     # Setup
-    expected_text   = 'This is a prompt.'
+    expected_text   = 'This is a prompt with [SIZE] and [COLOR].'
     expected_params = {
-      '[SIZE]'  => 20,
-      '[COLOR]' => 'blue'
+      '[SIZE]'  => [20],
+      '[COLOR]' => ['blue']
     }
 
     prompt_path = @prompts_dir + (@prompt_id + FSA.prompt_extension)

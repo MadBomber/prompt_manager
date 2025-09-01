@@ -189,8 +189,14 @@ class PromptManager::Storage::FileSystemAdapter
     params_path = file_path(prompt_id, params_extension)
     file_parameters = params_path.exist? ? deserialize(read_file(params_path)) : {}
 
-    # Merge parsed parameters with file parameters
-    parsed_parameters.merge(file_parameters)
+    # Only preserve JSON values for parameters that exist in the current text
+    parsed_parameters.each_key do |key|
+      if file_parameters.key?(key) && file_parameters[key].is_a?(Array)
+        parsed_parameters[key] = file_parameters[key]
+      end
+    end
+    
+    parsed_parameters
   end
 
   # Parse parameters from the prompt text
