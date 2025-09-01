@@ -1,27 +1,35 @@
 # PromptManager
 
+<div align="center" style="background-color: yellow; color: black; padding: 20px; margin: 20px 0; border: 2px solid black; font-size: 48px; font-weight: bold;">
+  ⚠️ CAUTION ⚠️<br />
+  Breaking Changes are Coming<br />
+  See [Roadmap](#roadmap)
+</div>
+<br />
 <div align="center">
   <table>
     <tr>
       <td width="50%">
-        <img src="prompt_manager_logo.png" alt="PromptManager - The Enchanted Librarian of AI Prompts" width="800">
+        <a href="https://madbomber.github.io/blog/" target="_blank">
+          <img src="prompt_manager_logo.png" alt="PromptManager - The Enchanted Librarian of AI Prompts" width="1200">
+        </a>
       </td>
       <td width="50%" valign="top">
-        <p><strong>Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, <em>et.al.</em>) using storage adapters such as FileSystemAdapter and ActiveRecordAdapter.</strong></p>
-
-        <p>Like an enchanted librarian organizing floating books of knowledge, PromptManager helps you masterfully orchestrate and organize your AI prompts through wisdom and experience. Each prompt becomes a living entity that can be categorized, parameterized, and interconnected with golden threads of relationships.</p>
-
+        <strong>Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, <em>et.al.</em>) using storage adapters such as FileSystemAdapter and ActiveRecordAdapter.</strong>
+        <br/><br/>
+        Like an enchanted librarian organizing floating books of knowledge, PromptManager helps you masterfully orchestrate and organize your AI prompts through wisdom and experience. Each prompt becomes a living entity that can be categorized, parameterized, and interconnected with golden threads of relationships.
+        <br/><br/>
         <h3>Key Features</h3>
         <ul>
-          <li><strong>📚 Multiple Storage Adapters</strong> - FileSystem and ActiveRecord storage with extensible adapter architecture</li>
-          <li><strong>🔧 Parameterized Prompts</strong> - Use <code>[KEYWORDS]</code> or <code>{{params}}</code> for dynamic content substitution</li>
-          <li><strong>📋 Directive Processing</strong> - Support for <code>//include</code> and <code>//import</code> directives with loop protection</li>
-          <li><strong>🎨 ERB Integration</strong> - Full ERB support for complex prompt generation</li>
-          <li><strong>🌍 Shell Integration</strong> - Full integration supporting scripts and envars</li>
-          <li><strong>📖 Inline Documentation</strong> - Support for line and block comments</li>
-          <li><strong>📊 Parameter History</strong> - Maintains history of parameter values for easy reuse</li>
-          <li><strong>⚡ Error Handling</strong> - Comprehensive error classes for better debugging</li>
-          <li><strong>🔌 Extensible Architecture</strong> - Easy to extend with custom adapters and processors</li>
+            <li><strong>📚 Multiple Storage Adapters</strong> - FileSystem and ActiveRecord storage with extensible adapter architecture</li>
+            <li><strong>🔧 Parameterized Prompts</strong> - Use <code>[KEYWORDS]</code> or <code>{{params}}</code> for dynamic content substitution</li>
+            <li><strong>📋 Directive Processing</strong> - Support for <code>//include</code> and <code>//import</code> directives with loop protection</li>
+            <li><strong>🎨 ERB Integration</strong> - Full ERB support for complex prompt generation</li>
+            <li><strong>🌍 Shell Integration</strong> - Full integration supporting scripts and envars</li>
+            <li><strong>📖 Inline Documentation</strong> - Support for line and block comments</li>
+            <li><strong>📊 Parameter History</strong> - Maintains history of parameter values for easy reuse</li>
+            <li><strong>⚡ Error Handling</strong> - Comprehensive error classes for better debugging</li>
+            <li><strong>🔌 Extensible Architecture</strong> - Easy to extend with custom adapters and processors</li>
         </ul>
       </td>
     </tr>
