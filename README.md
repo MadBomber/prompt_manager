@@ -1,10 +1,8 @@
 # PromptManager
 
-<div align="center" style="background-color: yellow; color: black; padding: 20px; margin: 20px 0; border: 2px solid black; font-size: 48px; font-weight: bold;">
-  ⚠️ CAUTION ⚠️<br />
-  Breaking Changes are Coming<br />
-  See [Roadmap](#roadmap)
-</div>
+> [!CAUTION]
+> ## ⚠️ Breaking Changes are Coming ⚠️
+> See [Roadmap](#roadmap) for details about upcoming changes.
 <br />
 <div align="center">
   <table>
