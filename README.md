@@ -171,7 +171,7 @@ prompt.save
 
 ### Directive Processing
 
-Directives are special instructions in your prompts that begin with `//`. They're inspired by IBM JCL and provide powerful prompt composition capabilities.
+Directives are special line oriented instructions in your prompts that begin with `//` starting in column 1. They're inspired by IBM JCL and provide powerful prompt composition capabilities.  A character string that begins with `//` but is not at the very beginning of the line will NOT be processed as a directive.
 
 #### Built-in Directives
 

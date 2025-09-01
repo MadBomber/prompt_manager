@@ -1,0 +1,8 @@
+# This is a demonstration of directive processing
+# Comments like this are ignored when the prompt is processed
+
+// good_directive param_one param_two
+
+This is a demonstration of parameters using {language} syntax.
+
+You can substitute parameters like {language} with values.
