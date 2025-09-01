@@ -20,60 +20,73 @@
         <h3>Key Features</h3>
         <ul>
             <li><strong>📚 <a href="#storage-adapters">Multiple Storage Adapters</a></strong>
-            <li><strong>🔧 <a href="#what-does-a-keyword-look-like">Parameterized Prompts</a></strong>
-            <li><strong>📋 <a href="#all-about-directives">Directive Processing</a></strong>
-            <li><strong>🎨 <a href="#prompt-initialization-options">ERB Integration</a></strong>
-            <li><strong>🌍 <a href="#prompt-initialization-options">Shell Integration</a></strong>
-            <li><strong>📖 <a href="#comments-are-ignored">Inline Documentation</a></strong>
-            <li><strong>📊 <a href="#accessing-and-setting-parameter-values">Parameter History</a></strong>
-            <li><strong>⚡ <a href="#prompt-initialization-options">Error Handling</a></strong>
-            <li><strong>🔌 <a href="#other-potential-storage-adapters">Extensible Architecture</a></strong>
+            <li><strong>🔧 <a href="#parameterized-prompts">Parameterized Prompts</a></strong>
+            <li><strong>📋 <a href="#directive-processing">Directive Processing</a></strong>
+            <li><strong>🎨 <a href="#erb-and-shell-integration">ERB Integration</a></strong>
+            <li><strong>🌍 <a href="#erb-and-shell-integration">Shell Integration</a></strong>
+            <li><strong>📖 <a href="#comments-and-documentation">Inline Documentation</a></strong>
+            <li><strong>📊 <a href="#parameter-history">Parameter History</a></strong>
+            <li><strong>⚡ <a href="#error-handling">Error Handling</a></strong>
+            <li><strong>🔌 <a href="#extensible-architecture">Extensible Architecture</a></strong>
         </ul>
       </td>
     </tr>
   </table>
 </div>
 
-
 ## Table of Contents
 
-  * [Installation](#installation)
-  * [Usage](#usage)
-  * [Overview](#overview)
-    * [Prompt Initialization Options](#prompt-initialization-options)
-    * [Generative AI (gen\-AI)](#generative-ai-gen-ai)
-      * [What does a keyword look like?](#what-does-a-keyword-look-like)
-      * [All about directives](#all-about-directives)
-        * [Example Prompt with Directives](#example-prompt-with-directives)
-        * [Accessing and Setting Parameter Values](#accessing-and-setting-parameter-values)
-        * [Dynamic Directives](#dynamic-directives)
-        * [Executing Directives](#executing-directives)
-      * [Comments Are Ignored](#comments-are-ignored)
-  * [Storage Adapters](#storage-adapters)
-    * [FileSystemAdapter](#filesystemadapter)
-      * [Configuration](#configuration)
-        * [prompts\_dir](#prompts_dir)
-        * [search\_proc](#search_proc)
-        * [File Extensions](#file-extensions)
-      * [Example Prompt Text File](#example-prompt-text-file)
-      * [Example Prompt Parameters JSON File](#example-prompt-parameters-json-file)
-      * [Extra Functionality](#extra-functionality)
-    * [ActiveRecordAdapter](#activerecordadapter)
-      * [Configuration](#configuration-1)
-        * [model](#model)
-        * [id\_column](#id_column)
-        * [text\_column](#text_column)
-        * [parameters\_column](#parameters_column)
-    * [Other Potential Storage Adapters](#other-potential-storage-adapters)
-  * [Roadmap](#roadmap)
-    * [v0\.9\.0 \- Modern Prompt Format (Breaking Changes)](#v090---modern-prompt-format-breaking-changes)
-    * [v1\.0\.0 \- Stability Release](#v100---stability-release)
-    * [Future Enhancements](#future-enhancements)
-    * [What's Staying the Same](#whats-staying-the-same)
-  * [Development](#development)
-  * [Contributing](#contributing)
-  * [License](#license)
-
+* [Installation](#installation)
+* [Quick Start](#quick-start)
+* [Core Features](#core-features)
+  * [Parameterized Prompts](#parameterized-prompts)
+    * [Keyword Syntax](#keyword-syntax)
+    * [Custom Patterns](#custom-patterns)
+    * [Working with Parameters](#working-with-parameters)
+  * [Directive Processing](#directive-processing)
+    * [Built\-in Directives](#built-in-directives)
+    * [Directive Syntax](#directive-syntax)
+    * [Custom Directive Processors](#custom-directive-processors)
+  * [ERB and Shell Integration](#erb-and-shell-integration)
+    * [ERB Templates](#erb-templates)
+    * [Environment Variables](#environment-variables)
+  * [Comments and Documentation](#comments-and-documentation)
+    * [Line Comments](#line-comments)
+    * [Block Comments](#block-comments)
+    * [Blank Lines](#blank-lines)
+  * [Parameter History](#parameter-history)
+  * [Error Handling](#error-handling)
+* [Storage Adapters](#storage-adapters)
+  * [FileSystemAdapter](#filesystemadapter)
+    * [Configuration](#configuration)
+    * [File Structure](#file-structure)
+    * [Custom Search](#custom-search)
+    * [Extra Methods](#extra-methods)
+  * [ActiveRecordAdapter](#activerecordadapter)
+    * [Configuration](#configuration-1)
+    * [Database Setup](#database-setup)
+  * [Custom Adapters](#custom-adapters)
+* [Configuration](#configuration-2)
+  * [Initialization Options](#initialization-options)
+  * [Global Configuration](#global-configuration)
+* [Advanced Usage](#advanced-usage)
+  * [Custom Keyword Patterns](#custom-keyword-patterns)
+  * [Dynamic Directives](#dynamic-directives)
+  * [Search Capabilities](#search-capabilities)
+* [Examples](#examples)
+  * [Basic Usage](#basic-usage)
+  * [With Search](#with-search)
+  * [Custom Storage](#custom-storage)
+* [Extensible Architecture](#extensible-architecture)
+  * [Extension Points](#extension-points)
+  * [Potential Extensions](#potential-extensions)
+* [Roadmap](#roadmap)
+  * [v0\.9\.0 \- Modern Prompt Format (Breaking Changes)](#v090---modern-prompt-format-breaking-changes)
+  * [v1\.0\.0 \- Stability Release](#v100---stability-release)
+  * [Future Enhancements](#future-enhancements)
+* [Development](#development)
+* [Contributing](#contributing)
+* [License](#license)
 
 ## Installation
 
@@ -85,303 +98,508 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     gem install prompt_manager
 
-## Usage
-
-See [examples/simple.rb](examples/simple.rb)
-
-See also [examples/using_search_proc.rb](examples/using_search_proc.rb)
-
-## Overview
-
-### Prompt Initialization Options
-- `id`: A String name for the prompt.
-- `context`: An Array for additional context.
-- `directives_processor`: An instance of PromptManager::DirectiveProcessor (default), can be customized.
-- `external_binding`: A Ruby binding to be used for ERB processing.
-- `erb_flag`: Boolean flag to enable ERB processing in the prompt text.
-- `envar_flag`: Boolean flag to enable environment variable substitution in the prompt text.
-
-The `prompt_manager` gem provides functionality to manage prompts that have keywords and directives for use with generative AI processes.
-
-### Generative AI (gen-AI)
-
-Gen-AI deals with the conversion (some would say execution) of a human natural language text (the "prompt") into something else using what are known as large language models (LLM) such as those available from OpenAI.  A parameterized prompt is one in which there are embedded keywords (parameters) which are place holders for other text to be inserted into the prompt.
-
-The prompt_manager uses a regular expression to identify these keywords within the prompt. It uses the keywords as keys in a `parameters` Hash which is stored with the prompt text in a serialized form - for example as JSON.
-
-#### What does a keyword look like?
-
-By default, any text matching `[UPPERCASE_TEXT]` enclosed in square brackets is treated as a keyword. [KEYWORDS CAN ALSO HAVE SPACES] as well as the underscore character.
-
-You can customize the keyword pattern by setting a different regular expression:
+## Quick Start
 
 ```ruby
-# Use {{param}} style instead of [PARAM]
-PromptManager::Prompt.parameter_regex = /(\{\{[A-Za-z_]+\}\})/
-```
+require 'prompt_manager'
 
-The regex must include capturing parentheses () to extract the keyword. The default regex is `/(\[[A-Z _|]+\])/`.
-#### All about directives
+# Configure storage adapter
+PromptManager::Prompt.storage_adapter =
+  PromptManager::Storage::FileSystemAdapter.config do |config|
+    config.prompts_dir = '~/.prompts'
+  end.new
 
-A directive is a line in the prompt text that starts with the two characters '//' - slash slash - just like in the old days of IBM JCL - Job Control Language.  A prompt can have zero or more directives.  Directives can have parameters and can make use of keywords.
-
-The `prompt_manager` collects directives and provides a DirectiveProcessor class that currently implements the `//include` directive (also aliased as `//import`), which allows including content from other files with loop protection. It extracts keywords from directive lines and provides the substitution of those keywords with other text just like it does for the prompt.
-
-##### Example Prompt with Directives
-
-Here is an example prompt text file with comments, directives and keywords:
-
-```text
-# prompts/sing_a_song.txt
-# Desc: Has the computer sing a song
-
-//TextToSpeech [LANGUAGE] [VOICE NAME]
-
-Say the lyrics to the song [SONG NAME].  Please provide only the lyrics without commentary.
-
-__END__
-Computers will never replace Frank Sinatra
-```
-
-##### Accessing and Setting Parameter Values
-
-Getting and setting keywords from a prompt is straightforward:
-
-```ruby
-prompt = PromptManager::Prompt.new(id: 'some_id')
-prompt.keywords   #=> an Array of keywords found in the prompt text
-
-# Update the parameters hash with keyword values
+# Load and use a prompt
+prompt = PromptManager::Prompt.new(id: 'greeting')
 prompt.parameters = {
-  "[KEYWORD1]" => "value1",
-  "[KEYWORD2]" => "value2"
+  "[NAME]" => "Alice",
+  "[LANGUAGE]" => "English"
 }
 
-# Build the final prompt text
-# This substitutes values for keywords and processes directives
-# Comments are removed and the result is ready for the LLM
+# Get the processed prompt text
+result = prompt.to_s
+```
+
+## Core Features
+
+### Parameterized Prompts
+
+The heart of PromptManager is its ability to manage parameterized prompts - text templates with embedded keywords that can be replaced with dynamic values.
+
+#### Keyword Syntax
+
+By default, keywords are enclosed in square brackets: `[KEYWORD]`, `[MULTIPLE WORDS]`, or `[WITH_UNDERSCORES]`.
+
+```ruby
+prompt_text = "Hello [NAME], please translate this to [LANGUAGE]"
+```
+
+#### Custom Patterns
+
+You can customize the keyword pattern to match your preferences:
+
+```ruby
+# Use {{mustache}} style
+PromptManager::Prompt.parameter_regex = /(\{\{[A-Za-z_]+\}\})/
+
+# Use :colon style
+PromptManager::Prompt.parameter_regex = /(:[a-z_]+)/
+```
+
+The regex must include capturing parentheses `()` to extract the keyword.
+
+#### Working with Parameters
+
+```ruby
+prompt = PromptManager::Prompt.new(id: 'example')
+
+# Get all keywords found in the prompt
+keywords = prompt.keywords  #=> ["[NAME]", "[LANGUAGE]"]
+
+# Set parameter values
+prompt.parameters = {
+  "[NAME]" => "Alice",
+  "[LANGUAGE]" => "French"
+}
+
+# Get processed text with substitutions
 final_text = prompt.to_s
 
-# Save any parameter changes back to storage
+# Save changes
 prompt.save
 ```
 
-Internally, directives are stored in a Hash where each key is the full directive line (including the // characters) and the value is the result string from executing that directive. The directives are processed in the order they appear in the prompt text.
+### Directive Processing
 
-##### Dynamic Directives
+Directives are special instructions in your prompts that begin with `//`. They're inspired by IBM JCL and provide powerful prompt composition capabilities.
 
-Since directies are collected after the keywords in the prompt have been substituted for their values, it is possible to have dynamically generated directives as part of a prompt.  For example:
+#### Built-in Directives
+
+**`//include` (alias: `//import`)** - Include content from other files:
 
 ```text
-//[COMMAND] [OPTIONS]
-# or
-[SOMETHING]
+//include common/header.txt
+//import [TEMPLATE_NAME].txt
+
+Main prompt content here...
 ```
-... where [COMMAND] gets replaced by some directive name.  [SOMETHING] could be replaced by "//directive options"
 
-##### Executing Directives
+Features:
+- Loop protection prevents circular includes
+- Supports keyword substitution in file paths
+- Processes included files recursively
 
-The `prompt_manager` gem provides a basic DirectiveProcessor class that handles the `//include` directive (aliased as `//import`), which adds the contents of a file to the prompt with loop protection to prevent circular includes.
+#### Directive Syntax
 
-Additionally, you can extend with your own directives or downstream processes. Here are some ideas on how directives could be used in prompt downstream process:
+```text
+//directive_name [PARAM1] [PARAM2] options
 
-- "//model gpt-5" could be used to set the LLM model to be used for a specific prompt.
-- "//backend mods" could be used to set the backend prompt processor on the command line to be the `mods` utility.
-- "//chat" could be used to send the prompts and then start up a chat session about the prompt and its response.
+# Dynamic directives using keywords
+//[COMMAND] [OPTIONS]
+```
 
-Its all up to how your application wants to support directives or not.
+#### Custom Directive Processors
 
-
-#### Comments Are Ignored
-
-The `prompt_manager` gem ignores comments.  A line that begins with the '#' - pound (aka hash) character - is a line comment.  Any lines that follow a line that is '__END__ at the end of a file are considered comments.  Basically the '__END__' the end of the file.  Nothing is process following that line.
-
-The gem also ignores blank lines.
-
-## Storage Adapters
-
-A storage adapter is a class instance that ties the `PromptManager::Prompt` class to a storage facility that holds the actual prompts. Currently there are 2 storage adapters implemented: FileSystemAdapter and ActiveRecordAdapter.
-
-The `PromptManager::Prompt` to support a small set of methods.  A storage adapter can provide "extra" class or instance methods that can be used through the Prompt class.  See the `test/prompt_manager/prompt_test.rb` for guidance on creating a new storage adapter.
-
-### FileSystemAdapter
-
-This is the first storage adapter developed. It saves prompts as text files within the file system inside a designated `prompts_dir` (directory) such as `~/.prompts` or where it makes the most sense to you.  Another example would be to have your directory on a shared file system so that others can use the same prompts.
-
-The `prompt ID` is the basename of the text file. For example `todo.txt` is the file for the prompt ID `todo` (see the examples directory.)
-
-The parameters for the `todo` prompt ID are saved in the same directory as `todo.txt` in a JSON file named `todo.json` (also in the examples directory.)
-
-#### Configuration
-
-Use a `config` block to establish the configuration for the class.
+You can create custom directive processors:
 
 ```ruby
-PromptManager::Storage::FileSystemAdapter.config do |o|
-  o.prompts_dir       = "path/to/prompts_directory"
-  o.search_proc       = nil     # default
-  o.prompt_extension  = '.txt'  # default
-  o.params_extension  = '.json' # default
+class MyDirectiveProcessor < PromptManager::DirectiveProcessor
+  def process_directive(directive, prompt)
+    case directive
+    when /^\/\/model (.+)$/
+      set_model($1)
+    when /^\/\/temperature (.+)$/
+      set_temperature($1.to_f)
+    else
+      super
+    end
+  end
+end
+
+prompt = PromptManager::Prompt.new(
+  id: 'example',
+  directives_processor: MyDirectiveProcessor.new
+)
+```
+
+### ERB and Shell Integration
+
+#### ERB Templates
+
+Enable ERB processing for dynamic content generation:
+
+```ruby
+prompt = PromptManager::Prompt.new(
+  id: 'dynamic',
+  erb_flag: true
+)
+```
+
+Example prompt with ERB:
+
+```text
+Today's date is <%= Date.today %>
+<% 5.times do |i| %>
+  Item <%= i + 1 %>
+<% end %>
+```
+
+#### Environment Variables
+
+Enable automatic environment variable substitution:
+
+```ruby
+prompt = PromptManager::Prompt.new(
+  id: 'with_env',
+  envar_flag: true
+)
+```
+
+Environment variables are automatically replaced in the prompt text.
+
+### Comments and Documentation
+
+PromptManager supports comprehensive inline documentation:
+
+#### Line Comments
+
+Lines beginning with `#` are treated as comments:
+
+```text
+# This is a comment
+# Description: This prompt does something useful
+
+Actual prompt text here...
+```
+
+#### Block Comments
+
+Everything after `__END__` is ignored:
+
+```text
+Main prompt content...
+
+__END__
+Development notes:
+- This section is completely ignored
+- Great for documentation
+- TODO items
+```
+
+#### Blank Lines
+
+Blank lines are automatically removed from the final output.
+
+### Parameter History
+
+PromptManager maintains a history of parameter values (since v0.3.0):
+
+```ruby
+# Parameters are stored as arrays
+prompt.parameters = {
+  "[NAME]" => ["Alice", "Bob", "Charlie"]  # Charlie is most recent
+}
+
+# The last value is always the most recent
+current_name = prompt.parameters["[NAME]"].last
+
+# Useful for:
+# - Implementing value history in UIs
+# - Providing dropdown selections
+# - Tracking parameter usage over time
+```
+
+### Error Handling
+
+PromptManager provides specific error classes for better debugging:
+
+```ruby
+begin
+  prompt = PromptManager::Prompt.new(id: 'missing')
+rescue PromptManager::StorageError => e
+  # Handle storage-related errors
+  puts "Storage error: #{e.message}"
+rescue PromptManager::ParameterError => e
+  # Handle parameter substitution errors
+  puts "Parameter error: #{e.message}"
+rescue PromptManager::ConfigurationError => e
+  # Handle configuration errors
+  puts "Configuration error: #{e.message}"
 end
 ```
 
-The `config` block returns `self` so that means you can do this to setup the storage adapter with the Prompt class:
+## Storage Adapters
 
-```ruby
-PromptManager::Prompt
-  .storage_adapter =
-    PromptManager::Storage::FileSystemAdapter
-      .config do |config|
-        config.prompts_dir = 'path/to/prompts_dir'
-      end.new
-```
+Storage adapters provide the persistence layer for prompts. PromptManager includes two built-in adapters and supports custom implementations.
 
-##### prompts_dir
+### FileSystemAdapter
 
-This is either a `String` or a `Pathname` object.  All file paths are maintained in the class as `Pathname` objects.  If you provide a `String` it will be converted.  Relative paths will be converted to absolute paths.
-
-An `ArgumentError` will be raised when `prompts_dir` does not exist or if it is not a directory.
-
-##### search_proc
-
-The default for `search_proc` is nil which means that the search will be preformed by a default `search` method which is basically reading all the prompt files to see which ones contain the search term. It will return an Array of prompt IDs for each prompt file found that contains the search term.  Its up to the application to select which returned prompt ID to use.
-
-There are faster ways to search and select files.  For example there are specialized search and selection utilities that are available for the command line. The `examples` directory contains a `bash` script named `rgfzf` that uses `rg` (aka `ripgrep`) to do the searching and `fzf` to do the selecting.
-
-See [examples/using_search_proc.rb](examples/using_search_proc.rb)
-
-##### File Extensions
-
-These two configuration options are `String` objects that must start with a period "." utherwise an `ArgumentError` will be raised.
-
-* prompt_extension - default: '.txt'
-* params_extension - default: '.json'
-
-Currently the `FileSystemAdapter` only supports a JSON serializer for its parameters Hash.  Using any other values for these extensions will cause problems.
-
-They exist so that there is a platform on to which other storage adapters can be built or serializers added.  This is not currently on the roadmap.
-
-#### Example Prompt Text File
-
-```text
-# ~/.prompts/joke.txt
-# Desc: Tell some jokes
-
-Tell me a few [KIND] jokes about [SUBJECT]
-```
-
-Note the command lines at the top.  This is a convention I use.  It is not part of the software.  I find it helpful in documenting the prompt.
-
-#### Example Prompt Parameters JSON File
-
-```json
-{
-  "[KIND]": [
-    "pun",
-    "family friendly"
-  ],
-  "[SUBJECT]": [
-    "parrot",
-    "garbage man",
-    "snowman",
-    "weather girl"
-  ]
-}
-```
-
-The last value in the keyword's Array is the most recent value used for that keyword.  This is a functionality established since v0.3.0.  Its purpose is to provide a history of values from which a user can select to repeat a previous value or to select ta previous value and edit it into something new.
-
-#### Extra Functionality
-
-The `FileSystemAdapter` adds two new methods for use by the `Prompt` class:
-
-- list - returns an Array of prompt IDs
-- path and path(prompt_id) - returns a `Pathname` object to the prompt file
-
-Use the `path(prompt_id)` form against the `Prompt` class
-Use `prompt.path` when you have an instance of a `Prompt`
-
-### ActiveRecordAdapter
-
-The `ActiveRecordAdapter` assumes that there is a database already configured by the application program that is requiring `prompt_manager` which has a model that contains prompt content.  This model must have at least three columns which contain content for:
-
-- a prompt ID
-- prompt text
-- prompt parameters
-
-The model and the columns for these three elements can have any name.  Those names are provided to the `ActiveRecordAdapter` in its config block.
-
+Stores prompts as text files in a directory structure.
 
 #### Configuration
 
-Use a `config` block to establish the configuration for the class.
-
-The `PromptManager::Prompt` class expects an instance of a storage adapter class.  By convention storage adapter class config methods will return `self` so that a simple `new` after the config will establish the instance.
-
 ```ruby
-PromptManager::Prompt
-  .storage_adapter =
-    PromptManager::Storage::ActiveRecordAdapter.config do |config|
-      config.model              = DbPromptModel # any ActiveRecord::Base model
-      config.id_column          = :prompt_name
-      config.text_column        = :prompt_text
-      config.parameters_column  = :prompt_params
-    end.new # adapters an instances of the adapter class
+PromptManager::Storage::FileSystemAdapter.config do |config|
+  config.prompts_dir       = "~/.prompts"      # Required
+  config.search_proc       = nil               # Optional custom search
+  config.prompt_extension  = '.txt'            # Default
+  config.params_extension  = '.json'           # Default
+end
 ```
 
-##### model
-The `model` configuration parameter is the actual class name of the `ActiveRecord::Base` or `ApplicationRecord` (if you are using a rails application) that contains the content used for prompts.
+#### File Structure
 
-##### id_column
-The `id_column` contains the name of the column that contains the "prompt ID" content.  It can be either a `String` or `Symbol` value.
+```
+~/.prompts/
+├── greeting.txt        # Prompt text
+├── greeting.json       # Parameters
+├── email/
+│   ├── welcome.txt
+│   └── welcome.json
+```
 
-##### text_column
-The `text_column` contains name of the column that contains the actual raw text of the prompt.  This raw text can include the keywords which will be replaced by values from the parameters Hash.  The column name value can be either a `String` or a `Symbol`.
+#### Custom Search
 
-##### parameters_column
-The `parameters_column` contains the name of the column that contains the parameters used to replace keywords in the prompt text.  This column in the database model is expected to be serialized.  The `ActiveRecordAdapter` currently has a kludge bit of code that assumes that the serialization is done with JSON.  The value of the parameters_column can be either a `String` or a `Symbol`.
+Integrate with external search tools:
 
-TODO: fix the kludge so that any serialization can be used.
+```ruby
+config.search_proc = ->(query) {
+  # Use ripgrep for fast searching
+  `rg -l "#{query}" #{config.prompts_dir}`.split("\n")
+}
+```
 
-### Other Potential Storage Adapters
+#### Extra Methods
 
-There are many possibilities to expand this plugin concept of the storage adapter.  Here are some for consideration:
+- `list` - Returns array of all prompt IDs
+- `path(id)` - Returns Pathname to prompt file
 
-- RedisAdapter - For caching prompts or temporary storage
-- ApiAdapter - Use some end-point to CRUD a prompt
-- CloudStorageAdapter - Store prompts in cloud storage services
+### ActiveRecordAdapter
+
+Stores prompts in a database using ActiveRecord.
+
+#### Configuration
+
+```ruby
+PromptManager::Storage::ActiveRecordAdapter.config do |config|
+  config.model              = PromptModel      # Your AR model
+  config.id_column          = :prompt_id       # Column for ID
+  config.text_column        = :content         # Column for text
+  config.parameters_column  = :params          # Column for parameters
+end
+```
+
+#### Database Setup
+
+```ruby
+class CreatePrompts < ActiveRecord::Migration[7.0]
+  def change
+    create_table :prompts do |t|
+      t.string :prompt_id, null: false, index: { unique: true }
+      t.text :content
+      t.json :params
+      t.timestamps
+    end
+  end
+end
+```
+
+### Custom Adapters
+
+Create your own storage adapter:
+
+```ruby
+class RedisAdapter
+  def initialize(redis_client)
+    @redis = redis_client
+  end
+
+  def get(id)
+    prompt_text = @redis.get("prompt:#{id}:text")
+    parameters = JSON.parse(@redis.get("prompt:#{id}:params") || '{}')
+    [prompt_text, parameters]
+  end
+
+  def save(id, text, parameters)
+    @redis.set("prompt:#{id}:text", text)
+    @redis.set("prompt:#{id}:params", parameters.to_json)
+  end
+
+  def delete(id)
+    @redis.del("prompt:#{id}:text", "prompt:#{id}:params")
+  end
+
+  def list
+    @redis.keys("prompt:*:text").map { |k| k.split(':')[1] }
+  end
+end
+```
+
+## Configuration
+
+### Initialization Options
+
+When creating a prompt instance:
+
+```ruby
+prompt = PromptManager::Prompt.new(
+  id: 'example',
+  context: ['additional', 'context'],
+  directives_processor: CustomProcessor.new,
+  external_binding: binding,
+  erb_flag: true,
+  envar_flag: true
+)
+```
+
+Options:
+- `id` - Unique identifier for the prompt
+- `context` - Additional context array
+- `directives_processor` - Custom directive processor
+- `external_binding` - Ruby binding for ERB
+- `erb_flag` - Enable ERB processing
+- `envar_flag` - Enable environment variable substitution
+
+### Global Configuration
+
+Set the storage adapter globally:
+
+```ruby
+PromptManager::Prompt.storage_adapter = adapter_instance
+```
+
+## Advanced Usage
+
+### Custom Keyword Patterns
+
+Examples of different keyword patterns:
+
+```ruby
+# Handlebars style: {{name}}
+PromptManager::Prompt.parameter_regex = /(\{\{[a-z_]+\}\})/
+
+# Colon prefix: :name
+PromptManager::Prompt.parameter_regex = /(:[a-z_]+)/
+
+# Dollar sign: $NAME
+PromptManager::Prompt.parameter_regex = /(\$[A-Z_]+)/
+
+# Percentage: %name%
+PromptManager::Prompt.parameter_regex = /(%[a-z_]+%)/
+```
+
+### Dynamic Directives
+
+Create directives that change based on parameters:
+
+```text
+# Set directive name via parameter
+//[DIRECTIVE_TYPE] [OPTIONS]
+
+# Conditional directives
+//include templates/[TEMPLATE_TYPE].txt
+```
+
+### Search Capabilities
+
+Implement powerful search across prompts:
+
+```ruby
+# With FileSystemAdapter
+adapter.search_proc = ->(query) {
+  # Custom search implementation
+  results = []
+  Dir.glob("#{prompts_dir}/**/*.txt").each do |file|
+    content = File.read(file)
+    if content.include?(query)
+      results << File.basename(file, '.txt')
+    end
+  end
+  results
+}
+
+# With ActiveRecordAdapter
+PromptModel.where("content LIKE ?", "%#{query}%").pluck(:prompt_id)
+```
+
+## Examples
+
+### Basic Usage
+
+```ruby
+# examples/simple.rb
+require 'prompt_manager'
+
+# Setup
+PromptManager::Prompt.storage_adapter =
+  PromptManager::Storage::FileSystemAdapter.config do |c|
+    c.prompts_dir = '~/.prompts'
+  end.new
+
+# Create and use a prompt
+prompt = PromptManager::Prompt.new(id: 'story')
+prompt.parameters = {
+  "[GENRE]" => "fantasy",
+  "[CHARACTER]" => "wizard"
+}
+
+puts prompt.to_s
+```
+
+### With Search
+
+See [examples/using_search_proc.rb](examples/using_search_proc.rb) for advanced search integration.
+
+### Custom Storage
+
+```ruby
+# examples/redis_storage.rb
+class RedisStorage
+  # ... implementation
+end
+
+PromptManager::Prompt.storage_adapter = RedisStorage.new(Redis.new)
+```
+
+## Extensible Architecture
+
+PromptManager is designed to be extended:
+
+### Extension Points
+
+1. **Storage Adapters** - Implement your own persistence layer
+2. **Directive Processors** - Add custom directives
+3. **Search Processors** - Integrate external search tools
+4. **Serializers** - Support different parameter formats
+
+### Potential Extensions
+
+- **CloudStorageAdapter** - S3, Google Cloud Storage
+- **RedisAdapter** - For caching and fast access
+- **ApiAdapter** - REST API backend
+- **GraphQLAdapter** - GraphQL endpoint storage
+- **GitAdapter** - Version controlled prompts
 
 ## Roadmap
 
-The PromptManager gem is actively evolving to meet the changing needs of the AI development community. Here's what's coming:
-
 ### v0.9.0 - Modern Prompt Format (Breaking Changes)
-- **Markdown Support**: Full `.md` file support with YAML front matter for metadata and LLM configuration
-- **Modern Parameter Syntax**: Support for `{{keyword}}` format alongside existing `[KEYWORD]` format
-- **Enhanced API**: New `set_parameter()` and `get_parameter()` methods for cleaner parameter management
-- **Parameter Validation**: Built-in validation based on parameter specifications in front matter
-- **HTML Comments**: Support for `<!-- comments -->` that are stripped before sending to LLMs
-- **Migration Tools**: Automated conversion from current format to new Markdown-based format
-- **Preserving `__END__`**: Continued support for the `__END__` marker for developer notes
+- **Markdown Support**: Full `.md` file support with YAML front matter
+- **Modern Parameter Syntax**: Support for `{{keyword}}` format
+- **Enhanced API**: New `set_parameter()` and `get_parameter()` methods
+- **Parameter Validation**: Built-in validation based on specifications
+- **HTML Comments**: Support for `<!-- comments -->`
+- **Migration Tools**: Automated conversion utilities
 
 ### v1.0.0 - Stability Release
-- Performance optimizations and bug fixes
-- Complete documentation with migration guides
-- Production hardening based on v0.9.0 feedback
+- Performance optimizations
+- Complete documentation
+- Production hardening
 
 ### Future Enhancements
-- Additional storage adapters (Redis, S3, PostgreSQL)
-- Enhanced directive system with plugin architecture
-- Prompt versioning and template inheritance
-- Performance optimizations for large prompt collections
-
-### What's Staying the Same
-- JCL-style directives (`//include`, `//import`)
-- JSON serialization as the default
-- Internal parameter storage format for backward compatibility
-- All existing functionality continues to work
-
-For detailed information about planned improvements, implementation strategies, and technical specifications, see our comprehensive [Improvement Plan](improvement_plan.md).
+- Additional storage adapters
+- Enhanced directive system with plugins
+- Prompt versioning and inheritance
+- Performance optimizations for large collections
 
 ## Development
 
