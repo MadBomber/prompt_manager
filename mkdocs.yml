@@ -1,0 +1,145 @@
+site_name: PromptManager Documentation
+site_description: Comprehensive documentation for the PromptManager Ruby gem - Manage parameterized prompts for generative AI
+site_author: MadBomber
+site_url: https://madbomber.github.io/prompt_manager
+repo_url: https://github.com/MadBomber/prompt_manager
+repo_name: MadBomber/prompt_manager
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  logo: assets/logo.svg
+  favicon: assets/favicon.ico
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.prune
+    - navigation.indexes
+    - navigation.top
+    - toc.follow
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - search.share
+    - header.autohide
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/MadBomber/prompt_manager
+      name: GitHub Repository
+    - icon: fontawesome/solid/gem
+      link: https://rubygems.org/gems/prompt_manager
+      name: RubyGems Package
+  version:
+    provider: mike
+    default: latest
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quick-start.md
+    - Basic Concepts: getting-started/basic-concepts.md
+  - Core Features:
+    - Parameterized Prompts: core-features/parameterized-prompts.md
+    - Directive Processing: core-features/directive-processing.md
+    - ERB Integration: core-features/erb-integration.md
+    - Shell Integration: core-features/shell-integration.md
+    - Comments & Documentation: core-features/comments.md
+    - Parameter History: core-features/parameter-history.md
+    - Error Handling: core-features/error-handling.md
+  - Storage Adapters:
+    - Overview: storage/overview.md
+    - FileSystemAdapter: storage/filesystem-adapter.md
+    - ActiveRecordAdapter: storage/activerecord-adapter.md
+    - Custom Adapters: storage/custom-adapters.md
+  - API Reference:
+    - Prompt Class: api/prompt-class.md
+    - Storage Adapters: api/storage-adapters.md
+    - Directive Processor: api/directive-processor.md
+    - Configuration: api/configuration.md
+  - Advanced Usage:
+    - Custom Keywords: advanced/custom-keywords.md
+    - Dynamic Directives: advanced/dynamic-directives.md
+    - Search Integration: advanced/search-integration.md
+    - Performance Tips: advanced/performance.md
+  - Examples:
+    - Basic Examples: examples/basic.md
+    - Advanced Examples: examples/advanced.md
+    - Real World Use Cases: examples/real-world.md
+  - Development:
+    - Architecture: development/architecture.md
+    - Contributing: development/contributing.md
+    - Testing: development/testing.md
+    - Roadmap: development/roadmap.md
+  - Migration Guides:
+    - Version 0.9.0: migration/v0.9.0.md
+    - Version 1.0.0: migration/v1.0.0.md
+
+copyright: Copyright &copy; 2024 MadBomber - MIT License

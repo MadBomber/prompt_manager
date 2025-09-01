@@ -1,0 +1,79 @@
+# System Analysis and Historical Comparison Report
+# Generated with PromptManager - ERB + Shell Integration Demo
+
+```markdown
+## Current System Information
+
+**Timestamp**: <%= Time.now.strftime('%A, %B %d, %Y at %I:%M:%S %p %Z') %>
+**Analysis Duration**: <%= Time.now - Time.parse('2024-01-01') %> seconds since 2024 began
+
+### Hardware Platform Details
+**Architecture**: $HOSTTYPE$MACHTYPE
+**Hostname**: $HOSTNAME
+**Operating System**: $OSTYPE
+**Shell**: $SHELL (version: $BASH_VERSION)
+**User**: $USER
+**Home Directory**: $HOME
+**Current Path**: $PWD
+**Terminal**: $TERM
+
+### Detailed System Profile
+<% if RUBY_PLATFORM.include?('darwin') %>
+**Platform**: macOS/Darwin System
+**Ruby Platform**: <%= RUBY_PLATFORM %>
+**Ruby Version**: <%= RUBY_VERSION %>
+**Ruby Engine**: <%= RUBY_ENGINE %>
+<% elsif RUBY_PLATFORM.include?('linux') %>
+**Platform**: Linux System
+**Ruby Platform**: <%= RUBY_PLATFORM %>
+**Ruby Version**: <%= RUBY_VERSION %>
+**Ruby Engine**: <%= RUBY_ENGINE %>
+<% else %>
+**Platform**: Other Unix-like System
+**Ruby Platform**: <%= RUBY_PLATFORM %>
+**Ruby Version**: <%= RUBY_VERSION %>
+**Ruby Engine**: <%= RUBY_ENGINE %>
+<% end %>
+
+### Environment Configuration
+**PATH**: $PATH
+**Language**: $LANG
+**Editor**: $EDITOR
+**Pager**: $PAGER
+
+### Development Environment
+<% if ENV['RBENV_VERSION'] %>
+**Ruby Version Manager**: rbenv (version: <%= ENV['RBENV_VERSION'] %>)
+<% elsif ENV['RVM_VERSION'] %>
+**Ruby Version Manager**: RVM (version: <%= ENV['RVM_VERSION'] %>)
+<% else %>
+**Ruby Version Manager**: System Ruby or other
+<% end %>
+
+**Gem Home**: $GEM_HOME
+**Gem Path**: $GEM_PATH
+
+### Performance Context
+**Load Average**: <%= `uptime`.strip rescue 'Unable to determine' %>
+**Memory Info**: <%= `vm_stat | head -5`.strip rescue 'Unable to determine' if RUBY_PLATFORM.include?('darwin') %>
+**Disk Usage**: <%= `df -h / | tail -1`.strip rescue 'Unable to determine' %>
+
+## Analysis Request
+
+You are a technology historian and systems analyst. Please provide a comprehensive comparison between this current system and **the most powerful Apple computer created in the 20th century** (which would be from the 1990s).
+
+Consider these aspects in your analysis:
+
+1. **Processing Power**: Compare the computational capabilities
+2. **Memory and Storage**: Analyze RAM and storage differences
+3. **Architecture Evolution**: Discuss the architectural changes
+4. **Operating System**: Compare the OS sophistication
+5. **Development Environment**: Contrast the programming environments
+6. **Historical Context**: Put both systems in their historical perspective
+7. **Price and Accessibility**: Consider cost and availability differences
+8. **Legacy Impact**: How each system influenced computing
+
+Please be specific about which Apple computer from the 1990s you're comparing against, and provide concrete numbers where possible. Make the comparison engaging and educational, highlighting the dramatic evolution of computing power over the decades.
+
+**Format your response as a detailed technical report with clear sections and specific comparisons.**
+```

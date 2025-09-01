@@ -13,6 +13,8 @@
         <a href="https://madbomber.github.io/blog/" target="_blank">
           <img src="prompt_manager_logo.png" alt="PromptManager - The Enchanted Librarian of AI Prompts" width="800">
         </a>
+        <br /><br />
+        [Comprehensive Documentation Website](https://madbomber.github.io/prompt_manager/)
       </td>
       <td width="60%" align="left" valign="top">
         Like an enchanted librarian organizing floating books of knowledge, PromptManager helps you masterfully orchestrate and organize your AI prompts through wisdom and experience. Each prompt becomes a living entity that can be categorized, parameterized, and interconnected with golden threads of relationships.
@@ -545,6 +547,17 @@ prompt.parameters = {
 
 puts prompt.to_s
 ```
+
+### Advanced Integration with LLM and Streaming
+
+See [examples/advanced_integrations.rb](examples/advanced_integrations.rb) for a complete example that demonstrates:
+
+- **ERB templating** for dynamic content generation
+- **Shell integration** for environment variable substitution
+- **OpenAI API integration** with streaming responses
+- **Professional UI** with spinner feedback using `tty-spinner`
+
+This example shows how to create sophisticated AI prompts that adapt to your system environment and stream responses in real-time.
 
 ### With Search
 

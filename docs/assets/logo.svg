@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="#4F46E5" stroke="#3730A3" stroke-width="2"/>
+  
+  <!-- Librarian figure (simplified) -->
+  <circle cx="32" cy="22" r="6" fill="#F3F4F6"/>
+  <path d="M20 50 Q32 45 44 50" stroke="#F3F4F6" stroke-width="3" fill="none"/>
+  
+  <!-- Floating books -->
+  <rect x="12" y="18" width="8" height="6" rx="1" fill="#FBBF24" transform="rotate(-15 16 21)"/>
+  <rect x="18" y="12" width="8" height="6" rx="1" fill="#EF4444" transform="rotate(25 22 15)"/>
+  <rect x="44" y="16" width="8" height="6" rx="1" fill="#10B981" transform="rotate(15 48 19)"/>
+  <rect x="38" y="10" width="8" height="6" rx="1" fill="#8B5CF6" transform="rotate(-25 42 13)"/>
+  
+  <!-- Golden threads (simplified) -->
+  <path d="M16 21 Q32 28 48 19" stroke="#FBBF24" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M22 15 Q32 25 42 13" stroke="#FBBF24" stroke-width="1" fill="none" opacity="0.6"/>
+  
+  <!-- Sparkles -->
+  <circle cx="24" cy="35" r="1" fill="#FBBF24"/>
+  <circle cx="40" cy="33" r="1" fill="#FBBF24"/>
+  <circle cx="28" cy="40" r="1" fill="#FBBF24"/>
+</svg>
