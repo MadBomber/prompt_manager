@@ -1,29 +1,33 @@
 # PromptManager
 
-<div align="left">
-  <img src="prompt_manager_logo.png" alt="PromptManager - The Enchanted Librarian of AI Prompts" width="1200"
-      align="left" style="margin-right: 20px; margin-bottom: 20px;">
+<div align="center">
+  <table>
+    <tr>
+      <td width="50%">
+        <img src="prompt_manager_logo.png" alt="PromptManager - The Enchanted Librarian of AI Prompts" width="800">
+      </td>
+      <td width="50%" valign="top">
+        <p><strong>Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, <em>et.al.</em>) using storage adapters such as FileSystemAdapter and ActiveRecordAdapter.</strong></p>
 
-  **Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, _et.al._) using storage adapters such as FileSystemAdapter and ActiveRecordAdapter.**
+        <p>Like an enchanted librarian organizing floating books of knowledge, PromptManager helps you masterfully orchestrate and organize your AI prompts through wisdom and experience. Each prompt becomes a living entity that can be categorized, parameterized, and interconnected with golden threads of relationships.</p>
 
-  Like an enchanted librarian organizing floating books of knowledge, PromptManager helps you masterfully orchestrate and organize your AI prompts through wisdom and experience. Each prompt becomes a living entity that can be categorized, parameterized, and interconnected with golden threads of relationships.
-
-  ## Key Features
-
-  - **📚 Multiple Storage Adapters** - FileSystem and ActiveRecord storage with extensible adapter architecture
-  - **🔧 Parameterized Prompts** - Use `[KEYWORDS]` or `{{params}}` for dynamic content substitution
-  - **📋 Directive Processing** - Support for `//include` and `//import` directives with loop protection
-  - **🎨 ERB Integration** - Full ERB support for complex prompt generation
-  - **🌍 Shell Integration** - Full integration supporting scripts and envars
-  - **📖 Inline Documentation** - Support for line and block comments__`
-  - **📊 Parameter History** - Maintains history of parameter values for easy reuse
-  - **⚡ Error Handling** - Comprehensive error classes for better debugging
-  - **🔌 Extensible Architecture** - Easy to extend with custom adapters and processors
+        <h3>Key Features</h3>
+        <ul>
+          <li><strong>📚 Multiple Storage Adapters</strong> - FileSystem and ActiveRecord storage with extensible adapter architecture</li>
+          <li><strong>🔧 Parameterized Prompts</strong> - Use <code>[KEYWORDS]</code> or <code>{{params}}</code> for dynamic content substitution</li>
+          <li><strong>📋 Directive Processing</strong> - Support for <code>//include</code> and <code>//import</code> directives with loop protection</li>
+          <li><strong>🎨 ERB Integration</strong> - Full ERB support for complex prompt generation</li>
+          <li><strong>🌍 Shell Integration</strong> - Full integration supporting scripts and envars</li>
+          <li><strong>📖 Inline Documentation</strong> - Support for line and block comments</li>
+          <li><strong>📊 Parameter History</strong> - Maintains history of parameter values for easy reuse</li>
+          <li><strong>⚡ Error Handling</strong> - Comprehensive error classes for better debugging</li>
+          <li><strong>🔌 Extensible Architecture</strong> - Easy to extend with custom adapters and processors</li>
+        </ul>
+      </td>
+    </tr>
+  </table>
 </div>
 
-<div style="clear: both;"></div>
-
-<!-- Tocer[start]: Auto-generated, don't remove. -->
 
 ## Table of Contents
 
