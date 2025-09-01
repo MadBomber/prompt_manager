@@ -15,21 +15,19 @@
         </a>
       </td>
       <td width="60%" align="left" valign="top">
-        <strong>Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, <em>et.al.</em>) using storage adapters such as FileSystemAdapter and ActiveRecordAdapter.</strong>
-        <br/><br/>
         Like an enchanted librarian organizing floating books of knowledge, PromptManager helps you masterfully orchestrate and organize your AI prompts through wisdom and experience. Each prompt becomes a living entity that can be categorized, parameterized, and interconnected with golden threads of relationships.
         <br/><br/>
         <h3>Key Features</h3>
         <ul>
-            <li><strong>📚 Multiple Storage Adapters</strong> - FileSystem and ActiveRecord storage with extensible adapter architecture</li>
-            <li><strong>🔧 Parameterized Prompts</strong> - Use <code>[KEYWORDS]</code> or <code>{{params}}</code> for dynamic content substitution</li>
-            <li><strong>📋 Directive Processing</strong> - Support for <code>//include</code> and <code>//import</code> directives with loop protection</li>
-            <li><strong>🎨 ERB Integration</strong> - Full ERB support for complex prompt generation</li>
-            <li><strong>🌍 Shell Integration</strong> - Full integration supporting scripts and envars</li>
-            <li><strong>📖 Inline Documentation</strong> - Support for line and block comments</li>
-            <li><strong>📊 Parameter History</strong> - Maintains history of parameter values for easy reuse</li>
-            <li><strong>⚡ Error Handling</strong> - Comprehensive error classes for better debugging</li>
-            <li><strong>🔌 Extensible Architecture</strong> - Easy to extend with custom adapters and processors</li>
+            <li><strong>📚 <a href="#storage-adapters">Multiple Storage Adapters</a></strong>
+            <li><strong>🔧 <a href="#what-does-a-keyword-look-like">Parameterized Prompts</a></strong>
+            <li><strong>📋 <a href="#all-about-directives">Directive Processing</a></strong>
+            <li><strong>🎨 <a href="#prompt-initialization-options">ERB Integration</a></strong>
+            <li><strong>🌍 <a href="#prompt-initialization-options">Shell Integration</a></strong>
+            <li><strong>📖 <a href="#comments-are-ignored">Inline Documentation</a></strong>
+            <li><strong>📊 <a href="#accessing-and-setting-parameter-values">Parameter History</a></strong>
+            <li><strong>⚡ <a href="#prompt-initialization-options">Error Handling</a></strong>
+            <li><strong>🔌 <a href="#other-potential-storage-adapters">Extensible Architecture</a></strong>
         </ul>
       </td>
     </tr>
