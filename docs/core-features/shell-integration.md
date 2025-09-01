@@ -39,7 +39,7 @@ Commands are executed when the prompt is processed, with output substituted in p
 
 ## Advanced Example
 
-The [advanced_integrations.rb](../../examples/advanced_integrations.rb) example demonstrates comprehensive shell integration:
+The [advanced_integrations.rb](https://github.com/MadBomber/prompt_manager/blob/main/examples/advanced_integrations.rb) example demonstrates comprehensive shell integration:
 
 ```text
 ### Hardware Platform Details

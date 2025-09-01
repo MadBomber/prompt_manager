@@ -29,7 +29,7 @@ puts prompt.to_s
 
 ## Advanced Integration with LLM and Streaming
 
-The [advanced_integrations.rb](../examples/advanced_integrations.rb) example demonstrates a complete integration with OpenAI's API, showcasing:
+The [advanced_integrations.rb](https://github.com/MadBomber/prompt_manager/blob/main/examples/advanced_integrations.rb) example demonstrates a complete integration with OpenAI's API, showcasing:
 
 ### Features Demonstrated
 
@@ -100,7 +100,7 @@ puts
 
 ### Prompt Template
 
-The example uses a sophisticated prompt template ([advanced_demo.txt](../examples/prompts_dir/advanced_demo.txt)) that demonstrates:
+The example uses a sophisticated prompt template ([advanced_demo.txt](https://github.com/MadBomber/prompt_manager/blob/main/examples/prompts_dir/advanced_demo.txt)) that demonstrates:
 
 ```text
 # System Analysis and Historical Comparison Report
@@ -160,7 +160,7 @@ You are a technology historian and systems analyst. Please provide a comprehensi
 
 ## Search Integration
 
-See [using_search_proc.rb](../examples/using_search_proc.rb) for advanced search capabilities:
+See [using_search_proc.rb](https://github.com/MadBomber/prompt_manager/blob/main/examples/using_search_proc.rb) for advanced search capabilities:
 
 ```ruby
 # Configure custom search with ripgrep
@@ -334,4 +334,4 @@ describe "greeting prompt" do
 end
 ```
 
-For more examples and advanced usage patterns, see the complete examples in the [examples/](../examples/) directory.
+For more examples and advanced usage patterns, see the complete examples in the [examples/](https://github.com/MadBomber/prompt_manager/tree/main/examples) directory.

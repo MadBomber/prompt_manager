@@ -130,6 +130,7 @@ nav:
     - Search Integration: advanced/search-integration.md
     - Performance Tips: advanced/performance.md
   - Examples:
+    - Overview: examples.md
     - Basic Examples: examples/basic.md
     - Advanced Examples: examples/advanced.md
     - Real World Use Cases: examples/real-world.md

@@ -55,7 +55,7 @@ Generated at: <%= Time.now %>
 
 ### Complete Integration Example
 
-See the complete [advanced_integrations.rb](../../examples/advanced_integrations.rb) example that demonstrates:
+See the complete [advanced_integrations.rb](https://github.com/MadBomber/prompt_manager/blob/main/examples/advanced_integrations.rb) example that demonstrates:
 
 - ERB templating with system information
 - Dynamic timestamp generation
