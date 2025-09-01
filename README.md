@@ -9,12 +9,12 @@
 <div align="center">
   <table>
     <tr>
-      <td width="50%" align="center" valign="top">
+      <td width="40%" align="center" valign="top">
         <a href="https://madbomber.github.io/blog/" target="_blank">
           <img src="prompt_manager_logo.png" alt="PromptManager - The Enchanted Librarian of AI Prompts" width="800">
         </a>
       </td>
-      <td width="50%" align="left" valign="top">
+      <td width="60%" align="left" valign="top">
         <strong>Manage the parameterized prompts (text) used in generative AI (aka chatGPT, OpenAI, <em>et.al.</em>) using storage adapters such as FileSystemAdapter and ActiveRecordAdapter.</strong>
         <br/><br/>
         Like an enchanted librarian organizing floating books of knowledge, PromptManager helps you masterfully orchestrate and organize your AI prompts through wisdom and experience. Each prompt becomes a living entity that can be categorized, parameterized, and interconnected with golden threads of relationships.
