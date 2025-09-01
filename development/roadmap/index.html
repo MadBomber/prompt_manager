@@ -1,0 +1,1865 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Comprehensive documentation for the PromptManager Ruby gem - Manage parameterized prompts for generative AI">
+      
+      
+        <meta name="author" content="MadBomber">
+      
+      
+        <link rel="canonical" href="https://madbomber.github.io/prompt_manager/development/roadmap/">
+      
+      
+        <link rel="prev" href="../testing/">
+      
+      
+        <link rel="next" href="../../migration/v0.9.0/">
+      
+      
+      <link rel="icon" href="../../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>Roadmap - PromptManager Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#roadmap" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="PromptManager Documentation" class="md-header__button md-logo" aria-label="PromptManager Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PromptManager Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Roadmap
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/MadBomber/prompt_manager" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MadBomber/prompt_manager
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../core-features/parameterized-prompts/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Core Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../storage/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Storage Adapters
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/prompt-class/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../advanced/custom-keywords/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Advanced Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../migration/v0.9.0/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Migration Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="PromptManager Documentation" class="md-nav__button md-logo" aria-label="PromptManager Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    PromptManager Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/MadBomber/prompt_manager" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MadBomber/prompt_manager
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../getting-started/installation/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../core-features/parameterized-prompts/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Core Features
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../storage/overview/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Storage Adapters
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../api/prompt-class/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../advanced/custom-keywords/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Advanced Usage
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../examples/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Development
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Roadmap
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Roadmap
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#current-version-05x" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Version (0.5.x)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Current Version (0.5.x)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#completed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Completed ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      In Progress 🚧
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-100-stable-foundation-q2-2024" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.0.0 - Stable Foundation (Q2 2024)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 1.0.0 - Stable Foundation (Q2 2024)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#major-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Major Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance &amp; Scalability
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-assurance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quality Assurance
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-110-collaboration-features-q3-2024" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.1.0 - Collaboration Features (Q3 2024)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 1.1.0 - Collaboration Features (Q3 2024)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#team-collaboration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Team Collaboration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#content-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Content Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-120-ai-integration-q4-2024" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 1.2.0 - AI Integration (Q4 2024)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 1.2.0 - AI Integration (Q4 2024)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ai-powered-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      AI-Powered Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-200-enterprise-platform-q2-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version 2.0.0 - Enterprise Platform (Q2 2025)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version 2.0.0 - Enterprise Platform (Q2 2025)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enterprise-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enterprise Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-analytics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Analytics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#governance-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Governance &amp; Compliance
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#long-term-vision-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      Long-term Vision (2025+)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Long-term Vision (2025+)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#platform-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Platform Evolution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aiml-advancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      AI/ML Advancements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#developer-ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Developer Ecosystem
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feature-requests-community-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      Feature Requests &amp; Community Input
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Feature Requests &amp; Community Input">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#highly-requested-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Highly Requested Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#research-exploration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Research &amp; Exploration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-schedule" class="md-nav__link">
+    <span class="md-ellipsis">
+      Release Schedule
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Release Schedule">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#release-cadence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Release Cadence
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-support-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version Support Policy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing-to-the-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing to the Roadmap
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contributing to the Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-influence-the-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Influence the Roadmap
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prioritization-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prioritization Criteria
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feedback-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Feedback Channels
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration &amp; Compatibility
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration &amp; Compatibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Breaking Changes Policy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backward-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backward Compatibility
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Metrics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Success Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technical-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adoption-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adoption Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quality Metrics
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../migration/v0.9.0/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Migration Guides
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h1>
+<p>This roadmap outlines the planned features, improvements, and long-term direction for PromptManager.</p>
+<h2 id="current-version-05x">Current Version (0.5.x)<a class="headerlink" href="#current-version-05x" title="Permanent link">&para;</a></h2>
+<h3 id="completed">Completed ✅<a class="headerlink" href="#completed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Core prompt management functionality</li>
+<li>FileSystem and ActiveRecord storage adapters</li>
+<li>Parameter substitution with nested object support</li>
+<li>ERB template integration</li>
+<li>Basic directive processing (<code>//include</code>)</li>
+<li>Environment variable substitution</li>
+<li>Parameter history tracking</li>
+<li>Comprehensive error handling</li>
+<li>Documentation website</li>
+</ul>
+<h3 id="in-progress">In Progress 🚧<a class="headerlink" href="#in-progress" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Performance optimization for large prompt libraries</li>
+<li>Enhanced search and filtering capabilities</li>
+<li>Improved error messages and debugging tools</li>
+</ul>
+<h2 id="version-100-stable-foundation-q2-2024">Version 1.0.0 - Stable Foundation (Q2 2024)<a class="headerlink" href="#version-100-stable-foundation-q2-2024" title="Permanent link">&para;</a></h2>
+<h3 id="major-features">Major Features<a class="headerlink" href="#major-features" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Stable API</strong>: Finalized public API with semantic versioning commitment</li>
+<li><strong>Enhanced Storage Options</strong>: </li>
+<li>Redis adapter</li>
+<li>S3/cloud storage adapter</li>
+<li>Encrypted storage support</li>
+<li><strong>Advanced Templating</strong>:</li>
+<li>Custom directive system</li>
+<li>Template inheritance</li>
+<li>Conditional rendering improvements</li>
+<li><strong>Developer Experience</strong>:</li>
+<li>CLI tool for prompt management</li>
+<li>VS Code extension for syntax highlighting</li>
+<li>Interactive prompt editor</li>
+</ul>
+<h3 id="performance-scalability">Performance &amp; Scalability<a class="headerlink" href="#performance-scalability" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Lazy loading for large prompt libraries</li>
+<li>Caching layer improvements</li>
+<li>Bulk operations API</li>
+<li>Memory usage optimization</li>
+</ul>
+<h3 id="quality-assurance">Quality Assurance<a class="headerlink" href="#quality-assurance" title="Permanent link">&para;</a></h3>
+<ul>
+<li>95%+ test coverage</li>
+<li>Performance benchmarking</li>
+<li>Security audit</li>
+<li>Documentation completeness review</li>
+</ul>
+<h2 id="version-110-collaboration-features-q3-2024">Version 1.1.0 - Collaboration Features (Q3 2024)<a class="headerlink" href="#version-110-collaboration-features-q3-2024" title="Permanent link">&para;</a></h2>
+<h3 id="team-collaboration">Team Collaboration<a class="headerlink" href="#team-collaboration" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Version Control Integration</strong>:</li>
+<li>Git-based prompt versioning</li>
+<li>Diff and merge capabilities for prompts</li>
+<li>Branch-based development workflows</li>
+<li><strong>Multi-user Support</strong>:</li>
+<li>User permissions and access control</li>
+<li>Approval workflows for prompt changes</li>
+<li>Audit logging for all operations</li>
+</ul>
+<h3 id="content-management">Content Management<a class="headerlink" href="#content-management" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Prompt Organization</strong>:</li>
+<li>Tags and categories</li>
+<li>Collections and workspaces</li>
+<li>Advanced search with faceted navigation</li>
+<li><strong>Quality Control</strong>:</li>
+<li>Prompt linting and validation</li>
+<li>A/B testing framework</li>
+<li>Usage analytics and insights</li>
+</ul>
+<h2 id="version-120-ai-integration-q4-2024">Version 1.2.0 - AI Integration (Q4 2024)<a class="headerlink" href="#version-120-ai-integration-q4-2024" title="Permanent link">&para;</a></h2>
+<h3 id="ai-powered-features">AI-Powered Features<a class="headerlink" href="#ai-powered-features" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Intelligent Prompt Assistance</strong>:</li>
+<li>AI-powered prompt generation</li>
+<li>Optimization suggestions</li>
+<li>Automatic parameter extraction</li>
+<li><strong>Smart Search</strong>:</li>
+<li>Semantic search using embeddings</li>
+<li>Similar prompt recommendations</li>
+<li>Context-aware suggestions</li>
+</ul>
+<h3 id="integration-capabilities">Integration Capabilities<a class="headerlink" href="#integration-capabilities" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>LLM Provider Integration</strong>:</li>
+<li>Direct integration with OpenAI, Anthropic, etc.</li>
+<li>Prompt testing and validation</li>
+<li>Response caching and optimization</li>
+<li><strong>Workflow Automation</strong>:</li>
+<li>Automated prompt testing</li>
+<li>Performance monitoring</li>
+<li>Quality metrics tracking</li>
+</ul>
+<h2 id="version-200-enterprise-platform-q2-2025">Version 2.0.0 - Enterprise Platform (Q2 2025)<a class="headerlink" href="#version-200-enterprise-platform-q2-2025" title="Permanent link">&para;</a></h2>
+<h3 id="enterprise-features">Enterprise Features<a class="headerlink" href="#enterprise-features" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Scalability</strong>:</li>
+<li>Multi-tenant architecture</li>
+<li>Horizontal scaling support</li>
+<li>Enterprise-grade security</li>
+<li><strong>Integration Platform</strong>:</li>
+<li>REST API and GraphQL endpoints</li>
+<li>Webhook system</li>
+<li>Third-party integrations (Slack, Teams, etc.)</li>
+</ul>
+<h3 id="advanced-analytics">Advanced Analytics<a class="headerlink" href="#advanced-analytics" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Usage Intelligence</strong>:</li>
+<li>Prompt performance analytics</li>
+<li>User behavior insights</li>
+<li>ROI tracking and reporting</li>
+<li><strong>Optimization Engine</strong>:</li>
+<li>Automatic prompt optimization</li>
+<li>Performance regression detection</li>
+<li>Resource usage optimization</li>
+</ul>
+<h3 id="governance-compliance">Governance &amp; Compliance<a class="headerlink" href="#governance-compliance" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Security &amp; Compliance</strong>:</li>
+<li>SOC 2 Type II compliance</li>
+<li>GDPR/CCPA compliance tools</li>
+<li>Data encryption at rest and in transit</li>
+<li><strong>Governance</strong>:</li>
+<li>Policy management</li>
+<li>Compliance reporting</li>
+<li>Data retention controls</li>
+</ul>
+<h2 id="long-term-vision-2025">Long-term Vision (2025+)<a class="headerlink" href="#long-term-vision-2025" title="Permanent link">&para;</a></h2>
+<h3 id="platform-evolution">Platform Evolution<a class="headerlink" href="#platform-evolution" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Microservices Architecture</strong>: Break down into specialized services</li>
+<li><strong>Event-Driven Architecture</strong>: Real-time prompt updates and notifications  </li>
+<li><strong>Global CDN</strong>: Distributed prompt delivery for low latency</li>
+<li><strong>Multi-Language Support</strong>: Native support for multiple programming languages</li>
+</ul>
+<h3 id="aiml-advancements">AI/ML Advancements<a class="headerlink" href="#aiml-advancements" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Prompt Evolution</strong>: AI that learns and improves prompts over time</li>
+<li><strong>Contextual Intelligence</strong>: Automatic context injection based on usage patterns</li>
+<li><strong>Predictive Analytics</strong>: Forecast prompt performance and usage trends</li>
+</ul>
+<h3 id="developer-ecosystem">Developer Ecosystem<a class="headerlink" href="#developer-ecosystem" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Plugin System</strong>: Extensible architecture for third-party plugins</li>
+<li><strong>Marketplace</strong>: Community-driven prompt and template sharing</li>
+<li><strong>SDK Library</strong>: Native SDKs for popular languages and frameworks</li>
+</ul>
+<h2 id="feature-requests-community-input">Feature Requests &amp; Community Input<a class="headerlink" href="#feature-requests-community-input" title="Permanent link">&para;</a></h2>
+<h3 id="highly-requested-features">Highly Requested Features<a class="headerlink" href="#highly-requested-features" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Visual Prompt Editor</strong> - GUI for non-technical users</li>
+<li><strong>Prompt Templates Gallery</strong> - Pre-built templates for common use cases</li>
+<li><strong>Integration Connectors</strong> - Native connectors for popular tools</li>
+<li><strong>Mobile App</strong> - Mobile application for prompt management</li>
+<li><strong>Backup/Export Tools</strong> - Data portability and backup solutions</li>
+</ol>
+<h3 id="research-exploration">Research &amp; Exploration<a class="headerlink" href="#research-exploration" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Prompt Compression</strong>: Techniques to reduce prompt size while maintaining effectiveness</li>
+<li><strong>Multi-Modal Prompts</strong>: Support for image, audio, and video prompts</li>
+<li><strong>Federated Learning</strong>: Collaborative improvement without sharing sensitive data</li>
+<li><strong>Quantum-Safe Encryption</strong>: Future-proof security measures</li>
+</ul>
+<h2 id="release-schedule">Release Schedule<a class="headerlink" href="#release-schedule" title="Permanent link">&para;</a></h2>
+<h3 id="release-cadence">Release Cadence<a class="headerlink" href="#release-cadence" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Major Releases</strong>: Every 6-9 months</li>
+<li><strong>Minor Releases</strong>: Every 2-3 months  </li>
+<li><strong>Patch Releases</strong>: As needed (security, critical bugs)</li>
+<li><strong>Beta/RC Releases</strong>: 2-4 weeks before major releases</li>
+</ul>
+<h3 id="version-support-policy">Version Support Policy<a class="headerlink" href="#version-support-policy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Latest Major Version</strong>: Full support (features, bugs, security)</li>
+<li><strong>Previous Major Version</strong>: Bug fixes and security updates for 18 months</li>
+<li><strong>Legacy Versions</strong>: Security updates only for 12 months after end of life</li>
+</ul>
+<h2 id="contributing-to-the-roadmap">Contributing to the Roadmap<a class="headerlink" href="#contributing-to-the-roadmap" title="Permanent link">&para;</a></h2>
+<h3 id="how-to-influence-the-roadmap">How to Influence the Roadmap<a class="headerlink" href="#how-to-influence-the-roadmap" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Feature Requests</strong>: Submit detailed feature requests via GitHub Issues</li>
+<li><strong>Community Discussion</strong>: Participate in roadmap discussions</li>
+<li><strong>User Research</strong>: Provide feedback through surveys and interviews</li>
+<li><strong>Pull Requests</strong>: Contribute implementations for planned features</li>
+</ol>
+<h3 id="prioritization-criteria">Prioritization Criteria<a class="headerlink" href="#prioritization-criteria" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>User Impact</strong>: How many users benefit and to what degree</li>
+<li><strong>Strategic Alignment</strong>: Fits with long-term vision and goals</li>
+<li><strong>Technical Feasibility</strong>: Implementation complexity and maintainability</li>
+<li><strong>Community Support</strong>: Level of community interest and contribution</li>
+<li><strong>Business Value</strong>: Commercial viability and sustainability</li>
+</ul>
+<h3 id="feedback-channels">Feedback Channels<a class="headerlink" href="#feedback-channels" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>GitHub Discussions</strong>: For feature ideas and architectural discussions</li>
+<li><strong>User Surveys</strong>: Quarterly surveys on feature priorities</li>
+<li><strong>Community Calls</strong>: Monthly calls with active contributors</li>
+<li><strong>Beta Programs</strong>: Early access to new features for feedback</li>
+</ul>
+<h2 id="migration-compatibility">Migration &amp; Compatibility<a class="headerlink" href="#migration-compatibility" title="Permanent link">&para;</a></h2>
+<h3 id="breaking-changes-policy">Breaking Changes Policy<a class="headerlink" href="#breaking-changes-policy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Semantic Versioning</strong>: Follow strict semantic versioning</li>
+<li><strong>Deprecation Warnings</strong>: 6-month warning period before removal</li>
+<li><strong>Migration Guides</strong>: Detailed guides for all breaking changes</li>
+<li><strong>Automated Migration</strong>: Tools to assist with major version upgrades</li>
+</ul>
+<h3 id="backward-compatibility">Backward Compatibility<a class="headerlink" href="#backward-compatibility" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>API Stability</strong>: Public API remains stable within major versions</li>
+<li><strong>Configuration</strong>: Configuration format maintained across minor versions</li>
+<li><strong>Storage Format</strong>: Storage adapters maintain backward compatibility</li>
+<li><strong>Plugin Interface</strong>: Plugin API versioning and compatibility matrix</li>
+</ul>
+<h2 id="success-metrics">Success Metrics<a class="headerlink" href="#success-metrics" title="Permanent link">&para;</a></h2>
+<h3 id="technical-metrics">Technical Metrics<a class="headerlink" href="#technical-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Performance</strong>: Sub-100ms prompt rendering for 95<sup>th</sup> percentile</li>
+<li><strong>Reliability</strong>: 99.9% uptime for cloud-hosted services</li>
+<li><strong>Scalability</strong>: Support for 1M+ prompts per instance</li>
+<li><strong>Security</strong>: Zero critical security vulnerabilities</li>
+</ul>
+<h3 id="adoption-metrics">Adoption Metrics<a class="headerlink" href="#adoption-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Community Growth</strong>: 10,000+ GitHub stars by end of 2024</li>
+<li><strong>Enterprise Adoption</strong>: 100+ enterprise customers by 2025</li>
+<li><strong>Ecosystem</strong>: 50+ community-contributed plugins and integrations</li>
+<li><strong>Documentation</strong>: 95%+ documentation coverage for all features</li>
+</ul>
+<h3 id="quality-metrics">Quality Metrics<a class="headerlink" href="#quality-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Code Coverage</strong>: Maintain 90%+ test coverage</li>
+<li><strong>Documentation Score</strong>: 4.5/5 average user rating</li>
+<li><strong>Support Response</strong>: &lt;24 hour response time for critical issues</li>
+<li><strong>Community Satisfaction</strong>: 8/10 average satisfaction score</li>
+</ul>
+<hr />
+<p><em>This roadmap is a living document that evolves based on user feedback, market conditions, and technical discoveries. While we strive to deliver on these plans, priorities may shift to better serve our community.</em></p>
+<p><strong>Last Updated</strong>: January 2024<br />
+<strong>Next Review</strong>: April 2024</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024 MadBomber - MIT License
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/MadBomber/prompt_manager" target="_blank" rel="noopener" title="GitHub Repository" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://rubygems.org/gems/prompt_manager" target="_blank" rel="noopener" title="RubyGems Package" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M116.7 33.8c4.5-6.1 11.7-9.8 19.3-9.8h240c7.6 0 14.8 3.6 19.3 9.8l112 152c6.8 9.2 6.1 21.9-1.5 30.4l-232 256c-4.5 5-11 7.9-17.8 7.9s-13.2-2.9-17.8-7.9l-232-256c-7.7-8.5-8.3-21.2-1.5-30.4zm38.5 39.8c-3.3 2.5-4.2 7-2.1 10.5l57.4 95.7L63.3 192c-4.1.3-7.3 3.8-7.3 8s3.2 7.6 7.3 8l192 16h1.3l192-16c4.1-.3 7.3-3.8 7.3-8s-3.2-7.6-7.3-8l-147.2-12.3 57.4-95.6c2.1-3.5 1.2-8.1-2.1-10.5s-7.9-2-10.7 1l-90 97.6-90.1-97.6c-2.8-3-7.4-3.4-10.7-1"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.prune", "navigation.indexes", "navigation.top", "toc.follow", "toc.integrate", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>
