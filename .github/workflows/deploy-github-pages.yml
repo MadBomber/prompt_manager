@@ -1,0 +1,52 @@
+name: Deploy Documentation to GitHub Pages
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - ".github/workflows/deploy-github-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: |
+          pip install mkdocs
+          pip install mkdocs-material
+          pip install mkdocs-macros-plugin
+          pip install mike
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Deploy to GitHub Pages
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Deploying from main branch"
+            mkdocs gh-deploy --force --clean
+          else
+            echo "Deploying from develop branch"
+            mkdocs gh-deploy --force --clean
+          fi

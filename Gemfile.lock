@@ -1,170 +1,101 @@
 PATH
   remote: .
   specs:
-    prompt_manager (0.5.8)
+    prompt_manager (1.0.0)
+      ostruct
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activemodel (8.0.2.1)
-      activesupport (= 8.0.2.1)
-    activerecord (8.0.2.1)
-      activemodel (= 8.0.2.1)
-      activesupport (= 8.0.2.1)
-      timeout (>= 0.4.0)
-    activesupport (8.0.2.1)
-      base64
-      benchmark (>= 0.3)
-      bigdecimal
-      concurrent-ruby (~> 1.0, >= 1.3.1)
-      connection_pool (>= 2.2.5)
-      drb
-      i18n (>= 1.6, < 2)
-      logger (>= 1.4.2)
-      minitest (>= 5.1)
-      securerandom (>= 0.3)
-      tzinfo (~> 2.0, >= 2.0.5)
-      uri (>= 0.13.1)
-    amazing_print (1.8.1)
+    aigcm (0.3.2)
+      ruby_llm
+    amazing_print (2.0.0)
     base64 (0.3.0)
-    benchmark (0.4.1)
-    bigdecimal (3.2.2)
-    cogger (1.5.0)
-      core (~> 2.0)
-      logger (~> 1.7)
-      refinements (~> 13.5)
-      tone (~> 2.0)
-      zeitwerk (~> 2.7)
-    concurrent-ruby (1.3.5)
-    connection_pool (2.5.4)
-    containable (1.3.0)
-      concurrent-ruby (~> 1.3)
-    core (2.3.0)
-    debug_me (1.1.1)
+    debug_me (1.1.3)
     docile (1.4.1)
-    drb (2.2.3)
-    dry-configurable (1.3.0)
-      dry-core (~> 1.1)
-      zeitwerk (~> 2.6)
-    dry-core (1.1.0)
-      concurrent-ruby (~> 1.0)
+    event_stream_parser (1.0.0)
+    faraday (2.14.0)
+      faraday-net_http (>= 2.0, < 3.5)
+      json
       logger
-      zeitwerk (~> 2.6)
-    dry-inflector (1.2.0)
-    dry-initializer (3.2.0)
-    dry-logic (1.6.0)
-      bigdecimal
-      concurrent-ruby (~> 1.0)
-      dry-core (~> 1.1)
-      zeitwerk (~> 2.6)
-    dry-monads (1.9.0)
-      concurrent-ruby (~> 1.0)
-      dry-core (~> 1.1)
-      zeitwerk (~> 2.6)
-    dry-schema (1.14.1)
-      concurrent-ruby (~> 1.0)
-      dry-configurable (~> 1.0, >= 1.0.1)
-      dry-core (~> 1.1)
-      dry-initializer (~> 3.2)
-      dry-logic (~> 1.5)
-      dry-types (~> 1.8)
-      zeitwerk (~> 2.6)
-    dry-types (1.8.3)
-      bigdecimal (~> 3.0)
-      concurrent-ruby (~> 1.0)
-      dry-core (~> 1.0)
-      dry-inflector (~> 1.0)
-      dry-logic (~> 1.4)
-      zeitwerk (~> 2.6)
-    etcher (3.3.0)
-      cogger (~> 1.0)
-      core (~> 2.0)
-      dry-monads (~> 1.9)
-      dry-types (~> 1.7)
-      refinements (~> 13.3)
-      versionaire (~> 14.0)
-      zeitwerk (~> 2.7)
-    i18n (1.14.7)
-      concurrent-ruby (~> 1.0)
-    infusible (4.4.0)
-      marameters (~> 4.1)
+    faraday-multipart (1.2.0)
+      multipart-post (~> 2.0)
+    faraday-net_http (3.4.2)
+      net-http (~> 0.5)
+    faraday-retry (2.4.0)
+      faraday (~> 2.0)
+    json (2.18.0)
     logger (1.7.0)
-    marameters (4.4.0)
-      refinements (~> 13.3)
-      zeitwerk (~> 2.7)
-    mini_portile2 (2.8.9)
-    minitest (5.25.5)
-    optparse (0.6.0)
+    marcel (1.1.0)
+    minitest (6.0.1)
+      prism (~> 1.5)
+    multipart-post (2.4.1)
+    net-http (0.9.1)
+      uri (>= 0.11.1)
     ostruct (0.6.3)
-    rake (13.3.0)
-    refinements (13.5.0)
-    runcom (12.3.0)
-      refinements (~> 13.3)
-      xdg (~> 9.0)
-      zeitwerk (~> 2.7)
-    securerandom (0.4.1)
+    prism (1.9.0)
+    rake (13.3.1)
+    ruby_llm (1.11.0)
+      base64
+      event_stream_parser (~> 1)
+      faraday (>= 1.10.0)
+      faraday-multipart (>= 1)
+      faraday-net_http (>= 1)
+      faraday-retry (>= 1)
+      marcel (~> 1.0)
+      ruby_llm-schema (~> 0.2.1)
+      zeitwerk (~> 2)
+    ruby_llm-schema (0.2.5)
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.13.2)
     simplecov_json_formatter (0.1.4)
-    sod (1.4.0)
-      cogger (~> 1.0)
-      containable (~> 1.1)
-      infusible (~> 4.0)
-      optparse (~> 0.6)
-      refinements (~> 13.5)
-      tone (~> 2.0)
-      zeitwerk (~> 2.7)
-    spek (4.4.0)
-      core (~> 2.0)
-      dry-monads (~> 1.9)
-      refinements (~> 13.3)
-      versionaire (~> 14.0)
-      zeitwerk (~> 2.7)
-    sqlite3 (2.7.3)
-      mini_portile2 (~> 2.8.0)
-    sqlite3 (2.7.3-arm64-darwin)
-    timeout (0.4.3)
-    tocer (19.3.0)
-      cogger (~> 1.0)
-      containable (~> 1.1)
-      core (~> 2.0)
-      dry-schema (~> 1.13)
-      etcher (~> 3.0)
-      infusible (~> 4.0)
-      refinements (~> 13.3)
-      runcom (~> 12.0)
-      sod (~> 1.0)
-      spek (~> 4.0)
-      zeitwerk (~> 2.7)
-    tone (2.4.0)
-      refinements (~> 13.3)
-      zeitwerk (~> 2.7)
-    tzinfo (2.0.6)
-      concurrent-ruby (~> 1.0)
-    uri (1.0.3)
-    versionaire (14.3.0)
-      refinements (~> 13.3)
-    xdg (9.3.0)
-    zeitwerk (2.7.3)
+    uri (1.1.1)
+    zeitwerk (2.7.4)
 
 PLATFORMS
-  arm64-darwin-23
+  arm64-darwin-25
   ruby
 
 DEPENDENCIES
-  activerecord
+  aigcm
   amazing_print
   debug_me
   minitest
-  ostruct
   prompt_manager!
   rake
   simplecov
-  sqlite3
-  tocer
+
+CHECKSUMS
+  aigcm (0.3.2) sha256=eda5055a4bc1dd021f860b08134bf122f9df2e283da5be6719d1dde98a23428a
+  amazing_print (2.0.0) sha256=2e36aba46ac78d37ed27ca0e2056afe3583183bb5c64f157c246b267355e5d6a
+  base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
+  debug_me (1.1.3) sha256=ae8cf61993350d9b3cbe337a7f9a0f595be5b4976c10891a4e1eacc63d09f717
+  docile (1.4.1) sha256=96159be799bfa73cdb721b840e9802126e4e03dfc26863db73647204c727f21e
+  event_stream_parser (1.0.0) sha256=a2683bab70126286f8184dc88f7968ffc4028f813161fb073ec90d171f7de3c8
+  faraday (2.14.0) sha256=8699cfe5d97e55268f2596f9a9d5a43736808a943714e3d9a53e6110593941cd
+  faraday-multipart (1.2.0) sha256=7d89a949693714176f612323ca13746a2ded204031a6ba528adee788694ef757
+  faraday-net_http (3.4.2) sha256=f147758260d3526939bf57ecf911682f94926a3666502e24c69992765875906c
+  faraday-retry (2.4.0) sha256=7b79c48fb7e56526faf247b12d94a680071ff40c9fda7cf1ec1549439ad11ebe
+  json (2.18.0) sha256=b10506aee4183f5cf49e0efc48073d7b75843ce3782c68dbeb763351c08fd505
+  logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
+  marcel (1.1.0) sha256=fdcfcfa33cc52e93c4308d40e4090a5d4ea279e160a7f6af988260fa970e0bee
+  minitest (6.0.1) sha256=7854c74f48e2e975969062833adc4013f249a4b212f5e7b9d5c040bf838d54bb
+  multipart-post (2.4.1) sha256=9872d03a8e552020ca096adadbf5e3cb1cd1cdd6acd3c161136b8a5737cdb4a8
+  net-http (0.9.1) sha256=25ba0b67c63e89df626ed8fac771d0ad24ad151a858af2cc8e6a716ca4336996
+  ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
+  prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
+  prompt_manager (1.0.0)
+  rake (13.3.1) sha256=8c9e89d09f66a26a01264e7e3480ec0607f0c497a861ef16063604b1b08eb19c
+  ruby_llm (1.11.0) sha256=c1bc17bb02a7e805d8f62ea6ada2ecfe7782fc955e9440b53a2fdbd00e5ec9cc
+  ruby_llm-schema (0.2.5) sha256=b08cd42e8de7100325e2e868672a56f1915eb23692bb808f51f214e41392104f
+  simplecov (0.22.0) sha256=fe2622c7834ff23b98066bb0a854284b2729a569ac659f82621fc22ef36213a5
+  simplecov-html (0.13.2) sha256=bd0b8e54e7c2d7685927e8d6286466359b6f16b18cb0df47b508e8d73c777246
+  simplecov_json_formatter (0.1.4) sha256=529418fbe8de1713ac2b2d612aa3daa56d316975d307244399fa4838c601b428
+  uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6
+  zeitwerk (2.7.4) sha256=2bef90f356bdafe9a6c2bd32bcd804f83a4f9b8bc27f3600fff051eb3edcec8b
 
 BUNDLED WITH
-   2.7.1
+  4.0.5
