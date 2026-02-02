@@ -1,6 +1,26 @@
 # PM (PromptManager)
 
-PM (PromptManager) parses YAML metadata from markdown strings or files. It expands shell references, extracts metadata and content, and renders ERB templates on demand.
+<table>
+<tr>
+<td width="50%" align="center" valign="top">
+<img src="docs/assets/images/prompt_manager.gif" alt="PromptManager" width="70%"><br>
+<em>"Prompts with superpowers"</em>
+</td>
+<td width="50%" valign="top">
+<strong>Parse YAML metadata from markdown, expand shell references, and render ERB templates on demand</strong><br><br>
+PM (PromptManager) treats prompt files as composable, parameterized templates. Write prompts in markdown with YAML front matter, shell references, and ERB — PM handles the rest.<br><br>
+<strong>Key Features</strong><br>
+
+- <strong>YAML Metadata</strong> - Parse from markdown strings or files<br>
+- <strong>Conditional Shell Expansion</strong> - $ENVAR, ${ENVAR}, $(command) substitution<br>
+- <strong>Conditional ERB Templates</strong> - On-demand rendering with named parameters<br>
+- <strong>Reclusive Include System</strong> - Compose prompts from multiple files<br>
+- <strong>Custom Directives</strong> - Register custom methods for ERB templates<br>
+- <strong>Configurable Pipeline</strong> - Enable/disable stages per prompt or globally<br>
+- <strong>Comment Stripping</strong> - HTML comments removed before processing
+</td>
+</tr>
+</table>
 
 ## Installation
 
