@@ -35,12 +35,16 @@ module PM
   # Parses a source through the full pipeline:
   # strip HTML comments → extract YAML metadata → shell expansion (when shell: true).
   #
-  # When source is a Pathname, responds to :to_path, or is a String ending
-  # in ".md", it is treated as a file path. The file is read and parsed,
-  # and `directory`, `name`, `created_at`, `modified_at` are added to metadata.
+  # When source is a Pathname, responds to :to_path, is a String ending
+  # in ".md", a Symbol, or a single word (e.g. "greeting"), it is treated
+  # as a file path. Symbols and single-word strings are converted to
+  # "name.md" basenames. The file is read and parsed, and `directory`,
+  # `name`, `created_at`, `modified_at` are added to metadata.
   #
   # Otherwise source is parsed directly as a string.
   def self.parse(source)
+    source = "#{source}.md" if source.is_a?(Symbol) || single_word?(source)
+
     if file_source?(source)
       raw = source.respond_to?(:to_path) ? source.to_path : source
       unless config.prompts_dir.empty?
@@ -69,6 +73,13 @@ module PM
     source.respond_to?(:to_path) || (source.is_a?(String) && source.end_with?('.md'))
   end
   private_class_method :file_source?
+
+  # Returns true when source is a single word with no spaces,
+  # path separators, or file extension.
+  def self.single_word?(source)
+    source.is_a?(String) && source.match?(/\A\w+\z/)
+  end
+  private_class_method :single_word?
 
   # Parses a string through the full pipeline.
   def self.parse_string(string)

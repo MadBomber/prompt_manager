@@ -141,6 +141,136 @@ class PMParseFileTest < Minitest::Test
   end
 end
 
+class PMParseShorthandTest < Minitest::Test
+  def setup
+    PM.config.prompts_dir = FIXTURES
+  end
+
+  def teardown
+    PM.config.reset!
+  end
+
+  # --- Symbol source ---
+
+  def test_parse_accepts_symbol
+    parsed = PM.parse(:simple)
+
+    assert_equal 'Simple Prompt', parsed.metadata.title
+  end
+
+  def test_parse_symbol_adds_directory_to_metadata
+    parsed = PM.parse(:simple)
+
+    assert_equal FIXTURES, parsed.metadata.directory
+  end
+
+  def test_parse_symbol_adds_name_to_metadata
+    parsed = PM.parse(:simple)
+
+    assert_equal 'simple.md', parsed.metadata.name
+  end
+
+  def test_parse_symbol_adds_created_at_to_metadata
+    parsed = PM.parse(:simple)
+
+    assert_instance_of Time, parsed.metadata.created_at
+  end
+
+  def test_parse_symbol_adds_modified_at_to_metadata
+    parsed = PM.parse(:simple)
+
+    assert_instance_of Time, parsed.metadata.modified_at
+  end
+
+  def test_parse_symbol_extracts_content
+    parsed = PM.parse(:simple)
+
+    assert_includes parsed.content, 'simple prompt with no parameters'
+  end
+
+  def test_parse_symbol_with_subdirectory_fixture
+    parsed = PM.parse(:'includes/header')
+
+    assert_equal 'header.md', parsed.metadata.name
+  end
+
+  # --- Single word string source ---
+
+  def test_parse_accepts_single_word
+    parsed = PM.parse('simple')
+
+    assert_equal 'Simple Prompt', parsed.metadata.title
+  end
+
+  def test_parse_single_word_adds_directory_to_metadata
+    parsed = PM.parse('simple')
+
+    assert_equal FIXTURES, parsed.metadata.directory
+  end
+
+  def test_parse_single_word_adds_name_to_metadata
+    parsed = PM.parse('simple')
+
+    assert_equal 'simple.md', parsed.metadata.name
+  end
+
+  def test_parse_single_word_adds_file_timestamps
+    parsed = PM.parse('simple')
+
+    assert_instance_of Time, parsed.metadata.created_at
+    assert_instance_of Time, parsed.metadata.modified_at
+  end
+
+  def test_parse_single_word_extracts_content
+    parsed = PM.parse('simple')
+
+    assert_includes parsed.content, 'simple prompt with no parameters'
+  end
+
+  # --- Single word detection edge cases ---
+
+  def test_multiword_string_not_treated_as_file
+    parsed = PM.parse("Hello world")
+
+    assert_nil parsed.metadata.title
+    assert_equal "Hello world", parsed.content
+  end
+
+  def test_string_with_dots_not_treated_as_single_word
+    parsed = PM.parse("some.thing")
+
+    assert_nil parsed.metadata.title
+    assert_equal "some.thing", parsed.content
+  end
+
+  def test_string_with_spaces_not_treated_as_single_word
+    parsed = PM.parse("not a word")
+
+    assert_nil parsed.metadata.title
+    assert_equal "not a word", parsed.content
+  end
+
+  def test_string_with_newline_not_treated_as_single_word
+    parsed = PM.parse("line1\nline2")
+
+    assert_nil parsed.metadata.title
+    assert_equal "line1\nline2", parsed.content
+  end
+
+  def test_string_with_yaml_not_treated_as_single_word
+    parsed = PM.parse("---\ntitle: Test\n---\nContent\n")
+
+    assert_equal 'Test', parsed.metadata.title
+  end
+
+  def test_single_word_with_underscores_treated_as_file
+    parsed = PM.parse('no_metadata')
+
+    assert_equal FIXTURES, parsed.metadata.directory
+    assert_equal 'no_metadata.md', parsed.metadata.name
+  end
+end
+
 class PMStripCommentsTest < Minitest::Test
   def test_strips_inline_html_comment
     parsed = PM.parse(fixture('with_comments.md'))

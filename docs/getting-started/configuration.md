@@ -14,12 +14,18 @@ end
 
 ## prompts_dir
 
-Prepended to relative file paths passed to `PM.parse`. Absolute paths bypass it.
+Prepended to relative file paths passed to `PM.parse`. Absolute paths bypass it. Symbols and single words are converted to `.md` basenames first.
 
 ```ruby
 PM.configure { |c| c.prompts_dir = '/usr/share/prompts' }
 
 PM.parse('code_review.md')
+#=> reads /usr/share/prompts/code_review.md
+
+PM.parse(:code_review)
+#=> reads /usr/share/prompts/code_review.md
+
+PM.parse('code_review')
 #=> reads /usr/share/prompts/code_review.md
 
 PM.parse('/absolute/path/review.md')

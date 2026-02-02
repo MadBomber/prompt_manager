@@ -25,7 +25,10 @@ Hello, <%= name %>! Welcome.
 ```
 
 ```ruby
-parsed = PM.parse('greeting.md')
+# Any of these forms work:
+parsed = PM.parse('greeting.md')    # explicit .md extension
+parsed = PM.parse(:greeting)        # Symbol — .md appended
+parsed = PM.parse('greeting')       # single word — .md appended
 
 parsed.metadata.title       #=> "Greeting"
 parsed.metadata.parameters  #=> {"name" => nil}

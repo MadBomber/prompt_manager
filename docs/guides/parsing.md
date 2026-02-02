@@ -1,6 +1,6 @@
 # Parsing Prompts
 
-`PM.parse` is the main entry point. It accepts either a file path or a raw string.
+`PM.parse` is the main entry point. It accepts a file path, a Symbol, a single word, or a raw string.
 
 ## File Paths
 
@@ -9,6 +9,8 @@ A source is treated as a file path when it:
 - Is a `Pathname` object
 - Responds to `to_path`
 - Is a String ending in `.md`
+- Is a Symbol (`.md` is appended, e.g. `:code_review` → `code_review.md`)
+- Is a single word containing only letters, digits, or underscores (`.md` is appended, e.g. `"code_review"` → `code_review.md`)
 
 ```ruby
 # String file path
@@ -16,6 +18,12 @@ parsed = PM.parse('code_review.md')
 
 # Pathname
 parsed = PM.parse(Pathname.new('code_review.md'))
+
+# Symbol (basename — .md appended)
+parsed = PM.parse(:code_review)
+
+# Single word (basename — .md appended)
+parsed = PM.parse('code_review')
 ```
 
 When parsing a file, PM adds these keys to the metadata automatically:

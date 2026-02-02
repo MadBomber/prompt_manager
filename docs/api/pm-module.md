@@ -12,12 +12,13 @@ Parse a file or string and return a `PM::Parsed` object.
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | String, Pathname | File path (`.md` extension or Pathname) or raw string |
+| `source` | String, Symbol, Pathname | File path (`.md` extension or Pathname), Symbol, single word, or raw string |
 
 **Returns:** `PM::Parsed` (Struct with `metadata` and `content`)
 
 **Behavior:**
 
+- If `source` is a Symbol or a single word (letters, digits, underscores only), `.md` is appended and it is treated as a file basename
 - If `source` is a Pathname, responds to `to_path`, or is a String ending in `.md`, it is treated as a file path
 - File paths are resolved relative to `PM.config.prompts_dir` (unless absolute)
 - File parsing adds `directory`, `name`, `created_at`, `modified_at` to metadata
@@ -26,6 +27,10 @@ Parse a file or string and return a `PM::Parsed` object.
 ```ruby
 # File
 parsed = PM.parse('review.md')
+
+# Symbol or single word (basename — .md appended)
+parsed = PM.parse(:review)      #=> parses review.md
+parsed = PM.parse('review')     #=> parses review.md
 
 # String
 parsed = PM.parse("---\ntitle: Hello\n---\nContent")

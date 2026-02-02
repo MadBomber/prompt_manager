@@ -6,7 +6,7 @@ PM processes prompts through a four-stage pipeline. The first three stages run a
 
 ```mermaid
 graph TD
-    A["Raw Input<br/>(file or string)"] --> B["1. Strip HTML Comments"]
+    A["Raw Input<br/>(file, symbol, word, or string)"] --> B["1. Strip HTML Comments"]
     B --> C["2. Extract YAML Metadata"]
     C --> D["3. Shell Expansion"]
     D --> E["PM::Parsed<br/>(metadata + content)"]

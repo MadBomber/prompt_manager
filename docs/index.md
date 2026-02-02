@@ -1,15 +1,27 @@
 # PM (PromptManager)
 
-PM parses YAML metadata from markdown strings or files. It expands shell references, extracts metadata and content, and renders ERB templates on demand.
+<table>
+<tr>
+<td width="40%" align="center" valign="top">
+  <img src="assets/images/prompt_manager.gif" alt="PromptManager" width="100%"><br>
+  <em>"Prompts with superpowers"</em>
+</td>
+<td width="60%" valign="top">
+<strong>Parse YAML metadata from markdown, expand shell references, and render ERB templates on demand</strong><br><br>
+PM (PromptManager) treats prompt files as composable, parameterized templates. Write prompts in markdown with YAML front matter, shell references, and ERB — PM handles the rest.
 
-## Key Features
+<h3>Key Features</h3>
 
-- **YAML Metadata Extraction** -- Front-matter parsed into an OpenStruct-based object with dot notation and predicate methods
-- **Shell Expansion** -- `$VAR`, `${VAR}`, and `$(command)` replaced at parse time
-- **ERB Rendering** -- Templates rendered on demand with parameter substitution via `to_s`
-- **File Includes** -- Compose prompts from multiple files with `<%= include 'path.md' %>`; nested includes and circular detection built in
-- **Custom Directives** -- Register your own methods available inside ERB templates
-- **Configurable Pipeline** -- Disable shell or ERB per-file or globally
+<li> <strong>YAML Metadata</strong> - Parse from markdown strings or files<br>
+<li> <strong>Shell Expansion</strong> - $VAR, ${VAR}, and $(command) substitution<br>
+<li> <strong>ERB Rendering</strong> - On-demand rendering with named parameters<br>
+<li> <strong>File Includes</strong> - Compose prompts from multiple files<br>
+<li> <strong>Custom Directives</strong> - Register custom methods for ERB templates<br>
+<li> <strong>Configurable Pipeline</strong> - Enable/disable stages per prompt or globally<br>
+<li> <strong>Comment Stripping</strong> - HTML comments removed before processing
+</td>
+</tr>
+</table>
 
 ## Processing Pipeline
 

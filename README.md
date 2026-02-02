@@ -77,12 +77,16 @@ PM.config.erb          #=> true
 
 ## Usage
 
-`PM.parse` accepts a file path or a string:
+`PM.parse` accepts a file path, a Symbol, a single word, or a string:
 
 ```ruby
 # File path (String ending in .md or Pathname)
 parsed = PM.parse('code_review.md')
 parsed = PM.parse(Pathname.new('code_review.md'))
+
+# Symbol or single word (treated as basename, .md appended)
+parsed = PM.parse(:code_review)    #=> parses code_review.md
+parsed = PM.parse('code_review')   #=> parses code_review.md
 
 # String content
 parsed = PM.parse("---\ntitle: Hello\n---\nContent here")
