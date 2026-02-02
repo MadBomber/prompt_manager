@@ -1803,7 +1803,7 @@
 <p>PM processes prompts through a four-stage pipeline. The first three stages run at parse time; the fourth runs on demand when <code>to_s</code> is called.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph TD
-    A["Raw Input&lt;br/&gt;(file or string)"] --&gt; B["1. Strip HTML Comments"]
+    A["Raw Input&lt;br/&gt;(file, symbol, word, or string)"] --&gt; B["1. Strip HTML Comments"]
     B --&gt; C["2. Extract YAML Metadata"]
     C --&gt; D["3. Shell Expansion"]
     D --&gt; E["PM::Parsed&lt;br/&gt;(metadata + content)"]

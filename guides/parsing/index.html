@@ -1768,19 +1768,27 @@
 
 
 <h1 id="parsing-prompts">Parsing Prompts<a class="headerlink" href="#parsing-prompts" title="Permanent link">&para;</a></h1>
-<p><code>PM.parse</code> is the main entry point. It accepts either a file path or a raw string.</p>
+<p><code>PM.parse</code> is the main entry point. It accepts a file path, a Symbol, a single word, or a raw string.</p>
 <h2 id="file-paths">File Paths<a class="headerlink" href="#file-paths" title="Permanent link">&para;</a></h2>
 <p>A source is treated as a file path when it:</p>
 <ul>
 <li>Is a <code>Pathname</code> object</li>
 <li>Responds to <code>to_path</code></li>
 <li>Is a String ending in <code>.md</code></li>
+<li>Is a Symbol (<code>.md</code> is appended, e.g. <code>:code_review</code> → <code>code_review.md</code>)</li>
+<li>Is a single word containing only letters, digits, or underscores (<code>.md</code> is appended, e.g. <code>"code_review"</code> → <code>code_review.md</code>)</li>
 </ul>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># String file path</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;code_review.md&#39;</span><span class="p">)</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Pathname</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="no">Pathname</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;code_review.md&#39;</span><span class="p">))</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Symbol (basename — .md appended)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="ss">:code_review</span><span class="p">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Single word (basename — .md appended)</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;code_review&#39;</span><span class="p">)</span>
 </span></code></pre></div>
 <p>When parsing a file, PM adds these keys to the metadata automatically:</p>
 <table>

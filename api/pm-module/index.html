@@ -1918,14 +1918,15 @@
 <tbody>
 <tr>
 <td><code>source</code></td>
-<td>String, Pathname</td>
-<td>File path (<code>.md</code> extension or Pathname) or raw string</td>
+<td>String, Symbol, Pathname</td>
+<td>File path (<code>.md</code> extension or Pathname), Symbol, single word, or raw string</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Returns:</strong> <code>PM::Parsed</code> (Struct with <code>metadata</code> and <code>content</code>)</p>
 <p><strong>Behavior:</strong></p>
 <ul>
+<li>If <code>source</code> is a Symbol or a single word (letters, digits, underscores only), <code>.md</code> is appended and it is treated as a file basename</li>
 <li>If <code>source</code> is a Pathname, responds to <code>to_path</code>, or is a String ending in <code>.md</code>, it is treated as a file path</li>
 <li>File paths are resolved relative to <code>PM.config.prompts_dir</code> (unless absolute)</li>
 <li>File parsing adds <code>directory</code>, <code>name</code>, <code>created_at</code>, <code>modified_at</code> to metadata</li>
@@ -1934,8 +1935,12 @@
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># File</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;review.md&#39;</span><span class="p">)</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># String</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">title: Hello</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">Content&quot;</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Symbol or single word (basename — .md appended)</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="ss">:review</span><span class="p">)</span><span class="w">      </span><span class="c1">#=&gt; parses review.md</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;review&#39;</span><span class="p">)</span><span class="w">     </span><span class="c1">#=&gt; parses review.md</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># String</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">title: Hello</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">Content&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
