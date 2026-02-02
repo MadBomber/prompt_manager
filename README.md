@@ -7,9 +7,9 @@
 <em>"Prompts with superpowers"</em>
 </td>
 <td width="50%" valign="top">
-<strong>Parse YAML metadata from markdown, expand shell references, and render ERB templates on demand</strong><br><br>
-PM (PromptManager) treats prompt files as composable, parameterized templates. Write prompts in markdown with YAML front matter, shell references, and ERB — PM handles the rest.<br><br>
-<strong>Key Features</strong><br>
+  Like an enchanted librarian enhancing books of knowledge, PromptManager (PM) helps you masterfully orchestrate and organize your AI prompts through wisdom and experience. Each prompt becomes a living entity that can be categorized, parameterized, and interconnected with golden threads of relationships. 
+
+  <h3>Key Features</h3>
 
 - <strong>YAML Metadata</strong> - Parse from markdown strings or files<br>
 - <strong>Conditional Shell Expansion</strong> - $ENVAR, ${ENVAR}, $(command) substitution<br>
