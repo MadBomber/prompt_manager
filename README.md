@@ -2,7 +2,7 @@
 
 > [!CAUTION]
 > ## ⚠️ Breaking Changes are Coming ⚠️
-> See [Roadmap](#roadmap) for details about upcoming changes.
+> See the [develop branch README](https://github.com/madbomber/prompt_manager/blob/develop/README.md) for details about upcoming changes in version 1.0.0
 <br />
 <div align="center">
   <table>
