@@ -1,6 +1,39 @@
 ## Unreleased
 
 ## Released
+### [1.0.0] = 2026-02-03
+
+**Complete rewrite** — repositioned from a prompt management system with storage adapters to a focused prompt parsing and rendering engine.
+
+#### Breaking Changes
+- **New `PM` module replaces `PromptManager`** — the entire codebase has been restructured under the `PM` namespace. A backward-compatibility alias (`PromptManager = PM`) is provided via `require 'prompt_manager'`.
+- **Storage adapters removed** — `FileSystemAdapter`, `ActiveRecordAdapter`, and all database-backed persistence have been removed. The library now operates on strings, files, and Pathnames directly.
+- **`Prompt` class removed** — replaced by the lightweight `PM::Parsed` struct.
+- **`DirectiveProcessor` class removed** — replaced by a simple `PM.register` directive registration API.
+- **Parameter history removed** — the library no longer tracks historical parameter values per keyword.
+- **Configuration simplified** — only three settings remain: `prompts_dir`, `shell`, and `erb`. Options like `parameter_regex` and `search_proc` have been removed.
+
+#### New Features
+- **Symbol and single-word parsing** — `PM.parse(:code_review)` and `PM.parse('code_review')` automatically resolve to `code_review.md` in the configured `prompts_dir`.
+- **Directive aliases** — `PM.register(:webpage, :website, :web) { |ctx, url| ... }` registers multiple names for a single directive with rollback on duplicate detection.
+- **`PM::Metadata`** — OpenStruct-based metadata with automatic predicate methods for boolean fields (e.g., `metadata.shell?`).
+- **`PM::Parsed`** — Struct-based result with `RenderContext` support and required-parameter validation in `to_s`.
+- **Built-in `include` directive** — compose prompts from multiple files with loop protection.
+- **Streamlined parsing pipeline** — strip HTML comments, extract YAML front matter, optional shell expansion (`$VAR`, `${VAR}`, `$(command)`), optional ERB rendering.
+
+#### Removed
+- `PromptManager::Prompt` class
+- `PromptManager::DirectiveProcessor` class
+- `PromptManager::Storage::FileSystemAdapter`
+- `PromptManager::Storage::ActiveRecordAdapter`
+- Custom error classes (`PromptManager::Error` hierarchy)
+- Development dependencies on `activerecord`, `sqlite3`, and `tocer`
+
+#### Added
+- Runtime dependency on `ostruct`
+- Comprehensive test suite (8 test files, 19 fixtures)
+- Full documentation site under `docs/` with guides for parsing, shell expansion, ERB rendering, custom directives, and prompt composition
+
 ### [0.5.8] = 2025-09-01
 - fixed issue where removed keywords from prompt text were still being included in parameters if they existed in the JSON file (addresses AIA issue #105)
 - parameters now only include keywords currently present in the prompt text, while preserving historical values for existing keywords
