@@ -3,4 +3,8 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in prompt_manager.gemspec
 gemspec
 
-gem 'rake'
+group :development, :test do
+  gem 'aigcm'
+  gem 'debug_me'
+  gem 'rake'
+end
