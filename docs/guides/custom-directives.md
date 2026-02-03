@@ -21,6 +21,23 @@ Environment: <%= env 'DEPLOY_ENV' %>
 Recent commits: <%= run 'git log --oneline -5' %>
 ```
 
+## Aliases
+
+Register multiple names for the same directive by passing additional names:
+
+```ruby
+PM.register(:webpage, :website, :web) { |_ctx, url| fetch_page(url) }
+```
+
+All names point to the same block. Use any of them in ERB:
+
+```markdown
+<%= webpage 'https://example.com' %>
+<%= web 'https://example.com' %>
+```
+
+Duplicate detection still applies — if any name is already registered, an error is raised.
+
 ## The RenderContext
 
 The first argument to every directive block is a `PM::RenderContext` with access to the current render state:

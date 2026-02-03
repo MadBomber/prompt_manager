@@ -223,6 +223,20 @@ PM.register(:env)  { |_ctx, key| ENV.fetch(key, '') }
 PM.register(:run)  { |_ctx, cmd| `#{cmd}`.chomp }
 ```
 
+Register multiple names for the same directive (aliases):
+
+```ruby
+PM.register(:webpage, :website, :web) { |_ctx, url| fetch_page(url) }
+```
+
+All three names call the same block. Use any of them in ERB:
+
+```markdown
+<%= webpage 'https://example.com' %>
+<%= website 'https://example.com' %>
+<%= web 'https://example.com' %>
+```
+
 Use them in any prompt file:
 
 ```md

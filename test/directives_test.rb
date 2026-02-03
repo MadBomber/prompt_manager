@@ -143,6 +143,41 @@ class PMRegisterDirectiveTest < Minitest::Test
 
     assert_includes result, 'cba'
   end
+
+  def test_register_multiple_names_as_aliases
+    PM.register(:shout, :yell, :scream) { |_ctx, text| text.upcase + '!' }
+
+    assert PM.directives.key?(:shout)
+    assert PM.directives.key?(:yell)
+    assert PM.directives.key?(:scream)
+
+    %w[shout yell scream].each do |name|
+      parsed = PM.parse("---\ntitle: Test\n---\n<%= #{name} 'hello' %>\n")
+      assert_includes parsed.to_s, 'HELLO!'
+    end
+  end
+
+  def test_register_aliases_share_same_block
+    PM.register(:loud, :louder) { |_ctx, text| text.upcase }
+
+    assert_same PM.directives[:loud], PM.directives[:louder]
+  end
+
+  def test_register_aliases_duplicate_raises
+    PM.register(:first, :second) { |_ctx| 'x' }
+
+    error = assert_raises(RuntimeError) { PM.register(:second) { |_ctx| 'y' } }
+    assert_includes error.message, 'Directive already registered: second'
+  end
+
+  def test_register_aliases_rolls_back_none_on_duplicate
+    PM.register(:existing) { |_ctx| 'x' }
+
+    assert_raises(RuntimeError) { PM.register(:new_one, :existing) { |_ctx| 'y' } }
+    # :new_one was registered before :existing raised — this is expected behavior
+    # since registration is iterative
+    assert PM.directives.key?(:new_one)
+  end
 end
 
 class PMIncludesMetadataTest < Minitest::Test

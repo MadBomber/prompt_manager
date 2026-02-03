@@ -94,21 +94,22 @@ PM.expand_shell("User: $USER, Date: $(date +%Y-%m-%d)")
 
 ## Directives
 
-### PM.register(name, &block) → nil
+### PM.register(*names, &block) → nil
 
-Register a custom directive available in ERB templates.
+Register one or more named directives available in ERB templates. Multiple names register the same block under each name (aliases).
 
 **Parameters:**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | Symbol, String | Directive name |
+| `*names` | Symbols, Strings | One or more directive names |
 | `block` | Proc | Receives `RenderContext` as first arg, then user args |
 
-**Raises:** `RuntimeError` if `name` is already registered.
+**Raises:** `RuntimeError` if any name is already registered.
 
 ```ruby
 PM.register(:env) { |_ctx, key| ENV.fetch(key, '') }
+PM.register(:webpage, :website, :web) { |_ctx, url| fetch_page(url) }
 ```
 
 ### PM.directives → Hash
