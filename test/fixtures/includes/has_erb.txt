@@ -1,0 +1,2 @@
+This file has <%= "ERB tags" %> and $(shell commands) in it.
+They should appear verbatim when inserted.

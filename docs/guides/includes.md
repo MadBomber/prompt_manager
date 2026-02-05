@@ -134,6 +134,44 @@ Nested includes form a tree -- each entry's `includes` array contains its own ch
 
 The `includes` array is `nil` before `to_s` is called and is reset on each call.
 
+## `insert` / `read` — Raw File Insertion
+
+Use `insert` (or its alias `read`) to insert a file's content verbatim. Unlike `include`, the content is not parsed, shell-expanded, or ERB-rendered:
+
+```markdown
+---
+title: Code Review
+---
+Review this code:
+
+```ruby
+<%= insert 'src/app.rb' %>
+```
+```
+
+### Differences from `include`
+
+| | `insert` | `include` |
+|---|---|---|
+| File types | Any | `.md` only |
+| ERB in content | Preserved as literal text | Rendered |
+| Shell expansion | Not applied | Applied |
+| Recursion | None | Nested includes supported |
+| Metadata tracking | None | `metadata.includes` tree |
+
+### Path resolution
+
+Same as `include` — paths resolve relative to the parent file's directory. Absolute paths work from any context, including string-parsed prompts.
+
+### Missing files
+
+Raises an error:
+
+```ruby
+PM.parse("---\n---\n<%= insert '/no/such/file' %>").to_s
+#=> RuntimeError: insert: file not found: /no/such/file
+```
+
 ## Requirements
 
 - The `include` directive requires file context. Using it with string-parsed prompts raises an error:

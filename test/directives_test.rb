@@ -78,6 +78,100 @@ class PMIncludeTest < Minitest::Test
   end
 end
 
+class PMInsertTest < Minitest::Test
+  def test_basic_insert
+    parsed = PM.parse(fixture('with_insert.md'))
+    result = parsed.to_s
+
+    assert_includes result, 'Before insert.'
+    assert_includes result, 'def greet(name)'
+    assert_includes result, 'After insert.'
+  end
+
+  def test_read_alias
+    parsed = PM.parse(fixture('with_insert_read_alias.md'))
+    result = parsed.to_s
+
+    assert_includes result, 'def greet(name)'
+  end
+
+  def test_insert_non_md_file
+    parsed = PM.parse(fixture('with_insert.md'))
+    result = parsed.to_s
+
+    # The .rb file content is inserted verbatim
+    assert_includes result, 'puts "Hello, #{name}!"'
+  end
+
+  def test_insert_does_not_process_erb_in_content
+    parsed = PM.parse(fixture('with_insert_erb_content.md'))
+    result = parsed.to_s
+
+    # ERB tags in the inserted file appear as literal text
+    assert_includes result, '<%= "ERB tags" %>'
+    assert_includes result, '$(shell commands)'
+  end
+
+  def test_insert_missing_file_raises
+    parsed = PM.parse("---\ntitle: Test\n---\n<%= insert '/nonexistent/file.txt' %>\n")
+
+    error = assert_raises(RuntimeError) { parsed.to_s }
+    assert_includes error.message, 'insert: file not found'
+  end
+
+  def test_insert_with_absolute_path
+    # Create a temp file with known content
+    require 'tempfile'
+    Tempfile.create(['pm_insert_test', '.txt']) do |f|
+      f.write("absolute path content")
+      f.flush
+
+      parsed = PM.parse("---\ntitle: Test\n---\n<%= insert '#{f.path}' %>\n")
+      result = parsed.to_s
+
+      assert_includes result, 'absolute path content'
+    end
+  end
+
+  def test_insert_with_relative_path
+    parsed = PM.parse(fixture('with_insert.md'))
+    result = parsed.to_s
+
+    # includes/raw_code.rb is resolved relative to the fixture directory
+    assert_includes result, 'def greet(name)'
+  end
+
+  def test_insert_without_file_context_uses_expand_path
+    # When parsed from a string (no directory context), absolute paths still work
+    require 'tempfile'
+    Tempfile.create(['pm_insert_test', '.txt']) do |f|
+      f.write("string context content")
+      f.flush
+
+      parsed = PM.parse("---\ntitle: Test\n---\n<%= insert '#{f.path}' %>\n")
+      result = parsed.to_s
+
+      assert_includes result, 'string context content'
+    end
+  end
+
+  def test_insert_registered_as_builtin
+    assert PM.directives.key?(:insert)
+    assert PM.directives.key?(:read)
+  end
+
+  def test_insert_survives_reset
+    PM.reset_directives!
+
+    assert PM.directives.key?(:insert)
+    assert PM.directives.key?(:read)
+  end
+
+  def test_insert_and_read_share_same_block
+    assert_same PM.directives[:insert], PM.directives[:read]
+  end
+end
+
 class PMRegisterDirectiveTest < Minitest::Test
   def teardown
     PM.reset_directives!
@@ -111,6 +205,8 @@ class PMRegisterDirectiveTest < Minitest::Test
     PM.reset_directives!
 
     assert PM.directives.key?(:include)
+    assert PM.directives.key?(:insert)
+    assert PM.directives.key?(:read)
     refute PM.directives.key?(:custom)
   end
 

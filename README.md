@@ -14,7 +14,8 @@
 - <strong>YAML Metadata</strong> - Parse from markdown strings or files<br>
 - <strong>Conditional Shell Expansion</strong> - $ENVAR, ${ENVAR}, $(command) substitution<br>
 - <strong>Conditional ERB Templates</strong> - On-demand rendering with named parameters<br>
-- <strong>Reclusive Include System</strong> - Compose prompts from multiple files<br>
+- <strong>Recursive Include System</strong> - Compose prompts from multiple files<br>
+- <strong>Raw File Insert</strong> - Insert any file's content verbatim<br>
 - <strong>Custom Directives</strong> - Register custom methods for ERB templates<br>
 - <strong>Configurable Pipeline</strong> - Enable/disable stages per prompt or globally<br>
 - <strong>Comment Stripping</strong> - HTML comments removed before processing
@@ -190,6 +191,37 @@ Included files go through the full processing pipeline (comment stripping, metad
 
 Nested includes work — A can include B which includes C. Circular includes raise an error.
 
+### Inserting raw file content
+
+Use `insert` (or its alias `read`) to insert any file's content verbatim. Unlike `include`, the inserted content is not parsed, shell-expanded, or ERB-rendered — it appears as-is:
+
+```md
+---
+title: Code Review
+parameters:
+  feedback_style: null
+---
+Review this Ruby code:
+
+```ruby
+<%= insert 'app/models/user.rb' %>
+```
+
+Use a <%= feedback_style %> tone.
+```
+
+Paths are resolved relative to the parent file's directory (same as `include`). Absolute paths work from any context. Missing files raise an error.
+
+`insert` vs `include`:
+
+| | `insert` | `include` |
+|---|---|---|
+| File types | Any | `.md` only |
+| ERB in content | Preserved as literal text | Rendered |
+| Shell expansion | Not applied | Applied |
+| Recursion | None | Nested includes supported |
+| Metadata tracking | None | `metadata.includes` tree |
+
 After calling `to_s`, the parent's metadata has an `includes` key with a tree of what was included:
 
 ```ruby
@@ -215,10 +247,11 @@ parsed.metadata.includes
 
 ### Custom directives
 
+#### Block-based registration
+
 Register custom methods available in ERB templates:
 
 ```ruby
-PM.register(:read) { |_ctx, path| File.read(path) }
 PM.register(:env)  { |_ctx, key| ENV.fetch(key, '') }
 PM.register(:run)  { |_ctx, cmd| `#{cmd}`.chomp }
 ```
@@ -229,26 +262,45 @@ Register multiple names for the same directive (aliases):
 PM.register(:webpage, :website, :web) { |_ctx, url| fetch_page(url) }
 ```
 
-All three names call the same block. Use any of them in ERB:
+#### Class-based directives
 
-```markdown
-<%= webpage 'https://example.com' %>
-<%= website 'https://example.com' %>
-<%= web 'https://example.com' %>
+For organized groups of directives, subclass `PM::Directive`:
+
+```ruby
+class MyDirectives < PM::Directive
+  desc "Fetch environment variable"
+  def env(ctx, key)
+    ENV.fetch(key, '')
+  end
+
+  desc "Run a shell command"
+  def run(ctx, cmd)
+    `#{cmd}`.chomp
+  end
+  alias_method :exec, :run
+end
+
+# Register all directive subclasses with PM
+PM::Directive.register_all
 ```
 
-Use them in any prompt file:
+`desc` marks the next method as a directive. Methods without `desc` are helpers and won't be registered. `alias_method` aliases are detected automatically.
 
-```md
----
-title: Deploy Prompt
----
-Hostname: <%= read '/etc/hostname' %>
-Environment: <%= env 'DEPLOY_ENV' %>
-Recent commits: <%= run 'git log --oneline -5' %>
+Override `build_dispatch_block` on your base class to customize how methods are called:
+
+```ruby
+class MyDirectives < PM::Directive
+  class << self
+    def build_dispatch_block(inst, method_name)
+      proc { |_ctx, *args| inst.send(method_name, args) }
+    end
+  end
+end
 ```
 
-The first argument to every directive block is a `PM::RenderContext` with access to the current render state:
+#### RenderContext
+
+The first argument to every directive block (or class method) is a `PM::RenderContext`:
 
 - `ctx.directory` — directory of the file being rendered
 - `ctx.params` — merged parameter values
@@ -256,10 +308,7 @@ The first argument to every directive block is a `PM::RenderContext` with access
 - `ctx.depth` — include nesting depth
 - `ctx.included` — Set of file paths already in the include chain
 
-```ruby
-PM.register(:current_file) { |ctx| ctx.metadata.name || 'unknown' }
-PM.register(:depth) { |ctx| ctx.depth.to_s }
-```
+#### Duplicate detection and reset
 
 Registering a name that already exists raises an error:
 
@@ -272,6 +321,7 @@ Reset to built-in directives only:
 
 ```ruby
 PM.reset_directives!
+# Restores: include, insert, read
 ```
 
 ### Disabling processing stages

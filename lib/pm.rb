@@ -118,4 +118,9 @@ require_relative 'pm/version'
 require_relative 'pm/metadata'
 require_relative 'pm/parsed'
 require_relative 'pm/directives'
+require_relative 'pm/directive'
+require_relative 'pm/core_directives'
 require_relative 'pm/shell'
+
+# Register built-in directives from PM::CoreDirectives
+PM::Directive.register_all

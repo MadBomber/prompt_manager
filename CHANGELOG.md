@@ -1,5 +1,9 @@
 ## Unreleased
 
+- **`PM::Directive` base class** — class-based DSL for defining directive categories. Use `desc` before method definitions to mark them as directives, and `alias_method` for aliases. Subclass tracking, `register_all`, `category_name`, and `build_dispatch_block` are all built-in.
+- **`PM::CoreDirectives`** — built-in `include`, `insert`/`read` directives refactored as a `PM::Directive` subclass using the `desc` DSL.
+- **Built-in `insert` directive** (alias: `read`) — insert any file's raw content into a prompt. Unlike `include`, the inserted content is not parsed, shell-expanded, or ERB-rendered.
+
 ## Released
 ### [1.0.0] = 2026-02-03
 

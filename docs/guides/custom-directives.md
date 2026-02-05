@@ -84,7 +84,7 @@ Remove all custom directives and restore only the built-ins:
 PM.reset_directives!
 ```
 
-After reset, only `include` is registered.
+After reset, only the built-in directives are registered: `include`, `insert`, and `read`.
 
 ## Directives in Included Files
 
@@ -107,9 +107,74 @@ PM.register(:my_helper) { |_ctx| "works" }
 PM.register('other_helper') { |_ctx| "also works" }
 ```
 
+## Class-Based Directives
+
+For organized groups of directives, subclass `PM::Directive`:
+
+```ruby
+class MyDirectives < PM::Directive
+  desc "Fetch environment variable"
+  def env(ctx, key)
+    ENV.fetch(key, '')
+  end
+
+  desc "Run a shell command"
+  def run(ctx, cmd)
+    `#{cmd}`.chomp
+  end
+  alias_method :exec, :run
+
+  # No desc — not registered as a directive
+  def helper
+    "internal"
+  end
+end
+
+PM::Directive.register_all
+```
+
+`desc` marks the next method as a directive. Methods without `desc` are ordinary helpers and won't be registered. `alias_method` aliases are detected automatically via `UnboundMethod#original_name`.
+
+### Category name
+
+The class name determines a category heading (useful for help output):
+
+```ruby
+MyDirectives.category_name  #=> "My"
+PM::CoreDirectives.category_name  #=> "Core"
+```
+
+The last segment of the class name is used, with `Directives` stripped and camelCase split.
+
+### Dispatch customization
+
+Override `build_dispatch_block` to customize how methods are called when dispatched through `PM.directives`:
+
+```ruby
+class MyDirectives < PM::Directive
+  class << self
+    # Default: proc { |ctx, *args| inst.send(method_name, ctx, *args) }
+    def build_dispatch_block(inst, method_name)
+      proc { |_ctx, *args| inst.send(method_name, args.flatten) }
+    end
+  end
+end
+```
+
+### Subclass tracking
+
+All `PM::Directive` subclasses (direct and indirect) are tracked centrally:
+
+```ruby
+PM::Directive.directive_subclasses
+#=> [PM::CoreDirectives, MyDirectives, ...]
+```
+
+`register_all` iterates this list, creates a singleton instance per subclass, and registers each described method with `PM.register`.
+
 ## Listing Directives
 
 ```ruby
 PM.directives
-#=> { include: #<Proc>, read: #<Proc>, ... }
+#=> { include: #<Proc>, insert: #<Proc>, read: #<Proc>, ... }
 ```
