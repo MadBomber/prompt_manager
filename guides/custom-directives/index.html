@@ -1010,6 +1010,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#class-based-directives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class-Based Directives
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Class-Based Directives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#category-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category name
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dispatch-customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispatch customization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subclass-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subclass tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#listing-directives" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1716,6 +1766,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#class-based-directives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class-Based Directives
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Class-Based Directives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#category-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category name
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dispatch-customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispatch customization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subclass-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subclass tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#listing-directives" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1845,7 +1945,7 @@
 <p>Remove all custom directives and restore only the built-ins:</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">reset_directives!</span>
 </span></code></pre></div>
-<p>After reset, only <code>include</code> is registered.</p>
+<p>After reset, only the built-in directives are registered: <code>include</code>, <code>insert</code>, and <code>read</code>.</p>
 <h2 id="directives-in-included-files">Directives in Included Files<a class="headerlink" href="#directives-in-included-files" title="Permanent link">&para;</a></h2>
 <p>Custom directives are available in included files too. They share the same directive registry:</p>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>&lt;!-- parent.md --&gt;
@@ -1859,9 +1959,55 @@
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="ss">:my_helper</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">_ctx</span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;works&quot;</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">&#39;other_helper&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">_ctx</span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;also works&quot;</span><span class="w"> </span><span class="p">}</span>
 </span></code></pre></div>
+<h2 id="class-based-directives">Class-Based Directives<a class="headerlink" href="#class-based-directives" title="Permanent link">&para;</a></h2>
+<p>For organized groups of directives, subclass <code>PM::Directive</code>:</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyDirectives</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">PM</span><span class="o">::</span><span class="no">Directive</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="n">desc</span><span class="w"> </span><span class="s2">&quot;Fetch environment variable&quot;</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">env</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">)</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="no">ENV</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span><span class="k">end</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">  </span><span class="n">desc</span><span class="w"> </span><span class="s2">&quot;Run a shell command&quot;</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">cmd</span><span class="p">)</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">    </span><span class="sb">`</span><span class="si">#{</span><span class="n">cmd</span><span class="si">}</span><span class="sb">`</span><span class="o">.</span><span class="n">chomp</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">  </span><span class="k">end</span>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">  </span><span class="n">alias_method</span><span class="w"> </span><span class="ss">:exec</span><span class="p">,</span><span class="w"> </span><span class="ss">:run</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">  </span><span class="c1"># No desc — not registered as a directive</span>
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">helper</span>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">    </span><span class="s2">&quot;internal&quot;</span>
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">  </span><span class="k">end</span>
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="k">end</span>
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>
+</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="no">PM</span><span class="o">::</span><span class="no">Directive</span><span class="o">.</span><span class="n">register_all</span>
+</span></code></pre></div>
+<p><code>desc</code> marks the next method as a directive. Methods without <code>desc</code> are ordinary helpers and won't be registered. <code>alias_method</code> aliases are detected automatically via <code>UnboundMethod#original_name</code>.</p>
+<h3 id="category-name">Category name<a class="headerlink" href="#category-name" title="Permanent link">&para;</a></h3>
+<p>The class name determines a category heading (useful for help output):</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="no">MyDirectives</span><span class="o">.</span><span class="n">category_name</span><span class="w">  </span><span class="c1">#=&gt; &quot;My&quot;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="no">PM</span><span class="o">::</span><span class="no">CoreDirectives</span><span class="o">.</span><span class="n">category_name</span><span class="w">  </span><span class="c1">#=&gt; &quot;Core&quot;</span>
+</span></code></pre></div>
+<p>The last segment of the class name is used, with <code>Directives</code> stripped and camelCase split.</p>
+<h3 id="dispatch-customization">Dispatch customization<a class="headerlink" href="#dispatch-customization" title="Permanent link">&para;</a></h3>
+<p>Override <code>build_dispatch_block</code> to customize how methods are called when dispatched through <code>PM.directives</code>:</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyDirectives</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">PM</span><span class="o">::</span><span class="no">Directive</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="nb">self</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span><span class="c1"># Default: proc { |ctx, *args| inst.send(method_name, ctx, *args) }</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span><span class="k">def</span><span class="w"> </span><span class="nf">build_dispatch_block</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span><span class="w"> </span><span class="n">method_name</span><span class="p">)</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">      </span><span class="nb">proc</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">_ctx</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">args</span><span class="o">|</span><span class="w"> </span><span class="n">inst</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">method_name</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="o">.</span><span class="n">flatten</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">    </span><span class="k">end</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">  </span><span class="k">end</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="k">end</span>
+</span></code></pre></div>
+<h3 id="subclass-tracking">Subclass tracking<a class="headerlink" href="#subclass-tracking" title="Permanent link">&para;</a></h3>
+<p>All <code>PM::Directive</code> subclasses (direct and indirect) are tracked centrally:</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">Directive</span><span class="o">.</span><span class="n">directive_subclasses</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="c1">#=&gt; [PM::CoreDirectives, MyDirectives, ...]</span>
+</span></code></pre></div>
+<p><code>register_all</code> iterates this list, creates a singleton instance per subclass, and registers each described method with <code>PM.register</code>.</p>
 <h2 id="listing-directives">Listing Directives<a class="headerlink" href="#listing-directives" title="Permanent link">&para;</a></h2>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">directives</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="c1">#=&gt; { include: #&lt;Proc&gt;, read: #&lt;Proc&gt;, ... }</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">directives</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="c1">#=&gt; { include: #&lt;Proc&gt;, insert: #&lt;Proc&gt;, read: #&lt;Proc&gt;, ... }</span>
 </span></code></pre></div>
 
 

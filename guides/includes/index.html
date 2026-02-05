@@ -982,6 +982,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#insert-read-raw-file-insertion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        insert / read — Raw File Insertion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1716,6 +1727,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#insert-read-raw-file-insertion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        insert / read — Raw File Insertion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1864,12 +1886,44 @@
 </span></code></pre></div>
 <p>Nested includes form a tree -- each entry's <code>includes</code> array contains its own children.</p>
 <p>The <code>includes</code> array is <code>nil</code> before <code>to_s</code> is called and is reset on each call.</p>
+<h2 id="insert-read-raw-file-insertion"><code>insert</code> / <code>read</code> — Raw File Insertion<a class="headerlink" href="#insert-read-raw-file-insertion" title="Permanent link">&para;</a></h2>
+<p>Use <code>insert</code> (or its alias <code>read</code>) to insert a file's content verbatim. Unlike <code>include</code>, the content is not parsed, shell-expanded, or ERB-rendered:</p>
+<p><div class="language-markdown highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>---
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="gu">title: Code Review</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="gu">---</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>Review this code:
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>```ruby
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>&lt;%= insert &#39;src/app.rb&#39; %&gt;
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>### Differences from `include`
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>| | `insert` | `include` |
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>|---|---|---|
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>| File types | Any | `.md` only |
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>| ERB in content | Preserved as literal text | Rendered |
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>| Shell expansion | Not applied | Applied |
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>| Recursion | None | Nested includes supported |
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>| Metadata tracking | None | `metadata.includes` tree |
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>### Path resolution
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>Same as `include` — paths resolve relative to the parent file&#39;s directory. Absolute paths work from any context, including string-parsed prompts.
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>### Missing files
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>Raises an error:
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>
+</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a>```ruby
+</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a>PM.parse(&quot;---\n---\n&lt;%= insert &#39;/no/such/file&#39; %&gt;&quot;).to_s
+</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a>#=&gt; RuntimeError: insert: file not found: /no/such/file
+</span></code></pre></div></p>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The <code>include</code> directive requires file context. Using it with string-parsed prompts raises an error:</li>
 </ul>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">&lt;%= include &#39;other.md&#39; %&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1">#=&gt; RuntimeError: include requires a file context (use PM.parse with a file path)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">&lt;%= include &#39;other.md&#39; %&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="c1">#=&gt; RuntimeError: include requires a file context (use PM.parse with a file path)</span>
 </span></code></pre></div>
 <ul>
 <li>When <code>erb: false</code>, the include directive does not execute and <code>metadata.includes</code> is an empty array.</li>
