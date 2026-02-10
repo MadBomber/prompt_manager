@@ -673,6 +673,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#parse-a-string-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parse a String Directly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#parameters" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1628,6 +1639,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#parse-a-string-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parse a String Directly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#parameters" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1730,30 +1752,39 @@
 </span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="c1">#=&gt; &quot;Hello, Alice! Welcome.&quot;</span>
 </span></code></pre></div>
 <p>When parsing a file, PM also adds <code>directory</code>, <code>name</code>, <code>created_at</code>, and <code>modified_at</code> to the metadata.</p>
+<h2 id="parse-a-string-directly">Parse a String Directly<a class="headerlink" href="#parse-a-string-directly" title="Permanent link">&para;</a></h2>
+<p><code>PM.parse</code> treats single words as prompt IDs and looks them up as files. To always parse a string as content, use <code>PM.parse_string</code>:</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span><span class="w">              </span><span class="c1">#=&gt; looks for hello.md in prompts_dir</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span><span class="w">       </span><span class="c1">#=&gt; parses &quot;hello&quot; as string content</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">title: Inline</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">Some content&quot;</span><span class="p">)</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="w">  </span><span class="c1">#=&gt; &quot;Inline&quot;</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span><span class="w">         </span><span class="c1">#=&gt; &quot;Some content\n&quot;</span>
+</span></code></pre></div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <p>Parameters declared in the YAML front-matter define template variables:</p>
 <ul>
 <li><strong><code>null</code> value</strong> -- parameter is required; <code>to_s</code> raises <code>ArgumentError</code> if missing</li>
 <li><strong>Any other value</strong> -- used as the default; can be overridden in <code>to_s</code></li>
 </ul>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">parameters:</span><span class="se">\n</span><span class="s2">  lang: ruby</span><span class="se">\n</span><span class="s2">  code: null</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">&lt;%= lang %&gt;: &lt;%= code %&gt;&quot;</span><span class="p">)</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># Use defaults where available, supply required params</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;puts &quot;hi&quot;&#39;</span><span class="p">)</span><span class="w">  </span><span class="c1">#=&gt; &quot;ruby: puts \&quot;hi\&quot;&quot;</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1"># Override defaults</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;print(&quot;hi&quot;)&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;lang&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;python&#39;</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">parameters:</span><span class="se">\n</span><span class="s2">  lang: ruby</span><span class="se">\n</span><span class="s2">  code: null</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">&lt;%= lang %&gt;: &lt;%= code %&gt;&quot;</span><span class="p">)</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># Use defaults where available, supply required params</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;puts &quot;hi&quot;&#39;</span><span class="p">)</span><span class="w">  </span><span class="c1">#=&gt; &quot;ruby: puts \&quot;hi\&quot;&quot;</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c1"># Override defaults</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;print(&quot;hi&quot;)&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;lang&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;python&#39;</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="shell-expansion">Shell Expansion<a class="headerlink" href="#shell-expansion" title="Permanent link">&para;</a></h2>
 <p>Environment variables and commands are expanded at parse time:</p>
-<div class="language-markdown highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>---
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="gu">title: Info</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="gu">---</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>User: $USER
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Date: $(date +%Y-%m-%d)
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>---
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="gu">title: Info</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="gu">---</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>User: $USER
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>Date: $(date +%Y-%m-%d)
 </span></code></pre></div>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;info.md&#39;</span><span class="p">)</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span><span class="w">  </span><span class="c1">#=&gt; &quot;User: dewayne\nDate: 2025-01-15\n&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;info.md&#39;</span><span class="p">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span><span class="w">  </span><span class="c1">#=&gt; &quot;User: dewayne\nDate: 2025-01-15\n&quot;</span>
 </span></code></pre></div>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>

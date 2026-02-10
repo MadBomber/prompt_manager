@@ -829,6 +829,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Raw Strings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pmparse_string-vs-pmparse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PM.parse_string vs PM.parse
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1676,6 +1693,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Raw Strings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pmparse_string-vs-pmparse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PM.parse_string vs PM.parse
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1845,34 +1879,54 @@
 <p class="admonition-title">Include limitations</p>
 <p>The <code>include</code> directive requires file context to resolve relative paths. It raises an error when used with string-parsed prompts.</p>
 </div>
+<h3 id="pmparse_string-vs-pmparse">PM.parse_string vs PM.parse<a class="headerlink" href="#pmparse_string-vs-pmparse" title="Permanent link">&para;</a></h3>
+<p>Because <code>PM.parse</code> treats single words as prompt IDs (appending <code>.md</code> and looking them up as files), short strings like <code>"hello"</code> or <code>"summarize"</code> will trigger a file lookup instead of being parsed as content. Use <code>PM.parse_string</code> to always parse a string as content:</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># PM.parse treats single words as prompt IDs</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span><span class="w">          </span><span class="c1">#=&gt; looks for hello.md in prompts_dir</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;summarize&#39;</span><span class="p">)</span><span class="w">      </span><span class="c1">#=&gt; looks for summarize.md in prompts_dir</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># PM.parse_string always parses as string content</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span><span class="w">          </span><span class="c1">#=&gt; Parsed with content &quot;hello&quot;</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;summarize&#39;</span><span class="p">)</span><span class="w">      </span><span class="c1">#=&gt; Parsed with content &quot;summarize&quot;</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="c1"># Multi-word strings without .md extension work the same in both</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span><span class="w">           </span><span class="c1">#=&gt; Parsed with content &quot;Hello world&quot;</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span><span class="w">    </span><span class="c1">#=&gt; Parsed with content &quot;Hello world&quot;</span>
+</span></code></pre></div>
+<p>Use <code>PM.parse_string</code> when:</p>
+<ul>
+<li>Your input may be a single word that should not be treated as a file</li>
+<li>You know the source is always a string, never a file path</li>
+<li>You want to skip the file-detection logic entirely</li>
+</ul>
 <h2 id="metadata-extraction">Metadata Extraction<a class="headerlink" href="#metadata-extraction" title="Permanent link">&para;</a></h2>
 <p>YAML front-matter is delimited by <code>---</code> fences:</p>
-<div class="language-markdown highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>---
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>title: My Prompt
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>provider: openai
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>model: gpt-4
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="gu">temperature: 0.3</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="gu">---</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>The prompt content starts here.
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>---
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>title: My Prompt
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>provider: openai
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>model: gpt-4
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="gu">temperature: 0.3</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="gu">---</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>The prompt content starts here.
 </span></code></pre></div>
 <p>All YAML keys become accessible via dot notation on the <code>PM::Metadata</code> object:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="w">        </span><span class="c1">#=&gt; &quot;My Prompt&quot;</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">provider</span><span class="w">     </span><span class="c1">#=&gt; &quot;openai&quot;</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">temperature</span><span class="w">  </span><span class="c1">#=&gt; 0.3</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="w">        </span><span class="c1">#=&gt; &quot;My Prompt&quot;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">provider</span><span class="w">     </span><span class="c1">#=&gt; &quot;openai&quot;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">temperature</span><span class="w">  </span><span class="c1">#=&gt; 0.3</span>
 </span></code></pre></div>
 <p>Boolean keys also get predicate methods:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">shell</span><span class="w">   </span><span class="c1">#=&gt; true</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">shell?</span><span class="w">  </span><span class="c1">#=&gt; true</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">shell</span><span class="w">   </span><span class="c1">#=&gt; true</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">shell?</span><span class="w">  </span><span class="c1">#=&gt; true</span>
 </span></code></pre></div>
 <h3 id="no-metadata">No Metadata<a class="headerlink" href="#no-metadata" title="Permanent link">&para;</a></h3>
 <p>Files without front-matter are valid. The metadata object is empty and the entire content is preserved:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;Just plain text&quot;</span><span class="p">)</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="w">  </span><span class="c1">#=&gt; nil</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span><span class="w">         </span><span class="c1">#=&gt; &quot;Just plain text&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;Just plain text&quot;</span><span class="p">)</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="w">  </span><span class="c1">#=&gt; nil</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span><span class="w">         </span><span class="c1">#=&gt; &quot;Just plain text&quot;</span>
 </span></code></pre></div>
 <h3 id="bracket-accessor">Bracket Accessor<a class="headerlink" href="#bracket-accessor" title="Permanent link">&para;</a></h3>
 <p>You can also access metadata with bracket notation:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">parsed</span><span class="o">[</span><span class="ss">:title</span><span class="o">]</span><span class="w">  </span><span class="c1">#=&gt; &quot;My Prompt&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">parsed</span><span class="o">[</span><span class="ss">:title</span><span class="o">]</span><span class="w">  </span><span class="c1">#=&gt; &quot;My Prompt&quot;</span>
 </span></code></pre></div>
 <h2 id="pipeline-stages">Pipeline Stages<a class="headerlink" href="#pipeline-stages" title="Permanent link">&para;</a></h2>
 <p>After parsing, the content has been through these stages:</p>
