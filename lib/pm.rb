@@ -98,7 +98,7 @@ module PM
 
     Parsed.new(metadata: metadata, content: content)
   end
-  private_class_method :parse_string
+
 
   # Builds a Metadata object with defaults for shell and erb.
   def self.build_metadata(hash)

@@ -95,6 +95,14 @@ parsed = PM.parse("---\ntitle: Hello\n---\nContent here")
 
 When given a file path, `parse` adds `directory`, `name`, `created_at`, and `modified_at` to the metadata. Both forms run the full processing pipeline.
 
+Note that `PM.parse` treats single words (e.g. `'hello'`) as prompt IDs and appends `.md` to look them up as files. To parse a single word as literal string content, use `PM.parse_string`:
+
+```ruby
+PM.parse('hello')              #=> looks for hello.md in prompts_dir
+PM.parse_string('hello')       #=> parses "hello" as string content
+PM.parse_string('Any string')  #=> always parsed as content, never as a file
+```
+
 Given a file `code_review.md`:
 
 ```md

@@ -69,6 +69,30 @@ String-parsed prompts do not have `directory`, `name`, `created_at`, or `modifie
 !!! warning "Include limitations"
     The `include` directive requires file context to resolve relative paths. It raises an error when used with string-parsed prompts.
 
+### PM.parse_string vs PM.parse
+
+Because `PM.parse` treats single words as prompt IDs (appending `.md` and looking them up as files), short strings like `"hello"` or `"summarize"` will trigger a file lookup instead of being parsed as content. Use `PM.parse_string` to always parse a string as content:
+
+```ruby
+# PM.parse treats single words as prompt IDs
+PM.parse('hello')          #=> looks for hello.md in prompts_dir
+PM.parse('summarize')      #=> looks for summarize.md in prompts_dir
+
+# PM.parse_string always parses as string content
+PM.parse_string('hello')          #=> Parsed with content "hello"
+PM.parse_string('summarize')      #=> Parsed with content "summarize"
+
+# Multi-word strings without .md extension work the same in both
+PM.parse("Hello world")           #=> Parsed with content "Hello world"
+PM.parse_string("Hello world")    #=> Parsed with content "Hello world"
+```
+
+Use `PM.parse_string` when:
+
+- Your input may be a single word that should not be treated as a file
+- You know the source is always a string, never a file path
+- You want to skip the file-detection logic entirely
+
 ## Metadata Extraction
 
 YAML front-matter is delimited by `---` fences:

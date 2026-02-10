@@ -40,6 +40,19 @@ puts parsed.to_s('name' => 'Alice')
 
 When parsing a file, PM also adds `directory`, `name`, `created_at`, and `modified_at` to the metadata.
 
+## Parse a String Directly
+
+`PM.parse` treats single words as prompt IDs and looks them up as files. To always parse a string as content, use `PM.parse_string`:
+
+```ruby
+PM.parse('hello')              #=> looks for hello.md in prompts_dir
+PM.parse_string('hello')       #=> parses "hello" as string content
+
+parsed = PM.parse_string("---\ntitle: Inline\n---\nSome content")
+parsed.metadata.title  #=> "Inline"
+parsed.content         #=> "Some content\n"
+```
+
 ## Parameters
 
 Parameters declared in the YAML front-matter define template variables:

@@ -38,6 +38,44 @@ parsed = PM.parse("---\ntitle: Hello\n---\nContent")
 
 ---
 
+### PM.parse_string(string) → Parsed
+
+Parse a string directly through the processing pipeline, bypassing all file-detection logic. Unlike `PM.parse`, single words are never treated as prompt IDs.
+
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `string` | String | Raw string content to parse |
+
+**Returns:** `PM::Parsed` (Struct with `metadata` and `content`)
+
+**Behavior:**
+
+- Always parses the input as string content — never looks up files
+- Runs the same pipeline as `PM.parse`: strip comments → extract YAML → shell expansion
+- Does not add `directory`, `name`, `created_at`, or `modified_at` to metadata
+
+```ruby
+# Single words are parsed as content, not treated as file basenames
+parsed = PM.parse_string('hello')
+parsed.content  #=> "hello"
+
+# Strings with YAML front-matter work as expected
+parsed = PM.parse_string("---\ntitle: Hello\n---\nContent")
+parsed.metadata.title  #=> "Hello"
+parsed.content         #=> "Content\n"
+```
+
+**When to use `parse_string` instead of `parse`:**
+
+```ruby
+PM.parse('summarize')          #=> looks for summarize.md
+PM.parse_string('summarize')   #=> parses "summarize" as content
+```
+
+---
+
 ## Configuration
 
 ### PM.config → Configuration

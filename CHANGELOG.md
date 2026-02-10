@@ -1,3 +1,8 @@
+### [1.0.2] - 2026-02-09
+
+#### Changed
+- Made `PM.parse_string` a public class method so it can be called directly for parsing strings without file-based metadata enrichment.
+
 ### [1.0.1] - 2026-02-04
 
 #### Added
