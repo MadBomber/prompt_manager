@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Parse YAML metadata from markdown prompts with shell expansion and ERB rendering">
+        <meta name="description" content="Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand">
       
       
         <meta name="author" content="Dewayne VanHoozer">
@@ -18,14 +18,14 @@
         <link rel="prev" href="../custom-directives/">
       
       
-        <link rel="next" href="../../api/">
+        <link rel="next" href="../security/">
       
       
         
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -33,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -669,6 +669,8 @@
       
         
       
+        
+      
     
     
     
@@ -994,6 +996,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#comments-inside-code-fences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comments Inside Code Fences
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#direct-access" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1024,6 +1037,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1042,6 +1083,8 @@
       
         
           
+        
+      
         
       
         
@@ -1235,6 +1278,34 @@
     
   
     RenderContext
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
   
 
     
@@ -1639,6 +1710,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#comments-inside-code-fences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comments Inside Code Fences
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#direct-access" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1711,8 +1793,9 @@
 </span></code></pre></div>
 <p>After parsing:</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span><span class="w">  </span><span class="c1">#=&gt; &quot;\nContent here. \n&quot;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span><span class="w">  </span><span class="c1">#=&gt; "Content here. "</span>
 </span></code></pre></div>
+<p>The comment text is removed; surrounding whitespace and newlines stay where they were.</p>
 <h2 id="multiline-comments">Multiline Comments<a class="headerlink" href="#multiline-comments" title="Permanent link">&para;</a></h2>
 <p>Multiline comments are fully removed:</p>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&lt;!--
@@ -1725,17 +1808,22 @@
 </span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>Visible content.
 </span></code></pre></div>
 <h2 id="comments-before-metadata">Comments Before Metadata<a class="headerlink" href="#comments-before-metadata" title="Permanent link">&para;</a></h2>
-<p>Comments before the YAML front-matter are stripped first, so the metadata parser sees clean input:</p>
+<p>Comments before the YAML front matter are stripped first, so the metadata parser sees clean input:</p>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gu">&lt;!-- Editor note: draft version --&gt;</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="gu">---</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="gu">title: My Prompt</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="gu">---</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>Content
 </span></code></pre></div>
+<p>The blank line left behind by the comment is tolerated: front matter is recognised
+after leading whitespace.</p>
+<h2 id="comments-inside-code-fences">Comments Inside Code Fences<a class="headerlink" href="#comments-inside-code-fences" title="Permanent link">&para;</a></h2>
+<p>Comment stripping is a plain text pass and does not know about fenced code blocks.
+A <code>&lt;!-- ... --&gt;</code> inside a fence is removed too.</p>
 <h2 id="direct-access">Direct Access<a class="headerlink" href="#direct-access" title="Permanent link">&para;</a></h2>
 <p>The comment stripping method is available as a standalone utility:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">strip_comments</span><span class="p">(</span><span class="s2">&quot;Hello &lt;!-- removed --&gt; World&quot;</span><span class="p">)</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1">#=&gt; &quot;Hello  World&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">strip_comments</span><span class="p">(</span><span class="s2">"Hello &lt;!-- removed --&gt; World"</span><span class="p">)</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1">#=&gt; "Hello  World"</span>
 </span></code></pre></div>
 <h2 id="use-cases">Use Cases<a class="headerlink" href="#use-cases" title="Permanent link">&para;</a></h2>
 <ul>
@@ -1849,13 +1937,13 @@
         
         
           
-          <a href="../../api/" class="md-footer__link md-footer__link--next" aria-label="Next: API Reference">
+          <a href="../security/" class="md-footer__link md-footer__link--next" aria-label="Next: Security">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                API Reference
+                Security
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1872,7 +1960,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Dewayne VanHoozer
+      Copyright &copy; 2026 Dewayne VanHoozer
     </div>
   
   
@@ -1917,10 +2005,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

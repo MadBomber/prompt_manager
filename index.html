@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Parse YAML metadata from markdown prompts with shell expansion and ERB rendering">
+        <meta name="description" content="Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand">
       
       
         <meta name="author" content="Dewayne VanHoozer">
@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -31,10 +31,10 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -670,6 +670,8 @@
       
         
       
+        
+      
     
     
     
@@ -918,6 +920,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -936,6 +966,8 @@
       
         
           
+        
+      
         
       
         
@@ -1129,6 +1161,34 @@
     
   
     RenderContext
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
   
 
     
@@ -1522,6 +1582,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#a-word-on-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A word on trust
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#getting-started" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1579,18 +1650,22 @@
   <em>"Prompts with superpowers"</em>
 </td>
 <td width="60%" valign="top">
-<strong>Parse YAML metadata from markdown, expand shell references, and render ERB templates on demand</strong><br><br>
-PM (PromptManager) treats prompt files as composable, parameterized templates. Write prompts in markdown with YAML front matter, shell references, and ERB — PM handles the rest.
+<strong>Parse YAML front matter from markdown, expand shell references, compose prompts from other files, and render ERB on demand.</strong><br><br>
+PM (PromptManager) treats a prompt file as a composable, parameterized template. Write prompts in markdown with YAML front matter, shell references, and ERB. PM handles the rest.
 
 <h3>Key Features</h3>
-
-<li> <strong>YAML Metadata</strong> - Parse from markdown strings or files<br>
-<li> <strong>Shell Expansion</strong> - $VAR, ${VAR}, and $(command) substitution<br>
-<li> <strong>ERB Rendering</strong> - On-demand rendering with named parameters<br>
-<li> <strong>File Includes</strong> - Compose prompts from multiple files<br>
-<li> <strong>Custom Directives</strong> - Register custom methods for ERB templates<br>
-<li> <strong>Configurable Pipeline</strong> - Enable/disable stages per prompt or globally<br>
-<li> <strong>Comment Stripping</strong> - HTML comments removed before processing
+<ul>
+<li><strong>YAML Metadata</strong> - Parse from markdown strings or files</li>
+<li><strong>Shell Expansion</strong> - <code>$VAR</code>, <code>${VAR}</code>, <code>$(command)</code>; <code>\$</code> escapes; code fences are skipped</li>
+<li><strong>ERB Rendering</strong> - On-demand rendering with required and default parameters</li>
+<li><strong>File Includes</strong> - Compose prompts from multiple files with a tracked include tree</li>
+<li><strong>Raw Inserts</strong> - Drop any file in verbatim</li>
+<li><strong>Custom Directives</strong> - Blocks or <code>PM::Directive</code> subclasses, callable from ERB</li>
+<li><strong>Configurable Pipeline</strong> - Enable, disable, or lock stages per prompt or globally</li>
+<li><strong>Typed Errors</strong> - A <code>PM::Error</code> hierarchy for everything PM raises</li>
+<li><strong>Comment Stripping</strong> - HTML comments removed before processing</li>
+<li><strong>Zero runtime dependencies</strong> - Ruby 4.0.9+ and its standard library</li>
+</ul>
 </td>
 </tr>
 </table>
@@ -1603,7 +1678,7 @@ PM (PromptManager) treats prompt files as composable, parameterized templates. W
     C --&gt; D["ERB Rendering (on to_s)"]</code></pre>
 <ol>
 <li><strong>Strip HTML comments</strong> -- <code>&lt;!-- ... --&gt;</code> removed before anything else</li>
-<li><strong>Extract YAML metadata</strong> -- Front-matter between <code>---</code> fences parsed into <code>PM::Metadata</code></li>
+<li><strong>Extract YAML metadata</strong> -- Front matter between <code>---</code> fences parsed into <code>PM::Metadata</code></li>
 <li><strong>Shell expansion</strong> -- Environment variables and commands expanded (when <code>shell: true</code>)</li>
 <li><strong>ERB rendering</strong> -- Templates evaluated on demand when <code>to_s</code> is called (when <code>erb: true</code>)</li>
 </ol>
@@ -1620,12 +1695,16 @@ PM (PromptManager) treats prompt files as composable, parameterized templates. W
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>&lt;%= code %&gt;
 </span></code></pre></div>
 <p>Parse and render:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">&#39;pm&#39;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">'pm'</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;review.md&#39;</span><span class="p">)</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nb">puts</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="w">        </span><span class="c1">#=&gt; &quot;Code Review&quot;</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">puts</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">source</span><span class="p">)</span><span class="w"> </span><span class="c1">#=&gt; rendered prompt</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'review.md'</span><span class="p">)</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nb">puts</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="w">        </span><span class="c1">#=&gt; "Code Review"</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">puts</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">'code'</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">source</span><span class="p">)</span><span class="w"> </span><span class="c1">#=&gt; rendered prompt</span>
 </span></code></pre></div>
+<h2 id="a-word-on-trust">A word on trust<a class="headerlink" href="#a-word-on-trust" title="Permanent link">&para;</a></h2>
+<p>A prompt file can run Ruby (ERB), run shell commands (<code>$(...)</code>), and read any file
+(<code>include</code> / <code>insert</code>). Treat prompt files as code and read the
+<a href="guides/security/">Security guide</a> before parsing files you did not write.</p>
 <h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
 <p>Head to <a href="getting-started/installation/">Installation</a> to add PM to your project, then follow the <a href="getting-started/quick-start/">Quick Start</a> guide.</p>
 
@@ -1741,7 +1820,7 @@ PM (PromptManager) treats prompt files as composable, parameterized templates. W
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Dewayne VanHoozer
+      Copyright &copy; 2026 Dewayne VanHoozer
     </div>
   
   
@@ -1786,10 +1865,10 @@ PM (PromptManager) treats prompt files as composable, parameterized templates. W
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

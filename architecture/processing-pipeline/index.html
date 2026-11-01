@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Parse YAML metadata from markdown prompts with shell expansion and ERB rendering">
+        <meta name="description" content="Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand">
       
       
         <meta name="author" content="Dewayne VanHoozer">
@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -33,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -667,6 +667,8 @@
       
         
       
+        
+      
     
     
     
@@ -915,6 +917,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -933,6 +963,8 @@
       
         
           
+        
+      
         
       
         
@@ -1126,6 +1158,34 @@
     
   
     RenderContext
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
   
 
     
@@ -1357,34 +1417,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Stage 3: Shell Expansion">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#3a-command-substitution" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3a. Command Substitution
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3b-environment-variables" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3b. Environment Variables
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1697,34 +1729,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Stage 3: Shell Expansion">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#3a-command-substitution" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3a. Command Substitution
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3b-environment-variables" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3b. Environment Variables
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -1817,36 +1821,78 @@
 <p><strong>When:</strong> Parse time
 <strong>Method:</strong> <code>PM.strip_comments</code></p>
 <p>All <code>&lt;!-- ... --&gt;</code> comments are removed, including multiline spans. This runs first so comments don't interfere with metadata extraction.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Input:  &quot;&lt;!-- draft --&gt;\n---\ntitle: Test\n---\nContent &lt;!-- note --&gt;&quot;
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Output: &quot;\n---\ntitle: Test\n---\nContent &quot;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Input:  "&lt;!-- draft --&gt;\n---\ntitle: Test\n---\nContent &lt;!-- note --&gt;"
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Output: "\n---\ntitle: Test\n---\nContent "
 </span></code></pre></div>
 <h2 id="stage-2-extract-yaml-metadata">Stage 2: Extract YAML Metadata<a class="headerlink" href="#stage-2-extract-yaml-metadata" title="Permanent link">&para;</a></h2>
 <p><strong>When:</strong> Parse time
 <strong>Regex:</strong> <code>PM::METADATA_REGEXP</code></p>
-<p>The <code>---</code>-delimited front-matter is parsed with <code>YAML.safe_load</code> into a Hash, then wrapped in a <code>PM::Metadata</code> object. Global defaults for <code>shell</code> and <code>erb</code> are applied if the file doesn't specify them.</p>
+<p>The <code>---</code>-delimited front matter is parsed with <code>YAML.safe_load</code> (permitting <code>Date</code> and <code>Time</code>) into a Hash, validated, and wrapped in a <code>PM::Metadata</code> object:</p>
+<ul>
+<li>The front matter must be a mapping (or empty); anything else raises <code>PM::MetadataError</code>.</li>
+<li><code>shell</code> and <code>erb</code> are coerced to booleans. When the file does not set one, or the configuration is locked, the global default is used.</li>
+<li><code>parameters</code> must be a mapping when present.</li>
+</ul>
 <p>For file sources, <code>directory</code>, <code>name</code>, <code>created_at</code>, and <code>modified_at</code> are added from file stats.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Input:  &quot;---\ntitle: Test\nshell: true\n---\nContent&quot;
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Output: metadata = PM::Metadata(title: &quot;Test&quot;, shell: true, erb: true)
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        content  = &quot;Content&quot;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Input:  "---\ntitle: Test\nshell: true\n---\nContent"
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Output: metadata = PM::Metadata(title: "Test", shell: true, erb: true)
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        content  = "Content"
 </span></code></pre></div>
 <h2 id="stage-3-shell-expansion">Stage 3: Shell Expansion<a class="headerlink" href="#stage-3-shell-expansion" title="Permanent link">&para;</a></h2>
 <p><strong>When:</strong> Parse time (if <code>shell: true</code>)
-<strong>Method:</strong> <code>PM.expand_shell</code></p>
-<p>Two sub-stages run in order:</p>
-<h3 id="3a-command-substitution">3a. Command Substitution<a class="headerlink" href="#3a-command-substitution" title="Permanent link">&para;</a></h3>
-<p><code>$(command)</code> sequences are found (with proper nesting of parentheses), executed, and replaced with stdout.</p>
-<h3 id="3b-environment-variables">3b. Environment Variables<a class="headerlink" href="#3b-environment-variables" title="Permanent link">&para;</a></h3>
-<p><code>$VAR</code> and <code>${VAR}</code> patterns (UPPERCASE only) are replaced with the corresponding environment variable value. Missing variables become empty strings.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Input:  &quot;User: $USER\nDate: $(date +%Y-%m-%d)&quot;
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Output: &quot;User: dewayne\nDate: 2025-01-15&quot;
+<strong>Method:</strong> <code>PM.expand_shell</code>
+<strong>Class:</strong> <code>PM::ShellExpander</code></p>
+<p>A single left-to-right scan over the content (<code>StringScanner</code>). At each position the
+expander handles exactly one of:</p>
+<table>
+<thead>
+<tr>
+<th>Seen</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A fence line (``` or ~~~) at the start of a line</td>
+<td>Copy lines verbatim until the matching closing fence</td>
+</tr>
+<tr>
+<td><code>\$</code></td>
+<td>Emit a literal <code>$</code></td>
+</tr>
+<tr>
+<td><code>$(</code></td>
+<td>Read to the matching <code>)</code>, run the command with <code>Open3.capture3</code>, emit stdout (chomped)</td>
+</tr>
+<tr>
+<td><code>$VAR</code> or <code>${VAR}</code></td>
+<td>Emit <code>ENV.fetch(name, '')</code></td>
+</tr>
+<tr>
+<td>Anything else</td>
+<td>Copy one character</td>
+</tr>
+</tbody>
+</table>
+<p>Command output is appended to the result and the scan continues <strong>after</strong> the <code>$(...)</code>
+in the source, so output is never re-expanded. When the prompt has <code>erb: true</code>, <code>&lt;%</code>
+in output becomes <code>&lt;%%</code> so stage 4 treats it as text.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Input:  "User: $USER\nDate: $(date +%Y-%m-%d)"
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Output: "User: dewayne\nDate: 2026-11-01"
 </span></code></pre></div>
+<p>Errors: <code>PM::ShellCommandError</code> for a non-zero exit, <code>PM::ShellExpansionError</code> for an unmatched <code>$(</code>.</p>
 <h2 id="stage-4-erb-rendering">Stage 4: ERB Rendering<a class="headerlink" href="#stage-4-erb-rendering" title="Permanent link">&para;</a></h2>
 <p><strong>When:</strong> On demand (<code>to_s</code> call, if <code>erb: true</code>)
-<strong>Method:</strong> <code>PM::Parsed#to_s</code></p>
-<p>The content is evaluated as an ERB template. Parameter values (defaults merged with <code>to_s</code> arguments) and registered directives are available as local methods in the template.</p>
-<p>This stage also handles the <code>include</code> directive, which recursively parses and renders included files through the full pipeline.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Input:  &quot;Hello, &lt;%= name %&gt;!&quot;  (with params: {name: &quot;Alice&quot;})
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Output: &quot;Hello, Alice!&quot;
+<strong>Classes:</strong> <code>PM::Renderer</code>, <code>PM::RenderScope</code></p>
+<p><code>Renderer</code> merges parameter defaults with the <code>to_s</code> arguments, checks required
+parameters, builds a <code>PM::RenderContext</code>, and evaluates the content as ERB against a
+<code>RenderScope</code>. The scope resolves bare names: parameter (no arguments) → directive →
+<code>nil</code> (or <code>PM::UnknownParameterError</code> in strict mode).</p>
+<p>This stage also handles the <code>include</code> directive, which parses the child through
+stages 1 to 3 and renders it through stage 4 with the same parameters, a depth one
+greater, and the ancestor chain extended by the current file.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Input:  "Hello, &lt;%= name %&gt;!"  (with params: {name: "Alice"})
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Output: "Hello, Alice!"
 </span></code></pre></div>
 <h2 id="conditional-stages">Conditional Stages<a class="headerlink" href="#conditional-stages" title="Permanent link">&para;</a></h2>
 <p>Stages 3 and 4 can be independently disabled:</p>
@@ -1864,11 +1910,13 @@
 </tr>
 <tr>
 <td><code>erb: false</code></td>
-<td>Stage 4 skipped; <code>&lt;%= ... %&gt;</code> preserved</td>
+<td>Stage 4 skipped; <code>&lt;%= ... %&gt;</code> preserved; directives do not run</td>
 </tr>
 </tbody>
 </table>
-<p>Settings can be per-file (YAML metadata) or global (<code>PM.configure</code>). Per-file always wins.</p>
+<p>Settings can be per-file (YAML metadata) or global (<code>PM.configure</code>). Per-file wins
+unless the configuration is locked with <code>PM.config.lock!</code>, in which case the global
+value is final.</p>
 <h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph LR
     subgraph "Parse Time"
@@ -2014,7 +2062,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Dewayne VanHoozer
+      Copyright &copy; 2026 Dewayne VanHoozer
     </div>
   
   
@@ -2059,10 +2107,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

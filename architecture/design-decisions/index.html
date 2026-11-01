@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Parse YAML metadata from markdown prompts with shell expansion and ERB rendering">
+        <meta name="description" content="Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand">
       
       
         <meta name="author" content="Dewayne VanHoozer">
@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -33,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -667,6 +667,8 @@
       
         
       
+        
+      
     
     
     
@@ -915,6 +917,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -933,6 +963,8 @@
       
         
           
+        
+      
         
       
         
@@ -1126,6 +1158,34 @@
     
   
     RenderContext
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
   
 
     
@@ -1345,10 +1405,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#openstruct-for-metadata" class="md-nav__link">
+  <a href="#hash-backed-metadata" class="md-nav__link">
     <span class="md-ellipsis">
       
-        OpenStruct for Metadata
+        Hash-backed Metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-for-parsed-and-rendercontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data for Parsed and RenderContext
       
     </span>
   </a>
@@ -1378,10 +1449,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#separate-shell-and-erb-flags" class="md-nav__link">
+  <a href="#single-pass-shell-expansion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Separate Shell and ERB Flags
+        Single-pass Shell Expansion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#separate-shell-and-erb-flags-lockable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Separate Shell and ERB Flags, Lockable
       
     </span>
   </a>
@@ -1400,10 +1482,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#circular-include-detection" class="md-nav__link">
+  <a href="#ancestor-chain-circular-detection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Circular Include Detection
+        Ancestor-chain Circular Detection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#name-resolution-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Name Resolution Order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#typed-errors-backward-compatible-parameter-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typed Errors, Backward-compatible Parameter Errors
       
     </span>
   </a>
@@ -1426,6 +1530,17 @@
     <span class="md-ellipsis">
       
         UPPERCASE-Only Shell Variables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#packaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Packaging
       
     </span>
   </a>
@@ -1639,10 +1754,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#openstruct-for-metadata" class="md-nav__link">
+  <a href="#hash-backed-metadata" class="md-nav__link">
     <span class="md-ellipsis">
       
-        OpenStruct for Metadata
+        Hash-backed Metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-for-parsed-and-rendercontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data for Parsed and RenderContext
       
     </span>
   </a>
@@ -1672,10 +1798,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#separate-shell-and-erb-flags" class="md-nav__link">
+  <a href="#single-pass-shell-expansion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Separate Shell and ERB Flags
+        Single-pass Shell Expansion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#separate-shell-and-erb-flags-lockable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Separate Shell and ERB Flags, Lockable
       
     </span>
   </a>
@@ -1694,10 +1831,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#circular-include-detection" class="md-nav__link">
+  <a href="#ancestor-chain-circular-detection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Circular Include Detection
+        Ancestor-chain Circular Detection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#name-resolution-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Name Resolution Order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#typed-errors-backward-compatible-parameter-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typed Errors, Backward-compatible Parameter Errors
       
     </span>
   </a>
@@ -1720,6 +1879,17 @@
     <span class="md-ellipsis">
       
         UPPERCASE-Only Shell Variables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#packaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Packaging
       
     </span>
   </a>
@@ -1767,20 +1937,26 @@
 
 <h1 id="design-decisions">Design Decisions<a class="headerlink" href="#design-decisions" title="Permanent link">&para;</a></h1>
 <p>Key architectural choices and their rationale.</p>
-<h2 id="openstruct-for-metadata">OpenStruct for Metadata<a class="headerlink" href="#openstruct-for-metadata" title="Permanent link">&para;</a></h2>
-<p><code>PM::Metadata</code> extends <code>OpenStruct</code>, providing dynamic dot-notation access to any YAML key without predeclaring attributes.</p>
-<p><strong>Why:</strong> Prompt metadata is inherently schemaless. Different prompts carry different keys (<code>provider</code>, <code>model</code>, <code>temperature</code>, <code>parameters</code>, custom keys). OpenStruct allows any key without configuration.</p>
-<p><strong>Trade-off:</strong> Slightly slower than a fixed Struct for attribute access, but metadata objects are small and accessed infrequently relative to the parsing work.</p>
+<h2 id="hash-backed-metadata">Hash-backed Metadata<a class="headerlink" href="#hash-backed-metadata" title="Permanent link">&para;</a></h2>
+<p><code>PM::Metadata</code> wraps a Hash and resolves unknown method names to keys, giving dynamic dot-notation access to any YAML key without predeclaring attributes.</p>
+<p><strong>Why:</strong> Prompt metadata is inherently schemaless. Different prompts carry different keys (<code>provider</code>, <code>model</code>, <code>temperature</code>, <code>parameters</code>, custom keys).</p>
+<p><strong>Why not OpenStruct:</strong> Earlier versions subclassed <code>OpenStruct</code>. It pulled in the <code>ostruct</code> gem (PM's only runtime dependency), silently ignored keys that collide with <code>Object</code> methods such as <code>hash</code> or <code>method</code>, and is discouraged by Ruby itself. The Hash-backed class keeps the same surface (dot access, predicates, <code>[]</code>, <code>to_h</code>) with zero dependencies and a defined rule for name collisions.</p>
+<h2 id="data-for-parsed-and-rendercontext">Data for Parsed and RenderContext<a class="headerlink" href="#data-for-parsed-and-rendercontext" title="Permanent link">&para;</a></h2>
+<p><code>PM::Parsed</code> and <code>PM::RenderContext</code> are <code>Data.define</code> classes rather than <code>Struct</code>s.</p>
+<p><strong>Why:</strong> Both are value objects that nothing should mutate after creation. <code>Data</code> gives keyword construction, <code>with</code>, and immutability for free, and <code>RenderContext.new</code> with no arguments produces a sensible empty context, which makes directives easy to test in isolation.</p>
 <h2 id="erb-for-templates">ERB for Templates<a class="headerlink" href="#erb-for-templates" title="Permanent link">&para;</a></h2>
 <p>ERB was chosen as the template engine rather than Mustache, Liquid, or a custom syntax.</p>
 <p><strong>Why:</strong></p>
 <ul>
-<li>Ships with Ruby's standard library -- no additional dependencies</li>
+<li>Ships with Ruby's standard library, no additional dependencies</li>
 <li>Familiar to every Ruby developer</li>
 <li>Full Ruby expressions available (not just variable substitution)</li>
 <li>Custom directives integrate naturally as method calls</li>
 </ul>
-<p><strong>Trade-off:</strong> ERB can execute arbitrary Ruby, which is more powerful than needed for simple variable substitution. PM mitigates this by encouraging the use of parameters and directives rather than inline Ruby logic.</p>
+<p><strong>Trade-off:</strong> ERB can execute arbitrary Ruby. PM does not try to sandbox it; the
+<a href="../../guides/security/">Security guide</a> states the trust model instead. What PM does do
+is keep data from becoming code: command output and inserted files are inert, and
+<code>PM.config.lock!</code> stops a file from switching ERB on when the host turned it off.</p>
 <h2 id="parse-time-vs-render-time-split">Parse-Time vs Render-Time Split<a class="headerlink" href="#parse-time-vs-render-time-split" title="Permanent link">&para;</a></h2>
 <p>Shell expansion runs at parse time. ERB rendering runs on demand at <code>to_s</code> time.</p>
 <p><strong>Why:</strong></p>
@@ -1788,28 +1964,40 @@
 <li>Shell references (<code>$USER</code>, <code>$(date)</code>) represent the environment at the time the prompt is loaded. They should reflect current state when the file is read.</li>
 <li>ERB parameters represent per-invocation values that may change between calls. Deferring rendering allows the same parsed prompt to be rendered multiple times with different values.</li>
 </ul>
-<h2 id="separate-shell-and-erb-flags">Separate Shell and ERB Flags<a class="headerlink" href="#separate-shell-and-erb-flags" title="Permanent link">&para;</a></h2>
-<p>Both <code>shell</code> and <code>erb</code> can be independently enabled or disabled per file.</p>
-<p><strong>Why:</strong> Some prompts are documentation templates that should show <code>$VAR</code> syntax literally. Others need shell expansion but contain ERB syntax meant for a different renderer. Independent flags give full control.</p>
+<h2 id="single-pass-shell-expansion">Single-pass Shell Expansion<a class="headerlink" href="#single-pass-shell-expansion" title="Permanent link">&para;</a></h2>
+<p>The expander scans the content once, left to right, and never re-scans text it has emitted.</p>
+<p><strong>Why:</strong> The 1.0 implementation ran command substitution and then variable expansion as two <code>gsub</code> passes over the whole string, so a command whose output contained <code>$HOME</code> or <code>&lt;%= %&gt;</code> had that output expanded or evaluated. One pass with an explicit cursor makes the rule simple: source text is expanded, output is data. It also makes <code>\$</code> escapes and fence skipping possible, since the scanner knows where it is.</p>
+<h2 id="separate-shell-and-erb-flags-lockable">Separate Shell and ERB Flags, Lockable<a class="headerlink" href="#separate-shell-and-erb-flags-lockable" title="Permanent link">&para;</a></h2>
+<p>Both <code>shell</code> and <code>erb</code> can be independently enabled or disabled per file, and the host can lock the global values.</p>
+<p><strong>Why:</strong> Some prompts are documentation templates that should show <code>$VAR</code> syntax literally. Others need shell expansion but contain ERB syntax meant for a different renderer. Independent flags give full control. Locking exists because "the file always wins" is the wrong default when the files come from somewhere the host does not control.</p>
 <h2 id="include-via-erb-directive">Include via ERB Directive<a class="headerlink" href="#include-via-erb-directive" title="Permanent link">&para;</a></h2>
 <p>File inclusion uses <code>&lt;%= include 'path.md' %&gt;</code> rather than a preprocessor directive or custom syntax.</p>
 <p><strong>Why:</strong></p>
 <ul>
-<li>Consistent with the ERB rendering model -- includes are just another method call</li>
+<li>Consistent with the ERB rendering model: includes are just another method call</li>
 <li>Parameters flow naturally from parent to child</li>
 <li>Custom directives use the same mechanism, so the system is uniform</li>
 <li>No new syntax to learn</li>
 </ul>
 <p><strong>Trade-off:</strong> Includes only work when ERB is enabled. Setting <code>erb: false</code> disables includes.</p>
-<h2 id="circular-include-detection">Circular Include Detection<a class="headerlink" href="#circular-include-detection" title="Permanent link">&para;</a></h2>
-<p>PM tracks included file paths in a Set passed through the render chain.</p>
-<p><strong>Why:</strong> Circular includes would cause infinite recursion. The Set provides O(1) lookup and is threaded through the <code>RenderContext</code> without global state.</p>
+<h2 id="ancestor-chain-circular-detection">Ancestor-chain Circular Detection<a class="headerlink" href="#ancestor-chain-circular-detection" title="Permanent link">&para;</a></h2>
+<p>PM tracks the files on the current include path in a Set passed through the <code>RenderContext</code>, plus a depth counter.</p>
+<p><strong>Why:</strong> Circular includes would cause infinite recursion. Tracking ancestors rather than every file rendered so far means a shared fragment can be included twice by siblings (1.0 wrongly reported that as a cycle). The depth limit (<code>max_include_depth</code>) is a second guard for chains that are long rather than circular.</p>
+<h2 id="name-resolution-order">Name Resolution Order<a class="headerlink" href="#name-resolution-order" title="Permanent link">&para;</a></h2>
+<p>Inside a template, a bare name resolves to a parameter when called with no arguments, then to a directive, then to <code>nil</code>.</p>
+<p><strong>Why:</strong> Parameters and directives share one namespace, and downstream libraries (aia, robot_lab) have templates whose parameter names coincide with directive names. "Parameter wins without arguments, directive wins with arguments" matches how both are actually written and never breaks a working template. Strict mode is opt-in because rendering <code>""</code> for a missing value is the behaviour 1.0 users rely on.</p>
+<h2 id="typed-errors-backward-compatible-parameter-errors">Typed Errors, Backward-compatible Parameter Errors<a class="headerlink" href="#typed-errors-backward-compatible-parameter-errors" title="Permanent link">&para;</a></h2>
+<p>Everything PM raises descends from <code>PM::Error</code>, except the parameter errors, which descend from <code>ArgumentError</code>.</p>
+<p><strong>Why:</strong> Callers need to tell "this prompt is broken" from "this parameter is missing" from "this shell command failed" without string matching. <code>MissingParameterError</code> stays an <code>ArgumentError</code> with the same message because existing code (robot_lab among it) rescues <code>ArgumentError</code> and reads the message.</p>
 <h2 id="configuration-as-singleton">Configuration as Singleton<a class="headerlink" href="#configuration-as-singleton" title="Permanent link">&para;</a></h2>
-<p><code>PM.config</code> returns a single <code>PM::Configuration</code> instance. Per-file metadata overrides it.</p>
-<p><strong>Why:</strong> A global default makes sense for project-wide settings like <code>prompts_dir</code>. The override mechanism means individual files always have the final say, avoiding surprises.</p>
+<p><code>PM.config</code> returns a single <code>PM::Configuration</code> instance.</p>
+<p><strong>Why:</strong> A global default makes sense for project-wide settings like <code>prompts_dir</code>. It is not synchronized; PM expects configuration and directive registration to happen at boot, and parsing to be the concurrent part.</p>
 <h2 id="uppercase-only-shell-variables">UPPERCASE-Only Shell Variables<a class="headerlink" href="#uppercase-only-shell-variables" title="Permanent link">&para;</a></h2>
 <p>Only <code>$UPPER_CASE</code> variable names are expanded by shell expansion. <code>$lowercase</code> is left as-is.</p>
 <p><strong>Why:</strong> This avoids conflicts with ERB and other syntaxes that might use <code>$</code> followed by lowercase characters. Environment variables are conventionally uppercase, so this covers the practical use case without false matches.</p>
+<h2 id="packaging">Packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
+<p>The gem ships only <code>lib/</code>, <code>README.md</code>, <code>CHANGELOG.md</code>, and <code>LICENSE</code>.</p>
+<p><strong>Why:</strong> 1.0.x shipped the whole repository, including a GIF and an MP4, for a 9.6 MB gem whose code is under 30 KB. Documentation lives on the site; the gem carries the code.</p>
 
 
 
@@ -1939,7 +2127,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Dewayne VanHoozer
+      Copyright &copy; 2026 Dewayne VanHoozer
     </div>
   
   
@@ -1984,10 +2172,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Parse YAML metadata from markdown prompts with shell expansion and ERB rendering">
+        <meta name="description" content="Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand">
       
       
         <meta name="author" content="Dewayne VanHoozer">
@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -33,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -667,6 +667,8 @@
       
         
       
+        
+      
     
     
     
@@ -915,6 +917,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -935,6 +965,8 @@
       
         
           
+        
+      
         
       
         
@@ -1174,10 +1206,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pmexpand_shellstring-string" class="md-nav__link">
+  <a href="#pmexpand_shellstring-erb_safe-false-string" class="md-nav__link">
     <span class="md-ellipsis">
       
-        PM.expand_shell(string) → String
+        PM.expand_shell(string, erb_safe: false) → String
       
     </span>
   </a>
@@ -1217,6 +1249,17 @@
     <span class="md-ellipsis">
       
         PM.directives → Hash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pmdirectivename-boolean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PM.directive?(name) → Boolean
       
     </span>
   </a>
@@ -1347,6 +1390,34 @@
     
   
     RenderContext
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
   
 
     
@@ -1819,10 +1890,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pmexpand_shellstring-string" class="md-nav__link">
+  <a href="#pmexpand_shellstring-erb_safe-false-string" class="md-nav__link">
     <span class="md-ellipsis">
       
-        PM.expand_shell(string) → String
+        PM.expand_shell(string, erb_safe: false) → String
       
     </span>
   </a>
@@ -1862,6 +1933,17 @@
     <span class="md-ellipsis">
       
         PM.directives → Hash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pmdirectivename-boolean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PM.directive?(name) → Boolean
       
     </span>
   </a>
@@ -1945,7 +2027,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Returns:</strong> <code>PM::Parsed</code> (Struct with <code>metadata</code> and <code>content</code>)</p>
+<p><strong>Returns:</strong> <code>PM::Parsed</code> (a <code>Data</code> with <code>metadata</code> and <code>content</code>)</p>
 <p><strong>Behavior:</strong></p>
 <ul>
 <li>If <code>source</code> is a Symbol or a single word (letters, digits, underscores only), <code>.md</code> is appended and it is treated as a file basename</li>
@@ -1954,15 +2036,16 @@
 <li>File parsing adds <code>directory</code>, <code>name</code>, <code>created_at</code>, <code>modified_at</code> to metadata</li>
 <li>Processing pipeline: strip comments → extract YAML → shell expansion</li>
 </ul>
+<p><strong>Raises:</strong> <code>Errno::ENOENT</code> for a missing file; <code>PM::MetadataError</code> for invalid front matter; <code>Psych::SyntaxError</code> for invalid YAML; <code>PM::ShellExpansionError</code> / <code>PM::ShellCommandError</code> from shell expansion.</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># File</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;review.md&#39;</span><span class="p">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'review.md'</span><span class="p">)</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Symbol or single word (basename — .md appended)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Symbol or single word (basename, .md appended)</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="ss">:review</span><span class="p">)</span><span class="w">      </span><span class="c1">#=&gt; parses review.md</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;review&#39;</span><span class="p">)</span><span class="w">     </span><span class="c1">#=&gt; parses review.md</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'review'</span><span class="p">)</span><span class="w">     </span><span class="c1">#=&gt; parses review.md</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># String</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">title: Hello</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">Content&quot;</span><span class="p">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">"---</span><span class="se">\n</span><span class="s2">title: Hello</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">Content"</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h3 id="pmparse_stringstring-parsed">PM.parse_string(string) → Parsed<a class="headerlink" href="#pmparse_stringstring-parsed" title="Permanent link">&para;</a></h3>
@@ -1984,59 +2067,66 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Returns:</strong> <code>PM::Parsed</code> (Struct with <code>metadata</code> and <code>content</code>)</p>
+<p><strong>Returns:</strong> <code>PM::Parsed</code></p>
 <p><strong>Behavior:</strong></p>
 <ul>
-<li>Always parses the input as string content — never looks up files</li>
+<li>Always parses the input as string content, never looks up files</li>
 <li>Runs the same pipeline as <code>PM.parse</code>: strip comments → extract YAML → shell expansion</li>
 <li>Does not add <code>directory</code>, <code>name</code>, <code>created_at</code>, or <code>modified_at</code> to metadata</li>
 </ul>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Single words are parsed as content, not treated as file basenames</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span><span class="w">  </span><span class="c1">#=&gt; &quot;hello&quot;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span><span class="w">  </span><span class="c1">#=&gt; "hello"</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># Strings with YAML front-matter work as expected</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">title: Hello</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">Content&quot;</span><span class="p">)</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="w">  </span><span class="c1">#=&gt; &quot;Hello&quot;</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span><span class="w">         </span><span class="c1">#=&gt; &quot;Content\n&quot;</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># Strings with YAML front matter work as expected</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s2">"---</span><span class="se">\n</span><span class="s2">title: Hello</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">Content"</span><span class="p">)</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="w">  </span><span class="c1">#=&gt; "Hello"</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span><span class="w">         </span><span class="c1">#=&gt; "Content"</span>
 </span></code></pre></div>
 <p><strong>When to use <code>parse_string</code> instead of <code>parse</code>:</strong></p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;summarize&#39;</span><span class="p">)</span><span class="w">          </span><span class="c1">#=&gt; looks for summarize.md</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;summarize&#39;</span><span class="p">)</span><span class="w">   </span><span class="c1">#=&gt; parses &quot;summarize&quot; as content</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'summarize'</span><span class="p">)</span><span class="w">          </span><span class="c1">#=&gt; looks for summarize.md</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">'summarize'</span><span class="p">)</span><span class="w">   </span><span class="c1">#=&gt; parses "summarize" as content</span>
 </span></code></pre></div>
 <hr />
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <h3 id="pmconfig-configuration">PM.config → Configuration<a class="headerlink" href="#pmconfig-configuration" title="Permanent link">&para;</a></h3>
 <p>Returns the singleton <code>PM::Configuration</code> instance.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w">  </span><span class="c1">#=&gt; &#39;&#39;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w">  </span><span class="c1">#=&gt; ''</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">shell</span><span class="w">        </span><span class="c1">#=&gt; true</span>
 </span></code></pre></div>
 <h3 id="pmconfigure-config-configuration">PM.configure { |config| } → Configuration<a class="headerlink" href="#pmconfigure-config-configuration" title="Permanent link">&para;</a></h3>
-<p>Yields the configuration instance for block-style configuration.</p>
+<p>Yields the configuration instance for block-style configuration and returns it.</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">config</span><span class="o">|</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;~/.prompts&#39;</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">shell</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">true</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">erb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">true</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="k">end</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s1">'~/.prompts'</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">shell</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="kp">true</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">erb</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="kp">true</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">max_include_depth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">strict_parameters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">false</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="k">end</span>
 </span></code></pre></div>
+<p>See <a href="../configuration/">PM::Configuration</a> for <code>lock!</code> and the other methods.</p>
 <hr />
 <h2 id="utilities">Utilities<a class="headerlink" href="#utilities" title="Permanent link">&para;</a></h2>
 <h3 id="pmstrip_commentsstring-string">PM.strip_comments(string) → String<a class="headerlink" href="#pmstrip_commentsstring-string" title="Permanent link">&para;</a></h3>
 <p>Remove all HTML comments (<code>&lt;!-- ... --&gt;</code>) from the string, including multiline.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">strip_comments</span><span class="p">(</span><span class="s2">&quot;Hello &lt;!-- removed --&gt; World&quot;</span><span class="p">)</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">#=&gt; &quot;Hello  World&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">strip_comments</span><span class="p">(</span><span class="s2">"Hello &lt;!-- removed --&gt; World"</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">#=&gt; "Hello  World"</span>
 </span></code></pre></div>
-<h3 id="pmexpand_shellstring-string">PM.expand_shell(string) → String<a class="headerlink" href="#pmexpand_shellstring-string" title="Permanent link">&para;</a></h3>
-<p>Expand shell references in the string.</p>
+<h3 id="pmexpand_shellstring-erb_safe-false-string">PM.expand_shell(string, erb_safe: false) → String<a class="headerlink" href="#pmexpand_shellstring-erb_safe-false-string" title="Permanent link">&para;</a></h3>
+<p>Expand shell references in the string in a single left-to-right pass.</p>
 <ul>
 <li><code>$VAR</code> and <code>${VAR}</code> → environment variable value (empty string if unset)</li>
-<li><code>$(command)</code> → command stdout (trailing newline stripped)</li>
+<li><code>$(command)</code> → command stdout (trailing newline stripped); nested parentheses are matched</li>
+<li><code>\$</code> → literal <code>$</code></li>
+<li>Fenced code blocks (``` or ~~~) are copied through untouched</li>
+<li>Command output is inserted verbatim and never re-scanned</li>
+<li>With <code>erb_safe: true</code>, <code>&lt;%</code> in command output is written as <code>&lt;%%</code></li>
 </ul>
 <p>Only UPPERCASE variable names are expanded.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="s2">&quot;User: $USER, Date: $(date +%Y-%m-%d)&quot;</span><span class="p">)</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1">#=&gt; &quot;User: dewayne, Date: 2025-01-15&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="s2">"User: $USER, Date: $(date +%Y-%m-%d)"</span><span class="p">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1">#=&gt; "User: dewayne, Date: 2026-11-01"</span>
 </span></code></pre></div>
-<p><strong>Raises:</strong> <code>RuntimeError</code> if a command exits with non-zero status.</p>
+<p><strong>Raises:</strong> <code>PM::ShellCommandError</code> if a command exits non-zero (<code>#command</code>, <code>#status</code>, <code>#stderr</code>); <code>PM::ShellExpansionError</code> for an unmatched <code>$(</code>.</p>
 <hr />
 <h2 id="directives">Directives<a class="headerlink" href="#directives" title="Permanent link">&para;</a></h2>
 <h3 id="pmregisternames-block-nil">PM.register(*names, &amp;block) → nil<a class="headerlink" href="#pmregisternames-block-nil" title="Permanent link">&para;</a></h3>
@@ -2063,19 +2153,24 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Raises:</strong> <code>RuntimeError</code> if any name is already registered.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="ss">:env</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">_ctx</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="o">|</span><span class="w"> </span><span class="no">ENV</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<p><strong>Raises:</strong> <code>ArgumentError</code> without a block; <code>PM::DirectiveAlreadyRegisteredError</code> if any name is already registered, in which case nothing is registered.</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="ss">:env</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">_ctx</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="o">|</span><span class="w"> </span><span class="no">ENV</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="ss">:webpage</span><span class="p">,</span><span class="w"> </span><span class="ss">:website</span><span class="p">,</span><span class="w"> </span><span class="ss">:web</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">_ctx</span><span class="p">,</span><span class="w"> </span><span class="n">url</span><span class="o">|</span><span class="w"> </span><span class="n">fetch_page</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
 </span></code></pre></div>
 <h3 id="pmdirectives-hash">PM.directives → Hash<a class="headerlink" href="#pmdirectives-hash" title="Permanent link">&para;</a></h3>
-<p>Returns the current directive registry.</p>
+<p>Returns a frozen snapshot of the directive registry (Symbol keys, Proc values).</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">directives</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1">#=&gt; { include: #&lt;Proc&gt;, env: #&lt;Proc&gt; }</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1">#=&gt; { include: #&lt;Proc&gt;, insert: #&lt;Proc&gt;, read: #&lt;Proc&gt;, env: #&lt;Proc&gt; }</span>
+</span></code></pre></div>
+<h3 id="pmdirectivename-boolean">PM.directive?(name) → Boolean<a class="headerlink" href="#pmdirectivename-boolean" title="Permanent link">&para;</a></h3>
+<p>Whether a directive with this name (Symbol or String) is registered.</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">directive?</span><span class="p">(</span><span class="ss">:include</span><span class="p">)</span><span class="w">   </span><span class="c1">#=&gt; true</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">directive?</span><span class="p">(</span><span class="s1">'nope'</span><span class="p">)</span><span class="w">     </span><span class="c1">#=&gt; false</span>
 </span></code></pre></div>
 <h3 id="pmreset_directives-nil">PM.reset_directives! → nil<a class="headerlink" href="#pmreset_directives-nil" title="Permanent link">&para;</a></h3>
-<p>Remove all custom directives and re-register only the built-in <code>include</code> directive.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">reset_directives!</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">directives</span><span class="o">.</span><span class="n">keys</span><span class="w">  </span><span class="c1">#=&gt; [:include]</span>
+<p>Remove all custom directives and re-register the built-ins from every <code>PM::Directive</code> subclass.</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">reset_directives!</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">directives</span><span class="o">.</span><span class="n">keys</span><span class="w">  </span><span class="c1">#=&gt; [:include, :insert, :read]</span>
 </span></code></pre></div>
 
 
@@ -2206,7 +2301,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Dewayne VanHoozer
+      Copyright &copy; 2026 Dewayne VanHoozer
     </div>
   
   
@@ -2251,10 +2346,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Parse YAML metadata from markdown prompts with shell expansion and ERB rendering">
+        <meta name="description" content="Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand">
       
       
         <meta name="author" content="Dewayne VanHoozer">
@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://madbomber.github.io/prompt_manager/api/constants/">
       
       
-        <link rel="prev" href="../render-context/">
+        <link rel="prev" href="../errors/">
       
       
         <link rel="next" href="../../architecture/">
@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -33,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -667,6 +667,8 @@
       
         
       
+        
+      
     
     
     
@@ -915,6 +917,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -935,6 +965,8 @@
       
         
           
+        
+      
         
       
         
@@ -1148,6 +1180,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -1284,6 +1344,39 @@
     <span class="md-ellipsis">
       
         PM::COMMAND_START
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pmflag_keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PM::FLAG_KEYS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pmtrue_words-pmfalse_words" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PM::TRUE_WORDS / PM::FALSE_WORDS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pmderived_metadata_keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PM::DERIVED_METADATA_KEYS
       
     </span>
   </a>
@@ -1711,6 +1804,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#pmflag_keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PM::FLAG_KEYS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pmtrue_words-pmfalse_words" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PM::TRUE_WORDS / PM::FALSE_WORDS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pmderived_metadata_keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PM::DERIVED_METADATA_KEYS
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1756,38 +1882,42 @@
 
 
 <h1 id="constants">Constants<a class="headerlink" href="#constants" title="Permanent link">&para;</a></h1>
-<p>Regular expressions and markers defined in the <code>PM</code> module.</p>
+<p>Regular expressions, markers, and key lists defined in the <code>PM</code> module.</p>
 <h2 id="source">Source<a class="headerlink" href="#source" title="Permanent link">&para;</a></h2>
-<p><code>lib/pm.rb</code> and <code>lib/pm/shell.rb</code></p>
+<p><code>lib/pm.rb</code>, <code>lib/pm/parsed.rb</code>, <code>lib/pm/shell.rb</code>, <code>lib/pm/version.rb</code></p>
 <h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
 <h3 id="pmversion">PM::VERSION<a class="headerlink" href="#pmversion" title="Permanent link">&para;</a></h3>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">VERSION</span><span class="w">  </span><span class="c1">#=&gt; &quot;1.0.0&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">VERSION</span><span class="w">  </span><span class="c1">#=&gt; the gem version, e.g. "1.1.0"</span>
 </span></code></pre></div>
-<p>Current version of the PM library. Defined in <code>lib/pm/version.rb</code>.</p>
+<p>Defined in <code>lib/pm/version.rb</code>.</p>
 <h3 id="pmmetadata_regexp">PM::METADATA_REGEXP<a class="headerlink" href="#pmmetadata_regexp" title="Permanent link">&para;</a></h3>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">METADATA_REGEXP</span>
-</span></code></pre></div>
-<p>Matches YAML front-matter delimited by <code>---</code> fences. Captures the YAML content between the fences and the remaining body.</p>
+<p>Matches YAML front matter delimited by <code>---</code> fences at the start of the document (leading whitespace allowed). Captures the YAML content between the fences and the remaining body.</p>
 <p>Used internally by <code>PM.parse</code> to separate metadata from content.</p>
 <h3 id="pmhtml_comment_regexp">PM::HTML_COMMENT_REGEXP<a class="headerlink" href="#pmhtml_comment_regexp" title="Permanent link">&para;</a></h3>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">HTML_COMMENT_REGEXP</span>
-</span></code></pre></div>
-<p>Matches HTML comments (<code>&lt;!-- ... --&gt;</code>), including multiline comments. Uses the <code>m</code> (multiline) flag for dot-matches-newline behavior.</p>
+<p>Matches HTML comments (<code>&lt;!-- ... --&gt;</code>), including multiline comments.</p>
 <p>Used by <code>PM.strip_comments</code>.</p>
 <h3 id="pmenv_var_regexp">PM::ENV_VAR_REGEXP<a class="headerlink" href="#pmenv_var_regexp" title="Permanent link">&para;</a></h3>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">ENV_VAR_REGEXP</span>
-</span></code></pre></div>
 <p>Matches environment variable references in two forms:</p>
 <ul>
 <li><code>${VAR}</code> -- braced form (captured in group 1)</li>
 <li><code>$VAR</code> -- bare form (captured in group 2)</li>
 </ul>
 <p>Only matches UPPERCASE variable names (<code>[A-Z_][A-Z0-9_]*</code>). Lowercase names are intentionally ignored to avoid conflicts with ERB and other syntax.</p>
-<p>Used by <code>PM.expand_shell</code> during the environment variable expansion phase.</p>
+<p>Used by <code>PM.expand_shell</code>.</p>
 <h3 id="pmcommand_start">PM::COMMAND_START<a class="headerlink" href="#pmcommand_start" title="Permanent link">&para;</a></h3>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">COMMAND_START</span><span class="w">  </span><span class="c1">#=&gt; &quot;$(&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">COMMAND_START</span><span class="w">  </span><span class="c1">#=&gt; "$("</span>
 </span></code></pre></div>
-<p>String marker that identifies the start of a command substitution. Used by the shell expansion parser to find <code>$(command)</code> sequences with proper handling of nested parentheses.</p>
+<p>String marker that identifies the start of a command substitution. The shell expander reads from here to the matching close parenthesis, honouring nesting.</p>
+<h3 id="pmflag_keys">PM::FLAG_KEYS<a class="headerlink" href="#pmflag_keys" title="Permanent link">&para;</a></h3>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">FLAG_KEYS</span><span class="w">  </span><span class="c1">#=&gt; ["shell", "erb"]</span>
+</span></code></pre></div>
+<p>The front matter keys that toggle pipeline stages. Each is validated and resolved against the global configuration when metadata is built.</p>
+<h3 id="pmtrue_words-pmfalse_words">PM::TRUE_WORDS / PM::FALSE_WORDS<a class="headerlink" href="#pmtrue_words-pmfalse_words" title="Permanent link">&para;</a></h3>
+<p>The strings accepted for a flag besides YAML booleans: <code>true</code>, <code>yes</code>, <code>on</code> and <code>false</code>, <code>no</code>, <code>off</code> (case-insensitive).</p>
+<h3 id="pmderived_metadata_keys">PM::DERIVED_METADATA_KEYS<a class="headerlink" href="#pmderived_metadata_keys" title="Permanent link">&para;</a></h3>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">DERIVED_METADATA_KEYS</span><span class="w">  </span><span class="c1">#=&gt; [:directory, :name, :created_at, :modified_at, :includes]</span>
+</span></code></pre></div>
+<p>Metadata keys PM adds itself when parsing a file or rendering. <code>Parsed#to_markdown</code> leaves them out so a prompt round-trips.</p>
 
 
 
@@ -1877,7 +2007,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../render-context/" class="md-footer__link md-footer__link--prev" aria-label="Previous: RenderContext">
+          <a href="../errors/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Errors">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1887,7 +2017,7 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                RenderContext
+                Errors
               </div>
             </div>
           </a>
@@ -1917,7 +2047,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Dewayne VanHoozer
+      Copyright &copy; 2026 Dewayne VanHoozer
     </div>
   
   
@@ -1962,10 +2092,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

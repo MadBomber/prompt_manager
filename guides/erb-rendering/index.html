@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Parse YAML metadata from markdown prompts with shell expansion and ERB rendering">
+        <meta name="description" content="Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand">
       
       
         <meta name="author" content="Dewayne VanHoozer">
@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -33,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -669,6 +669,8 @@
       
         
       
+        
+      
     
     
     
@@ -959,6 +961,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errors
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1052,6 +1065,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1070,6 +1111,8 @@
       
         
           
+        
+      
         
       
         
@@ -1263,6 +1306,34 @@
     
   
     RenderContext
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
   
 
     
@@ -1716,6 +1787,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errors
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1763,13 +1845,15 @@
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gu">title: Math</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gu">---</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Result: &lt;%= 2 + 2 %&gt;
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Today: &lt;%= Time.now.strftime(&#39;%Y-%m-%d&#39;) %&gt;
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Today: &lt;%= Time.now.strftime('%Y-%m-%d') %&gt;
 </span></code></pre></div>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;math.md&#39;</span><span class="p">)</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="w">  </span><span class="c1">#=&gt; &quot;Result: 4\nToday: 2025-01-15\n&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'math.md'</span><span class="p">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="w">  </span><span class="c1">#=&gt; "Result: 4\nToday: 2026-11-01\n"</span>
 </span></code></pre></div>
+<p>ERB is full Ruby. Anything a template can express, it can run. See
+<a href="../security/">Security</a>.</p>
 <h2 id="template-parameters">Template Parameters<a class="headerlink" href="#template-parameters" title="Permanent link">&para;</a></h2>
-<p>Parameters declared in the YAML front-matter are available as local methods inside ERB:</p>
+<p>Parameters declared in the YAML front matter are available as local methods inside ERB:</p>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>---
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>title: Greeting
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>parameters:
@@ -1777,11 +1861,11 @@
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="gu">---</span>
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>Hello, &lt;%= name %&gt;!
 </span></code></pre></div>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;greeting.md&#39;</span><span class="p">)</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="w">                    </span><span class="c1">#=&gt; &quot;Hello, World!&quot;</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;Alice&#39;</span><span class="p">)</span><span class="w"> </span><span class="c1">#=&gt; &quot;Hello, Alice!&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'greeting.md'</span><span class="p">)</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="w">                    </span><span class="c1">#=&gt; "Hello, World!"</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">'name'</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">'Alice'</span><span class="p">)</span><span class="w"> </span><span class="c1">#=&gt; "Hello, Alice!"</span>
 </span></code></pre></div>
-<p>See <a href="../parameters/">Parameters</a> for details on required vs default values.</p>
+<p>See <a href="../parameters/">Parameters</a> for required vs default values, name resolution, and strict mode.</p>
 <h2 id="registered-directives">Registered Directives<a class="headerlink" href="#registered-directives" title="Permanent link">&para;</a></h2>
 <p>Custom directives registered with <code>PM.register</code> are also available in ERB:</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="ss">:upcase</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">_ctx</span><span class="p">,</span><span class="w"> </span><span class="n">str</span><span class="o">|</span><span class="w"> </span><span class="n">str</span><span class="o">.</span><span class="n">upcase</span><span class="w"> </span><span class="p">}</span>
@@ -1789,13 +1873,15 @@
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>---
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="gu">title: Example</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="gu">---</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>&lt;%= upcase &#39;hello&#39; %&gt;
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>&lt;%= upcase 'hello' %&gt;
 </span></code></pre></div>
 <p>See <a href="../custom-directives/">Custom Directives</a> for the full guide.</p>
 <h2 id="built-in-directives">Built-in Directives<a class="headerlink" href="#built-in-directives" title="Permanent link">&para;</a></h2>
-<p>PM includes one built-in directive:</p>
+<p>PM ships three built-in directives:</p>
 <ul>
-<li><strong><code>include</code></strong> -- Include and render another prompt file. See <a href="../includes/">Including Files</a>.</li>
+<li><strong><code>include</code></strong> -- Parse and render another prompt file in place. See <a href="../includes/">Including Files</a>.</li>
+<li><strong><code>insert</code></strong> -- Copy any file in verbatim.</li>
+<li><strong><code>read</code></strong> -- Alias of <code>insert</code>.</li>
 </ul>
 <h2 id="disabling-erb">Disabling ERB<a class="headerlink" href="#disabling-erb" title="Permanent link">&para;</a></h2>
 <p>Set <code>erb: false</code> in the file's YAML metadata:</p>
@@ -1808,14 +1894,15 @@
 <p>When ERB is disabled:</p>
 <ul>
 <li><code>to_s</code> returns the content without template evaluation</li>
-<li>Parameters are ignored</li>
-<li>The <code>include</code> directive does not execute</li>
+<li>Parameters are ignored (missing required parameters are not an error)</li>
+<li>Directives do not execute</li>
 <li><code>metadata.includes</code> is an empty array after <code>to_s</code></li>
 </ul>
 <h3 id="global-default">Global Default<a class="headerlink" href="#global-default" title="Permanent link">&para;</a></h3>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">c</span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">erb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">false</span><span class="w"> </span><span class="p">}</span>
 </span></code></pre></div>
-<p>Per-file metadata always overrides the global setting. A file with <code>erb: true</code> gets ERB rendering even when the global default is <code>false</code>.</p>
+<p>Per-file metadata overrides the global setting unless the configuration is locked
+with <code>PM.config.lock!</code>. See <a href="../../getting-started/configuration/#locking">Configuration</a>.</p>
 <h2 id="pipeline-position">Pipeline Position<a class="headerlink" href="#pipeline-position" title="Permanent link">&para;</a></h2>
 <p>ERB rendering is the last stage of the pipeline, executed on demand:</p>
 <ol>
@@ -1824,7 +1911,34 @@
 <li>Shell expansion (at parse time)</li>
 <li><strong>ERB rendering</strong> (at <code>to_s</code> time)</li>
 </ol>
-<p>This means shell variables are already expanded before ERB sees the content. If content contains both <code>$VAR</code> and <code>&lt;%= param %&gt;</code>, the shell variable is resolved first, then ERB fills in the parameters.</p>
+<p>This means shell variables are already expanded before ERB sees the content. If content contains both <code>$VAR</code> and <code>&lt;%= param %&gt;</code>, the shell variable is resolved first, then ERB fills in the parameters. Command output cannot smuggle ERB into stage 4: any <code>&lt;%</code> a command prints is escaped during stage 3.</p>
+<h2 id="errors">Errors<a class="headerlink" href="#errors" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Required parameter missing</td>
+<td><code>PM::MissingParameterError</code></td>
+</tr>
+<tr>
+<td>Unknown bare name in strict mode</td>
+<td><code>PM::UnknownParameterError</code></td>
+</tr>
+<tr>
+<td>Unknown name called with arguments</td>
+<td><code>NoMethodError</code></td>
+</tr>
+<tr>
+<td>ERB that does not compile</td>
+<td><code>SyntaxError</code></td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -1954,7 +2068,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Dewayne VanHoozer
+      Copyright &copy; 2026 Dewayne VanHoozer
     </div>
   
   
@@ -1999,10 +2113,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Parse YAML metadata from markdown prompts with shell expansion and ERB rendering">
+        <meta name="description" content="Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand">
       
       
         <meta name="author" content="Dewayne VanHoozer">
@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -33,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -669,6 +669,8 @@
       
         
       
+        
+      
     
     
     
@@ -894,6 +896,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#command-output-is-inert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command output is inert
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#standard-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#failed-commands" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -904,8 +928,41 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#unmatched" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unmatched $(
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#escaping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Escaping
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fenced-code-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fenced Code Blocks
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1063,6 +1120,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1081,6 +1166,8 @@
       
         
           
+        
+      
         
       
         
@@ -1274,6 +1361,34 @@
     
   
     RenderContext
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
   
 
     
@@ -1690,6 +1805,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#command-output-is-inert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command output is inert
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#standard-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#failed-commands" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1700,8 +1837,41 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#unmatched" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unmatched $(
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#escaping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Escaping
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fenced-code-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fenced Code Blocks
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1804,6 +1974,11 @@
 <td>Command substitution</td>
 <td><code>$(date +%Y-%m-%d)</code></td>
 </tr>
+<tr>
+<td><code>\$</code></td>
+<td>Literal dollar sign</td>
+<td><code>\$100</code> writes <code>$100</code></td>
+</tr>
 </tbody>
 </table>
 <h2 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h2>
@@ -1814,9 +1989,9 @@
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Home directory: ${HOME}
 </span></code></pre></div>
 <p>After parsing:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;info.md&#39;</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'info.md'</span><span class="p">)</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">content</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1">#=&gt; &quot;Current user: dewayne\nHome directory: /Users/dewayne\n&quot;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1">#=&gt; "Current user: dewayne\nHome directory: /Users/dewayne\n"</span>
 </span></code></pre></div>
 <p>Only UPPERCASE variable names are expanded. Lowercase names like <code>$foo</code> are left as-is.</p>
 <p>Missing environment variables are replaced with an empty string.</p>
@@ -1832,37 +2007,78 @@
 <p>Nested parentheses are handled correctly:</p>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$(echo $(echo hello))
 </span></code></pre></div>
-<h3 id="failed-commands">Failed Commands<a class="headerlink" href="#failed-commands" title="Permanent link">&para;</a></h3>
-<p>A command that exits with a non-zero status raises <code>RuntimeError</code>:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;Output: $(exit 1)&quot;</span><span class="p">)</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1">#=&gt; RuntimeError: Command failed with exit status 1: exit 1</span>
+<h3 id="command-output-is-inert">Command output is inert<a class="headerlink" href="#command-output-is-inert" title="Permanent link">&para;</a></h3>
+<p>Expansion is a single left-to-right pass. Whatever a command prints is spliced into
+the content verbatim and <strong>not</strong> scanned again:</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="sx">%q{$(printf '$HOME')}</span><span class="p">)</span><span class="w">   </span><span class="c1">#=&gt; "$HOME"</span>
 </span></code></pre></div>
+<p>When ERB is enabled for the prompt, any <code>&lt;%</code> in command output is escaped to <code>&lt;%%</code> so
+the output cannot inject Ruby into the later ERB pass. The rendered result shows the
+literal <code>&lt;%</code>.</p>
+<h3 id="standard-error">Standard error<a class="headerlink" href="#standard-error" title="Permanent link">&para;</a></h3>
+<p>A command's stderr is not part of the content. On success it is forwarded to the
+process's <code>$stderr</code>. On failure it is included in the error.</p>
+<h3 id="failed-commands">Failed Commands<a class="headerlink" href="#failed-commands" title="Permanent link">&para;</a></h3>
+<p>A command that exits with a non-zero status raises <code>PM::ShellCommandError</code>:</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s2">"Output: $(exit 1)"</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">#=&gt; PM::ShellCommandError: Shell command failed (exit 1): exit 1</span>
+</span></code></pre></div>
+<p>The error exposes <code>#command</code>, <code>#status</code> (a <code>Process::Status</code>), and <code>#stderr</code>.</p>
+<h3 id="unmatched">Unmatched <code>$(</code><a class="headerlink" href="#unmatched" title="Permanent link">&para;</a></h3>
+<p>An opening <code>$(</code> with no closing parenthesis raises <code>PM::ShellExpansionError</code>
+(the superclass of <code>PM::ShellCommandError</code>):</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="s2">"Total: $(echo"</span><span class="p">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1">#=&gt; PM::ShellExpansionError: Unmatched $( in shell expansion: $(echo</span>
+</span></code></pre></div>
+<h2 id="escaping">Escaping<a class="headerlink" href="#escaping" title="Permanent link">&para;</a></h2>
+<p>Write <code>\$</code> to produce a literal <code>$</code>:</p>
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Price: \$100
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Shell syntax for the reader: \$(ls)
+</span></code></pre></div>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">#=&gt; "Price: $100\nShell syntax for the reader: $(ls)\n"</span>
+</span></code></pre></div>
+<h2 id="fenced-code-blocks">Fenced Code Blocks<a class="headerlink" href="#fenced-code-blocks" title="Permanent link">&para;</a></h2>
+<p>Lines inside a fenced code block (``` or ~~~, with an optional language tag) are copied
+through untouched, so a prompt can show shell syntax to the model without running it:</p>
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>Run this:
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="sb">```bash</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$HOME</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="k">$(</span>dangerous<span class="k">)</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="sb">```</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>Your home is $HOME.
+</span></code></pre></div>
+<p>Only the last <code>$HOME</code> is expanded. A fence closes at a line that starts with at least
+as many of the same fence characters.</p>
 <h2 id="direct-access">Direct Access<a class="headerlink" href="#direct-access" title="Permanent link">&para;</a></h2>
 <p>Shell expansion is available as a standalone method:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="s2">&quot;Hello $USER from $(hostname)&quot;</span><span class="p">)</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">#=&gt; &quot;Hello dewayne from venus&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="s2">"Hello $USER from $(hostname)"</span><span class="p">)</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1">#=&gt; "Hello dewayne from venus"</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="ss">erb_safe</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">)</span><span class="w">   </span><span class="c1"># also escapes &lt;% in command output</span>
 </span></code></pre></div>
 <h2 id="disabling-shell-expansion">Disabling Shell Expansion<a class="headerlink" href="#disabling-shell-expansion" title="Permanent link">&para;</a></h2>
 <p>Set <code>shell: false</code> in the file's YAML metadata:</p>
-<div class="language-markdown highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>---
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>title: Raw
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="gu">shell: false</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="gu">---</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>This $USER reference is preserved as-is.
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>---
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>title: Raw
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="gu">shell: false</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="gu">---</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>This $USER reference is preserved as-is.
 </span></code></pre></div>
 <p>Or disable globally:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">c</span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">shell</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">false</span><span class="w"> </span><span class="p">}</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">c</span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">shell</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">false</span><span class="w"> </span><span class="p">}</span>
 </span></code></pre></div>
-<p>Per-file metadata always overrides the global setting. A file with <code>shell: true</code> gets shell expansion even when the global default is <code>false</code>.</p>
+<p>Per-file metadata overrides the global setting unless the configuration is locked
+with <code>PM.config.lock!</code>. See <a href="../../getting-started/configuration/#locking">Configuration</a>.</p>
 <h2 id="interaction-with-erb">Interaction with ERB<a class="headerlink" href="#interaction-with-erb" title="Permanent link">&para;</a></h2>
 <p>Shell expansion happens at parse time (step 3 of the pipeline). ERB rendering happens later when <code>to_s</code> is called (step 4). This means shell references in the raw template are expanded before ERB sees the content.</p>
 <p>If you need dynamic shell output at render time, use a custom directive instead:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="ss">:sh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">_ctx</span><span class="p">,</span><span class="w"> </span><span class="n">cmd</span><span class="o">|</span><span class="w"> </span><span class="sb">`</span><span class="si">#{</span><span class="n">cmd</span><span class="si">}</span><span class="sb">`</span><span class="o">.</span><span class="n">chomp</span><span class="w"> </span><span class="p">}</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="ss">:sh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">_ctx</span><span class="p">,</span><span class="w"> </span><span class="n">cmd</span><span class="o">|</span><span class="w"> </span><span class="sb">`</span><span class="si">#{</span><span class="n">cmd</span><span class="si">}</span><span class="sb">`</span><span class="o">.</span><span class="n">chomp</span><span class="w"> </span><span class="p">}</span>
 </span></code></pre></div>
-<div class="language-markdown highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>---
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="gu">title: Dynamic</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="gu">---</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>Branch: &lt;%= sh &#39;git rev-parse --abbrev-ref HEAD&#39; %&gt;
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>---
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="gu">title: Dynamic</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="gu">---</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>Branch: &lt;%= sh 'git rev-parse --abbrev-ref HEAD' %&gt;
 </span></code></pre></div>
 
 
@@ -1993,7 +2209,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Dewayne VanHoozer
+      Copyright &copy; 2026 Dewayne VanHoozer
     </div>
   
   
@@ -2038,10 +2254,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Parse YAML metadata from markdown prompts with shell expansion and ERB rendering">
+        <meta name="description" content="Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand">
       
       
         <meta name="author" content="Dewayne VanHoozer">
@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -33,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -667,6 +667,8 @@
       
         
       
+        
+      
     
     
     
@@ -915,6 +917,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -935,6 +965,8 @@
       
         
           
+        
+      
         
       
         
@@ -1146,10 +1178,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#reset-nil" class="md-nav__link">
+  <a href="#reset-self" class="md-nav__link">
     <span class="md-ellipsis">
       
-        reset! → nil
+        reset! → self
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lock-self" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        lock! → self
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unlock-self" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unlock! → self
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#locked-boolean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        locked? → Boolean
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strict_parameters-boolean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        strict_parameters? → Boolean
       
     </span>
   </a>
@@ -1195,6 +1271,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#locking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Locking
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1205,6 +1292,17 @@
     <span class="md-ellipsis">
       
         Override Behavior
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thread safety
       
     </span>
   </a>
@@ -1291,6 +1389,34 @@
     
   
     RenderContext
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
   
 
     
@@ -1707,10 +1833,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#reset-nil" class="md-nav__link">
+  <a href="#reset-self" class="md-nav__link">
     <span class="md-ellipsis">
       
-        reset! → nil
+        reset! → self
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lock-self" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        lock! → self
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unlock-self" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unlock! → self
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#locked-boolean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        locked? → Boolean
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strict_parameters-boolean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        strict_parameters? → Boolean
       
     </span>
   </a>
@@ -1756,6 +1926,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#locking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Locking
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1766,6 +1947,17 @@
     <span class="md-ellipsis">
       
         Override Behavior
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thread safety
       
     </span>
   </a>
@@ -1844,34 +2036,69 @@
 <td><code>true</code></td>
 <td>Default ERB rendering setting for new parses</td>
 </tr>
+<tr>
+<td><code>max_include_depth</code></td>
+<td>Integer or nil</td>
+<td><code>10</code></td>
+<td>Deepest <code>include</code> nesting allowed; <code>nil</code> for unlimited</td>
+</tr>
+<tr>
+<td><code>strict_parameters</code></td>
+<td>Boolean</td>
+<td><code>false</code></td>
+<td>Unknown template names raise instead of rendering <code>""</code> (reader is <code>strict_parameters?</code>)</td>
+</tr>
+<tr>
+<td><code>locked</code></td>
+<td>Boolean</td>
+<td><code>false</code></td>
+<td>Per-file <code>shell:</code> / <code>erb:</code> are ignored while locked (reader is <code>locked?</code>)</td>
+</tr>
 </tbody>
 </table>
-<p>All attributes have both getter and setter methods (<code>attr_accessor</code>).</p>
+<p>The first four have getters and setters. <code>strict_parameters</code> and <code>locked</code> have a
+setter plus a predicate reader.</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h3 id="initialize">initialize<a class="headerlink" href="#initialize" title="Permanent link">&para;</a></h3>
 <p>Creates a new Configuration with default values by calling <code>reset!</code>.</p>
-<h3 id="reset-nil">reset! → nil<a class="headerlink" href="#reset-nil" title="Permanent link">&para;</a></h3>
-<p>Restores all attributes to their defaults:</p>
+<h3 id="reset-self">reset! → self<a class="headerlink" href="#reset-self" title="Permanent link">&para;</a></h3>
+<p>Restores all attributes to their defaults and unlocks:</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">reset!</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w">  </span><span class="c1">#=&gt; &#39;&#39;</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">shell</span><span class="w">        </span><span class="c1">#=&gt; true</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">erb</span><span class="w">          </span><span class="c1">#=&gt; true</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w">         </span><span class="c1">#=&gt; ''</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">shell</span><span class="w">               </span><span class="c1">#=&gt; true</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">erb</span><span class="w">                 </span><span class="c1">#=&gt; true</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_include_depth</span><span class="w">   </span><span class="c1">#=&gt; 10</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">strict_parameters?</span><span class="w">  </span><span class="c1">#=&gt; false</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">locked?</span><span class="w">             </span><span class="c1">#=&gt; false</span>
 </span></code></pre></div>
+<h3 id="lock-self">lock! → self<a class="headerlink" href="#lock-self" title="Permanent link">&para;</a></h3>
+<p>Freezes the pipeline flags: a file's own <code>shell:</code> or <code>erb:</code> front matter no longer
+overrides the global values.</p>
+<h3 id="unlock-self">unlock! → self<a class="headerlink" href="#unlock-self" title="Permanent link">&para;</a></h3>
+<p>Reverses <code>lock!</code>.</p>
+<h3 id="locked-boolean">locked? → Boolean<a class="headerlink" href="#locked-boolean" title="Permanent link">&para;</a></h3>
+<h3 id="strict_parameters-boolean">strict_parameters? → Boolean<a class="headerlink" href="#strict_parameters-boolean" title="Permanent link">&para;</a></h3>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <h3 id="block-configuration">Block Configuration<a class="headerlink" href="#block-configuration" title="Permanent link">&para;</a></h3>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">config</span><span class="o">|</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;~/.prompts&#39;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'~/.prompts'</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">shell</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">false</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">end</span>
 </span></code></pre></div>
 <h3 id="direct-access">Direct Access<a class="headerlink" href="#direct-access" title="Permanent link">&para;</a></h3>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;/usr/share/prompts&#39;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'/usr/share/prompts'</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">erb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">false</span>
 </span></code></pre></div>
+<h3 id="locking">Locking<a class="headerlink" href="#locking" title="Permanent link">&para;</a></h3>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">c</span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">shell</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">false</span><span class="w"> </span><span class="p">}</span><span class="o">.</span><span class="n">lock!</span>
+</span></code></pre></div>
 <h2 id="override-behavior">Override Behavior<a class="headerlink" href="#override-behavior" title="Permanent link">&para;</a></h2>
-<p>Per-file YAML metadata always overrides the global setting. If a file has <code>shell: true</code> in its front-matter, shell expansion runs even when <code>PM.config.shell</code> is <code>false</code>.</p>
-<p>The global setting acts as the default when a file does not specify the value.</p>
+<p>Unlocked (the default): per-file YAML metadata overrides the global setting. If a file has <code>shell: true</code> in its front matter, shell expansion runs even when <code>PM.config.shell</code> is <code>false</code>. The global setting acts as the default when a file does not specify the value.</p>
+<p>Locked: the global value is used for every file and the front matter flag is ignored.</p>
+<h2 id="thread-safety">Thread safety<a class="headerlink" href="#thread-safety" title="Permanent link">&para;</a></h2>
+<p>The configuration is a process-global singleton with no synchronization. Set it up
+at boot, before parsing or rendering from multiple threads.</p>
 
 
 
@@ -2001,7 +2228,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Dewayne VanHoozer
+      Copyright &copy; 2026 Dewayne VanHoozer
     </div>
   
   
@@ -2046,10 +2273,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Parse YAML metadata from markdown prompts with shell expansion and ERB rendering">
+        <meta name="description" content="Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand">
       
       
         <meta name="author" content="Dewayne VanHoozer">
@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -33,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -667,6 +667,8 @@
       
         
       
+        
+      
     
     
     
@@ -915,6 +917,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -935,6 +965,8 @@
       
         
           
+        
+      
         
       
         
@@ -1213,10 +1245,54 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#keykey-boolean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        key?(key) → Boolean
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameters-hash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parameters → Hash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#to_svalues-string" class="md-nav__link">
     <span class="md-ellipsis">
       
         to_s(values = {}) → String
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_h-hash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_h → Hash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_markdown-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_markdown → String
       
     </span>
   </a>
@@ -1274,6 +1350,34 @@
     
   
     RenderContext
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
   
 
     
@@ -1701,10 +1805,54 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#keykey-boolean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        key?(key) → Boolean
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameters-hash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parameters → Hash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#to_svalues-string" class="md-nav__link">
     <span class="md-ellipsis">
       
         to_s(values = {}) → String
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_h-hash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_h → Hash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_markdown-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_markdown → String
       
     </span>
   </a>
@@ -1778,11 +1926,11 @@
 
 
 <h1 id="pmparsed">PM::Parsed<a class="headerlink" href="#pmparsed" title="Permanent link">&para;</a></h1>
-<p>The result object returned by <code>PM.parse</code>. A Struct with two fields: <code>metadata</code> and <code>content</code>.</p>
+<p>The result object returned by <code>PM.parse</code> and <code>PM.parse_string</code>. An immutable <code>Data</code> with two fields: <code>metadata</code> and <code>content</code>.</p>
 <h2 id="source">Source<a class="headerlink" href="#source" title="Permanent link">&para;</a></h2>
-<p><code>lib/pm/parsed.rb</code></p>
+<p><code>lib/pm/parsed.rb</code> (rendering lives in <code>lib/pm/renderer.rb</code> and <code>lib/pm/render_scope.rb</code>)</p>
 <h2 id="structure">Structure<a class="headerlink" href="#structure" title="Permanent link">&para;</a></h2>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">Parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Struct</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:metadata</span><span class="p">,</span><span class="w"> </span><span class="ss">:content</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="no">PM</span><span class="o">::</span><span class="no">Parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Data</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="ss">:metadata</span><span class="p">,</span><span class="w"> </span><span class="ss">:content</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="fields">Fields<a class="headerlink" href="#fields" title="Permanent link">&para;</a></h2>
 <table>
@@ -1797,23 +1945,29 @@
 <tr>
 <td><code>metadata</code></td>
 <td>PM::Metadata</td>
-<td>Parsed YAML front-matter</td>
+<td>Parsed YAML front matter plus <code>shell</code>/<code>erb</code> flags and any file-derived keys</td>
 </tr>
 <tr>
 <td><code>content</code></td>
 <td>String</td>
-<td>Markdown content after metadata extraction and shell expansion</td>
+<td>Content after comment stripping, metadata extraction, and shell expansion</td>
 </tr>
 </tbody>
 </table>
+<p><code>Parsed</code> itself is immutable, but <code>metadata</code> is a mutable object: <code>to_s</code> writes the
+<code>includes</code> tree into it.</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h3 id="key-object"><code>[](key)</code> → Object<a class="headerlink" href="#key-object" title="Permanent link">&para;</a></h3>
 <p>Bracket accessor that delegates to <code>metadata</code>:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">title: Hello</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">Content&quot;</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">"---</span><span class="se">\n</span><span class="s2">title: Hello</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">Content"</span><span class="p">)</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">parsed</span><span class="o">[</span><span class="ss">:title</span><span class="o">]</span><span class="w">    </span><span class="c1">#=&gt; &quot;Hello&quot;</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">parsed</span><span class="o">[</span><span class="s1">&#39;title&#39;</span><span class="o">]</span><span class="w">   </span><span class="c1">#=&gt; &quot;Hello&quot;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">parsed</span><span class="o">[</span><span class="ss">:title</span><span class="o">]</span><span class="w">    </span><span class="c1">#=&gt; "Hello"</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">parsed</span><span class="o">[</span><span class="s1">'title'</span><span class="o">]</span><span class="w">   </span><span class="c1">#=&gt; "Hello"</span>
 </span></code></pre></div>
+<h3 id="keykey-boolean">key?(key) → Boolean<a class="headerlink" href="#keykey-boolean" title="Permanent link">&para;</a></h3>
+<p>Whether the metadata has the key.</p>
+<h3 id="parameters-hash">parameters → Hash<a class="headerlink" href="#parameters-hash" title="Permanent link">&para;</a></h3>
+<p>The <code>parameters</code> mapping from the front matter, or <code>{}</code> when absent.</p>
 <h3 id="to_svalues-string">to_s(values = {}) → String<a class="headerlink" href="#to_svalues-string" title="Permanent link">&para;</a></h3>
 <p>Render the prompt content with ERB template evaluation.</p>
 <p><strong>Parameters:</strong></p>
@@ -1829,34 +1983,50 @@
 <tr>
 <td><code>values</code></td>
 <td>Hash</td>
-<td>Parameter values to merge with defaults</td>
+<td>Parameter values to merge with defaults (String or Symbol keys)</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Returns:</strong> Rendered prompt as String.</p>
-<p><strong>Raises:</strong> <code>ArgumentError</code> if required parameters (those with <code>nil</code> defaults) are not provided.</p>
+<p><strong>Raises:</strong> <code>PM::MissingParameterError</code> (an <code>ArgumentError</code>) if required parameters (those with <code>nil</code> defaults) are not provided; <code>PM::UnknownParameterError</code> in strict mode for an unknown bare name; the include and shell errors from any directive that runs.</p>
 <p><strong>Behavior:</strong></p>
 <ol>
+<li>Resets <code>metadata.includes</code> to <code>[]</code></li>
+<li>If <code>erb: false</code>, returns content as-is</li>
 <li>Merges provided values with parameter defaults from metadata</li>
 <li>Validates all required parameters are present</li>
-<li>If <code>erb: true</code>, evaluates ERB with parameters and registered directives</li>
-<li>If <code>erb: false</code>, returns content as-is</li>
-<li>Populates <code>metadata.includes</code> with the include tree</li>
+<li>Evaluates ERB with parameters and registered directives in scope</li>
+<li>Fills <code>metadata.includes</code> with the include tree</li>
 </ol>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;review.md&#39;</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'review.md'</span><span class="p">)</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># With required params</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;app.rb&#39;</span><span class="p">))</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">'code'</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'app.rb'</span><span class="p">))</span>
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1"># Override defaults</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;language&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;python&#39;</span><span class="p">)</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">'code'</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="s1">'language'</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">'python'</span><span class="p">)</span>
 </span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
 </span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1"># Symbol keys work</span>
 </span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="ss">code</span><span class="p">:</span><span class="w"> </span><span class="n">source</span><span class="p">)</span>
 </span></code></pre></div>
+<h3 id="to_h-hash">to_h → Hash<a class="headerlink" href="#to_h-hash" title="Permanent link">&para;</a></h3>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_h</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1">#=&gt; { metadata: { title: "Hello", shell: true, erb: true }, content: "Content" }</span>
+</span></code></pre></div>
+<p>The metadata Hash has Symbol keys.</p>
+<h3 id="to_markdown-string">to_markdown → String<a class="headerlink" href="#to_markdown-string" title="Permanent link">&para;</a></h3>
+<p>The prompt as a markdown file again: YAML front matter followed by the content.</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s2">"---</span><span class="se">\n</span><span class="s2">title: T</span><span class="se">\n</span><span class="s2">parameters:</span><span class="se">\n</span><span class="s2">  a: 1</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">Body &lt;%= a %&gt;"</span><span class="p">)</span><span class="o">.</span><span class="n">to_markdown</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1">#=&gt; "---\ntitle: T\nparameters:\n  a: 1\nshell: true\nerb: true\n---\nBody &lt;%= a %&gt;"</span>
+</span></code></pre></div>
+<ul>
+<li>Keys PM derived from the file system (<code>directory</code>, <code>name</code>, <code>created_at</code>, <code>modified_at</code>) and the <code>includes</code> tree are omitted, so the result re-parses cleanly.</li>
+<li><code>shell</code> and <code>erb</code> are always written, because their values were resolved against the global configuration at parse time.</li>
+<li>The content is the parsed content: shell references have already been expanded. ERB is untouched.</li>
+</ul>
 <h3 id="render_withvalues-included-depth-string">render_with(values, included, depth) → String<a class="headerlink" href="#render_withvalues-included-depth-string" title="Permanent link">&para;</a></h3>
-<p>Internal method used by <code>to_s</code> and the <code>include</code> directive. Handles the ERB rendering pipeline with include tracking.</p>
-<p><strong>Parameters:</strong></p>
+<p>Rendering entry point used by the <code>include</code> directive, which must pass the active
+include chain and depth through.</p>
 <table>
 <thead>
 <tr>
@@ -1874,7 +2044,7 @@
 <tr>
 <td><code>included</code></td>
 <td>Set</td>
-<td>File paths already in the include chain</td>
+<td>Paths of the ancestor files in the include chain</td>
 </tr>
 <tr>
 <td><code>depth</code></td>
@@ -1883,19 +2053,22 @@
 </tr>
 </tbody>
 </table>
-<p>This method is not typically called directly.</p>
+<p>Not typically called directly.</p>
 <h2 id="typical-usage">Typical Usage<a class="headerlink" href="#typical-usage" title="Permanent link">&para;</a></h2>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;prompt.md&#39;</span><span class="p">)</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># Access metadata</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">parameters</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Render</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># Check includes after render</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">includes</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'prompt.md'</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># Access metadata</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">parsed</span><span class="o">.</span><span class="n">parameters</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1"># Render</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">'key'</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">'value'</span><span class="p">)</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1"># Check includes after render</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">includes</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="c1"># Export</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="no">File</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'copy.md'</span><span class="p">,</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">)</span>
 </span></code></pre></div>
 
 
@@ -2026,7 +2199,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Dewayne VanHoozer
+      Copyright &copy; 2026 Dewayne VanHoozer
     </div>
   
   
@@ -2071,10 +2244,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

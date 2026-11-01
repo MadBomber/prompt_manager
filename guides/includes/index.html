@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Parse YAML metadata from markdown prompts with shell expansion and ERB rendering">
+        <meta name="description" content="Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand">
       
       
         <meta name="author" content="Dewayne VanHoozer">
@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -33,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -669,6 +669,8 @@
       
         
       
+        
+      
     
     
     
@@ -957,6 +959,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Nested Includes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#depth-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Depth limit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#including-the-same-file-twice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Including the Same File Twice
+      
+    </span>
+  </a>
+  
 </li>
       
         <li class="md-nav__item">
@@ -985,10 +1015,49 @@
   <a href="#insert-read-raw-file-insertion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        insert / read — Raw File Insertion
+        insert / read: Raw File Insertion
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="insert / read: Raw File Insertion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#differences-from-include" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Differences from include
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-resolution_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -997,6 +1066,17 @@
     <span class="md-ellipsis">
       
         Requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error summary
       
     </span>
   </a>
@@ -1068,6 +1148,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1086,6 +1194,8 @@
       
         
           
+        
+      
         
       
         
@@ -1279,6 +1389,34 @@
     
   
     RenderContext
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
   
 
     
@@ -1702,6 +1840,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Nested Includes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#depth-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Depth limit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#including-the-same-file-twice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Including the Same File Twice
+      
+    </span>
+  </a>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1730,10 +1896,49 @@
   <a href="#insert-read-raw-file-insertion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        insert / read — Raw File Insertion
+        insert / read: Raw File Insertion
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="insert / read: Raw File Insertion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#differences-from-include" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Differences from include
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-resolution_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1742,6 +1947,17 @@
     <span class="md-ellipsis">
       
         Requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error summary
       
     </span>
   </a>
@@ -1788,22 +2004,23 @@
 
 
 <h1 id="including-files">Including Files<a class="headerlink" href="#including-files" title="Permanent link">&para;</a></h1>
-<p>The <code>include</code> directive lets you compose prompts from multiple files.</p>
+<p>Two directives compose a prompt from other files. <code>include</code> parses and renders
+another prompt; <code>insert</code> (alias <code>read</code>) copies any file in verbatim.</p>
 <h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>---
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>title: Full Review
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>parameters:
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gu">  code: null</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gu">---</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>&lt;%= include &#39;common/header.md&#39; %&gt;
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>&lt;%= include 'common/header.md' %&gt;
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>Review this code:
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>&lt;%= code %&gt;
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>&lt;%= include &#39;common/footer.md&#39; %&gt;
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>&lt;%= include 'common/footer.md' %&gt;
 </span></code></pre></div>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;full_review.md&#39;</span><span class="p">)</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">puts</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;app.rb&#39;</span><span class="p">))</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'full_review.md'</span><span class="p">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">puts</span><span class="w"> </span><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">'code'</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'app.rb'</span><span class="p">))</span>
 </span></code></pre></div>
 <h2 id="how-includes-work">How Includes Work<a class="headerlink" href="#how-includes-work" title="Permanent link">&para;</a></h2>
 <p>Each included file goes through the full processing pipeline:</p>
@@ -1813,14 +2030,16 @@
 <li>Shell expansion applied</li>
 <li>ERB rendered (with the parent's parameter values)</li>
 </ol>
-<p>The included file's rendered content replaces the <code>&lt;%= include ... %&gt;</code> tag.</p>
+<p>The included file's rendered content replaces the <code>&lt;%= include ... %&gt;</code> tag. The file
+can have any extension; <code>.md</code> is conventional but not required.</p>
 <h2 id="path-resolution">Path Resolution<a class="headerlink" href="#path-resolution" title="Permanent link">&para;</a></h2>
 <p>Include paths are resolved relative to the <strong>parent file's directory</strong>:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>prompts/
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  review.md          # contains: &lt;%= include &#39;common/header.md&#39; %&gt;
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  review.md          # contains: &lt;%= include 'common/header.md' %&gt;
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  common/
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    header.md        # resolved from prompts/common/header.md
 </span></code></pre></div>
+<p>Absolute paths work too. Paths are not confined to <code>prompts_dir</code>.</p>
 <h2 id="parameter-passing">Parameter Passing<a class="headerlink" href="#parameter-passing" title="Permanent link">&para;</a></h2>
 <p>The parent's parameter values are passed to included files. Child files can use the same parameter names:</p>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gu">&lt;!-- parent.md --&gt;</span>
@@ -1828,7 +2047,7 @@
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>parameters:
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="gu">  name: null</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="gu">---</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>&lt;%= include &#39;greeting.md&#39; %&gt;
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>&lt;%= include 'greeting.md' %&gt;
 </span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>Done.
 </span></code></pre></div>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gu">&lt;!-- greeting.md --&gt;</span>
@@ -1837,97 +2056,186 @@
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="gu">---</span>
 </span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Hello, &lt;%= name %&gt;!
 </span></code></pre></div>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;parent.md&#39;</span><span class="p">)</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;Alice&#39;</span><span class="p">)</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1">#=&gt; &quot;Hello, Alice!\nDone.&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'parent.md'</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">'name'</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">'Alice'</span><span class="p">)</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1">#=&gt; "Hello, Alice!\nDone."</span>
 </span></code></pre></div>
 <h2 id="nested-includes">Nested Includes<a class="headerlink" href="#nested-includes" title="Permanent link">&para;</a></h2>
 <p>Includes can be nested. File A can include File B, which includes File C:</p>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&lt;!-- a.md --&gt;
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>&lt;%= include &#39;b.md&#39; %&gt;
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>&lt;%= include 'b.md' %&gt;
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>&lt;!-- b.md --&gt;
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>&lt;%= include &#39;c.md&#39; %&gt;
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>&lt;%= include 'c.md' %&gt;
 </span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
 </span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>&lt;!-- c.md --&gt;
 </span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>Content from C
 </span></code></pre></div>
-<h2 id="circular-include-detection">Circular Include Detection<a class="headerlink" href="#circular-include-detection" title="Permanent link">&para;</a></h2>
-<p>PM detects circular includes and raises an error:</p>
-<div class="language-markdown highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&lt;!-- circular_a.md --&gt;
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>&lt;%= include &#39;circular_b.md&#39; %&gt;
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>&lt;!-- circular_b.md --&gt;
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>&lt;%= include &#39;circular_a.md&#39; %&gt;
+<h3 id="depth-limit">Depth limit<a class="headerlink" href="#depth-limit" title="Permanent link">&para;</a></h3>
+<p>Nesting is capped by <code>PM.config.max_include_depth</code> (default 10). The top-level file
+is depth 0, so with the default a chain of ten nested includes works and the
+eleventh raises:</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'deep.md'</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1">#=&gt; PM::IncludeDepthError: Include depth exceeds 10 (PM.config.max_include_depth): /path/to/eleventh.md</span>
 </span></code></pre></div>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;circular_a.md&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1">#=&gt; RuntimeError: Circular include detected: /path/to/circular_a.md</span>
+<p>Set <code>max_include_depth</code> to <code>nil</code> to remove the limit.</p>
+<h2 id="including-the-same-file-twice">Including the Same File Twice<a class="headerlink" href="#including-the-same-file-twice" title="Permanent link">&para;</a></h2>
+<p>A file may be included more than once in one prompt, for example a separator between
+sections. Only a true cycle is an error.</p>
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>&lt;%= include 'sep.md' %&gt;
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Section one
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>&lt;%= include 'sep.md' %&gt;
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>Section two
+</span></code></pre></div>
+<h2 id="circular-include-detection">Circular Include Detection<a class="headerlink" href="#circular-include-detection" title="Permanent link">&para;</a></h2>
+<p>PM tracks the chain of files currently being rendered. Including a file that is
+already an ancestor raises <code>PM::CircularIncludeError</code>:</p>
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>&lt;!-- circular_a.md --&gt;
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>&lt;%= include 'circular_b.md' %&gt;
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>&lt;!-- circular_b.md --&gt;
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>&lt;%= include 'circular_a.md' %&gt;
+</span></code></pre></div>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'circular_a.md'</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1">#=&gt; PM::CircularIncludeError: Circular include detected: /path/to/circular_a.md</span>
 </span></code></pre></div>
 <h2 id="includes-metadata">Includes Metadata<a class="headerlink" href="#includes-metadata" title="Permanent link">&para;</a></h2>
 <p>After calling <code>to_s</code>, the parent's metadata has an <code>includes</code> key with a tree of what was included:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;full_review.md&#39;</span><span class="p">)</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">source</span><span class="p">)</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">includes</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="c1">#=&gt; [</span>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="c1">#     {</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1">#       path:     &quot;/prompts/common/header.md&quot;,</span>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="c1">#       depth:    1,</span>
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="c1">#       metadata: { title: &quot;Header&quot;, ... },</span>
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="c1">#       includes: []</span>
-</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="c1">#     },</span>
-</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="c1">#     {</span>
-</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="c1">#       path:     &quot;/prompts/common/footer.md&quot;,</span>
-</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="c1">#       depth:    1,</span>
-</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="c1">#       metadata: { title: &quot;Footer&quot;, ... },</span>
-</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="c1">#       includes: []</span>
-</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="c1">#     }</span>
-</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="c1">#   ]</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">parsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'full_review.md'</span><span class="p">)</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="s1">'code'</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">source</span><span class="p">)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">includes</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="c1">#=&gt; [</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="c1">#     {</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1">#       path:     "/prompts/common/header.md",</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="c1">#       depth:    1,</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="c1">#       metadata: { title: "Header", shell: true, erb: true, directory: "...", name: "header.md", ... },</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="c1">#       includes: []</span>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="c1">#     },</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="c1">#     {</span>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="c1">#       path:     "/prompts/common/footer.md",</span>
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="c1">#       depth:    1,</span>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="c1">#       metadata: { title: "Footer", ... },</span>
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="c1">#       includes: []</span>
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="c1">#     }</span>
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="c1">#   ]</span>
 </span></code></pre></div>
-<p>Nested includes form a tree -- each entry's <code>includes</code> array contains its own children.</p>
+<p>Nested includes form a tree: each entry's <code>includes</code> array contains its own children.
+Each entry's <code>metadata</code> is a plain Hash with Symbol keys.</p>
 <p>The <code>includes</code> array is <code>nil</code> before <code>to_s</code> is called and is reset on each call.</p>
-<h2 id="insert-read-raw-file-insertion"><code>insert</code> / <code>read</code> — Raw File Insertion<a class="headerlink" href="#insert-read-raw-file-insertion" title="Permanent link">&para;</a></h2>
+<h2 id="insert-read-raw-file-insertion"><code>insert</code> / <code>read</code>: Raw File Insertion<a class="headerlink" href="#insert-read-raw-file-insertion" title="Permanent link">&para;</a></h2>
 <p>Use <code>insert</code> (or its alias <code>read</code>) to insert a file's content verbatim. Unlike <code>include</code>, the content is not parsed, shell-expanded, or ERB-rendered:</p>
-<p><div class="language-markdown highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>---
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="gu">title: Code Review</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="gu">---</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>Review this code:
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>```ruby
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>&lt;%= insert &#39;src/app.rb&#39; %&gt;
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>---
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="gu">title: Code Review</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="gu">---</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>Review this code:
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="sb">```ruby</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="o">&lt;%=</span><span class="w"> </span><span class="n">insert</span><span class="w"> </span><span class="s1">'src/app.rb'</span><span class="w"> </span><span class="o">%&gt;</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="sb">```</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>### Differences from `include`
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>| | `insert` | `include` |
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>|---|---|---|
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>| File types | Any | `.md` only |
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>| ERB in content | Preserved as literal text | Rendered |
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>| Shell expansion | Not applied | Applied |
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>| Recursion | None | Nested includes supported |
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>| Metadata tracking | None | `metadata.includes` tree |
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>### Path resolution
-</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
-</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>Same as `include` — paths resolve relative to the parent file&#39;s directory. Absolute paths work from any context, including string-parsed prompts.
-</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>
-</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>### Missing files
-</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>
-</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>Raises an error:
-</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>
-</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a>```ruby
-</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a>PM.parse(&quot;---\n---\n&lt;%= insert &#39;/no/such/file&#39; %&gt;&quot;).to_s
-</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a>#=&gt; RuntimeError: insert: file not found: /no/such/file
-</span></code></pre></div></p>
+<h3 id="differences-from-include">Differences from <code>include</code><a class="headerlink" href="#differences-from-include" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>insert</code> / <code>read</code></th>
+<th><code>include</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File types</td>
+<td>Any</td>
+<td>Any (conventionally <code>.md</code>)</td>
+</tr>
+<tr>
+<td>Front matter</td>
+<td>Kept as text</td>
+<td>Parsed into the child's metadata</td>
+</tr>
+<tr>
+<td>ERB in content</td>
+<td>Preserved as literal text</td>
+<td>Rendered</td>
+</tr>
+<tr>
+<td>Shell expansion</td>
+<td>Not applied</td>
+<td>Applied</td>
+</tr>
+<tr>
+<td>Parameters</td>
+<td>n/a</td>
+<td>Parent values passed down</td>
+</tr>
+<tr>
+<td>Recursion</td>
+<td>None</td>
+<td>Nested, up to <code>max_include_depth</code></td>
+</tr>
+<tr>
+<td>Metadata tracking</td>
+<td>None</td>
+<td><code>metadata.includes</code> tree</td>
+</tr>
+<tr>
+<td>Needs a file context</td>
+<td>No (absolute paths work anywhere)</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="path-resolution_1">Path resolution<a class="headerlink" href="#path-resolution_1" title="Permanent link">&para;</a></h3>
+<p>Same as <code>include</code>: paths resolve relative to the parent file's directory. Absolute paths work from any context, including string-parsed prompts.</p>
+<h3 id="missing-files">Missing files<a class="headerlink" href="#missing-files" title="Permanent link">&para;</a></h3>
+<p>Raises <code>PM::FileNotFoundError</code>:</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s2">"&lt;%= insert '/no/such/file' %&gt;"</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1">#=&gt; PM::FileNotFoundError: insert: file not found: /no/such/file</span>
+</span></code></pre></div>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The <code>include</code> directive requires file context. Using it with string-parsed prompts raises an error:</li>
+<li>The <code>include</code> directive requires file context. Using it with string-parsed prompts raises <code>PM::IncludeContextError</code>:</li>
 </ul>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">&lt;%= include &#39;other.md&#39; %&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="c1">#=&gt; RuntimeError: include requires a file context (use PM.parse with a file path)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s2">"&lt;%= include 'other.md' %&gt;"</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="c1">#=&gt; PM::IncludeContextError: include requires a file context (use PM.parse with a file path)</span>
 </span></code></pre></div>
 <ul>
-<li>When <code>erb: false</code>, the include directive does not execute and <code>metadata.includes</code> is an empty array.</li>
+<li>When <code>erb: false</code>, directives do not execute and <code>metadata.includes</code> is an empty array.</li>
 </ul>
+<h2 id="error-summary">Error summary<a class="headerlink" href="#error-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PM::CircularIncludeError</code></td>
+<td>File is already in the current include chain</td>
+</tr>
+<tr>
+<td><code>PM::IncludeDepthError</code></td>
+<td>Nesting deeper than <code>max_include_depth</code></td>
+</tr>
+<tr>
+<td><code>PM::IncludeContextError</code></td>
+<td><code>include</code> from a string-parsed prompt</td>
+</tr>
+<tr>
+<td><code>PM::FileNotFoundError</code></td>
+<td><code>insert</code> / <code>read</code> target missing or not a regular file</td>
+</tr>
+<tr>
+<td><code>Errno::ENOENT</code></td>
+<td><code>include</code> target missing</td>
+</tr>
+</tbody>
+</table>
+<p>All but <code>Errno::ENOENT</code> descend from <code>PM::IncludeError</code> or <code>PM::Error</code>. See the
+<a href="../../api/errors/">Errors reference</a>.</p>
 
 
 
@@ -2057,7 +2365,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Dewayne VanHoozer
+      Copyright &copy; 2026 Dewayne VanHoozer
     </div>
   
   
@@ -2102,10 +2410,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>
