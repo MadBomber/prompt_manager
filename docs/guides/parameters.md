@@ -18,17 +18,22 @@ at <%= style_guide %>:
 <%= code %>
 ```
 
+`parameters:` must be a YAML mapping; anything else raises `PM::MetadataError`.
+
 ## Required vs Default
 
-- **`null` value** -- the parameter is **required**. `to_s` raises `ArgumentError` if not provided.
+- **`null` value** -- the parameter is **required**. `to_s` raises `PM::MissingParameterError` if not provided.
 - **Any other value** -- used as the **default**. Can be overridden when calling `to_s`.
 
 ```ruby
 parsed = PM.parse('code_review.md')
 
-parsed.metadata.parameters
+parsed.parameters
 #=> {"language" => "ruby", "code" => nil, "style_guide" => "~/guides/default.md"}
 ```
+
+`parsed.parameters` is a shortcut for `parsed.metadata.parameters` that returns `{}`
+when the file declares none.
 
 ## Rendering with to_s
 
@@ -58,14 +63,56 @@ parsed.to_s  #=> renders with all defaults
 
 ### Missing Required Parameters
 
-Calling `to_s` without supplying a required parameter raises `ArgumentError`:
+Calling `to_s` without supplying a required parameter raises `PM::MissingParameterError`:
 
 ```ruby
 parsed.to_s
-#=> ArgumentError: Missing required parameters: code
+#=> PM::MissingParameterError: Missing required parameters: code
 ```
 
-The error message lists all missing parameters.
+The error message lists all missing parameters. `PM::MissingParameterError` is a
+subclass of `ArgumentError`, so code that rescues `ArgumentError` keeps working.
+
+## Name Resolution
+
+Inside a template, a bare identifier is looked up in this order:
+
+1. **A parameter**, when the name is called with no arguments
+2. **A directive** (`include`, `insert`, or anything registered with `PM.register`)
+3. **`nil`**, which renders as an empty string
+
+```markdown
+---
+parameters:
+  include: "a parameter named include"
+---
+<%= include %>              <!-- the parameter -->
+<%= include 'other.md' %>   <!-- the directive -->
+<%= nothing_here %>         <!-- "" -->
+```
+
+Calling an unknown name **with** arguments raises `NoMethodError`, as in plain Ruby.
+
+### Strict mode
+
+Turn step 3 into an error:
+
+```ruby
+PM.configure { |c| c.strict_parameters = true }
+
+PM.parse_string('<%= nothing_here %>').to_s
+#=> PM::UnknownParameterError: Unknown parameter or directive: nothing_here
+```
+
+Strict mode catches typos in parameter names that would otherwise render silently as
+empty text.
+
+### Names that collide with Ruby methods
+
+A parameter may be named like a public `Object` method (`display`, `method`, `name`,
+`hash`, `format`). It still resolves to the parameter value inside the template. A
+handful of names that ERB itself relies on (`class`, `object_id`, `send`, `respond_to?`,
+`binding`, `instance_variable_get`, and the other reflection methods) are never shadowed.
 
 ## Parameters in Included Files
 
@@ -94,3 +141,5 @@ parsed = PM.parse('parent.md')
 parsed.to_s('name' => 'Alice')
 #=> "Hello, Alice!"
 ```
+
+A child's own `parameters:` defaults apply too; parent values override them.

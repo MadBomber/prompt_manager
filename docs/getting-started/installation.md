@@ -27,8 +27,9 @@ require 'pm'
 ```
 
 The `PM` module is the primary interface. All public methods are accessed through it.
+`require 'prompt_manager'` also works; it loads the same code.
 
 ## Requirements
 
-- Ruby >= 3.2.0
-- No runtime dependencies beyond the standard library (plus `ostruct` on Ruby 4.0+)
+- Ruby >= 4.0.9
+- No runtime dependencies. PM uses only the standard library (`yaml`, `erb`, `open3`, `strscan`, `pathname`).

@@ -8,8 +8,11 @@ require 'pm'
 parsed = PM.parse("---\ntitle: Hello\n---\nContent here")
 
 parsed.metadata.title  #=> "Hello"
-parsed.content         #=> "\nContent here\n"
+parsed.content         #=> "Content here"
 ```
+
+The content is everything after the closing `---` line. Interior blank lines and
+a trailing newline in the source are preserved as written.
 
 ## Parse a File
 
@@ -27,11 +30,11 @@ Hello, <%= name %>! Welcome.
 ```ruby
 # Any of these forms work:
 parsed = PM.parse('greeting.md')    # explicit .md extension
-parsed = PM.parse(:greeting)        # Symbol — .md appended
-parsed = PM.parse('greeting')       # single word — .md appended
+parsed = PM.parse(:greeting)        # Symbol: .md appended
+parsed = PM.parse('greeting')       # single word: .md appended
 
 parsed.metadata.title       #=> "Greeting"
-parsed.metadata.parameters  #=> {"name" => nil}
+parsed.parameters           #=> {"name" => nil}
 
 # Render with parameters
 puts parsed.to_s('name' => 'Alice')
@@ -50,14 +53,14 @@ PM.parse_string('hello')       #=> parses "hello" as string content
 
 parsed = PM.parse_string("---\ntitle: Inline\n---\nSome content")
 parsed.metadata.title  #=> "Inline"
-parsed.content         #=> "Some content\n"
+parsed.content         #=> "Some content"
 ```
 
 ## Parameters
 
-Parameters declared in the YAML front-matter define template variables:
+Parameters declared in the YAML front matter define template variables:
 
-- **`null` value** -- parameter is required; `to_s` raises `ArgumentError` if missing
+- **`null` value** -- parameter is required; `to_s` raises `PM::MissingParameterError` if missing
 - **Any other value** -- used as the default; can be overridden in `to_s`
 
 ```ruby
@@ -68,6 +71,9 @@ parsed.to_s('code' => 'puts "hi"')  #=> "ruby: puts \"hi\""
 
 # Override defaults
 parsed.to_s('code' => 'print("hi")', 'lang' => 'python')
+
+parsed.to_s
+#=> PM::MissingParameterError: Missing required parameters: code
 ```
 
 ## Shell Expansion
@@ -80,15 +86,35 @@ title: Info
 ---
 User: $USER
 Date: $(date +%Y-%m-%d)
+Literal: \$HOME
 ```
 
 ```ruby
 parsed = PM.parse('info.md')
-parsed.content  #=> "User: dewayne\nDate: 2025-01-15\n"
+parsed.content  #=> "User: dewayne\nDate: 2026-11-01\nLiteral: $HOME\n"
 ```
+
+## Composing Prompts
+
+```markdown
+---
+parameters:
+  code: null
+---
+<%= include 'common/header.md' %>
+
+Review this code:
+<%= code %>
+
+<%= insert 'app/models/user.rb' %>
+```
+
+`include` parses and renders another prompt file with the same parameters.
+`insert` (alias `read`) copies any file in verbatim.
 
 ## Next Steps
 
 - [Configuration](configuration.md) -- Set a prompts directory and global defaults
 - [Parsing Guide](../guides/parsing.md) -- File vs string parsing in depth
 - [Parameters Guide](../guides/parameters.md) -- Required and default parameters
+- [Security Guide](../guides/security.md) -- What a prompt file is allowed to do

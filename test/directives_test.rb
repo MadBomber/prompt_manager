@@ -13,23 +13,19 @@ class PMIncludeTest < Minitest::Test
   end
 
   def test_included_file_runs_shell_expansion
-    parsed = PM.parse(fixture('with_include.md'))
+    parsed = PM.parse(fixture('with_include_shell.md'))
     result = parsed.to_s
 
-    # header.md has no shell refs, but let's test a file that does
-    parsed2 = PM.parse("---\ntitle: Test\n---\n<%= include 'includes/with_shell.md' %>\n")
-    # parse (not parse_file) won't have directory, so include won't be available
-    # We need parse_file for include to work
+    assert_includes result, 'Echo: included'
   end
 
-  def test_include_with_shell_expansion
-    # Create a temporary wrapper that includes with_shell.md
-    wrapper = PM.parse(fixture('with_include.md'))
-    # Test the shell include fixture directly
-    shell_parsed = PM.parse(fixture('includes/with_shell.md'))
-    result = shell_parsed.to_s
+  def test_include_with_shell_expansion_keeps_parent_content
+    parsed = PM.parse(fixture('with_include_shell.md'))
+    result = parsed.to_s
 
+    assert_includes result, 'Parent before.'
     assert_includes result, 'Echo: included'
+    assert_includes result, 'Parent after.'
   end
 
   def test_nested_include
@@ -43,13 +39,13 @@ class PMIncludeTest < Minitest::Test
   def test_circular_include_raises
     parsed = PM.parse(fixture('circular_a.md'))
 
-    assert_raises(RuntimeError) { parsed.to_s }
+    assert_raises(PM::CircularIncludeError) { parsed.to_s }
   end
 
   def test_circular_include_error_message
     parsed = PM.parse(fixture('circular_a.md'))
 
-    error = assert_raises(RuntimeError) { parsed.to_s }
+    error = assert_raises(PM::CircularIncludeError) { parsed.to_s }
     assert_includes error.message, 'Circular include detected'
   end
 
@@ -73,7 +69,7 @@ class PMIncludeTest < Minitest::Test
   def test_include_from_parse_raises_with_clear_message
     parsed = PM.parse("---\ntitle: Test\n---\n<%= include 'foo.md' %>\n")
 
-    error = assert_raises(RuntimeError) { parsed.to_s }
+    error = assert_raises(PM::IncludeContextError) { parsed.to_s }
     assert_includes error.message, 'include requires a file context (use PM.parse with a file path)'
   end
 end
@@ -115,7 +111,7 @@ class PMInsertTest < Minitest::Test
   def test_insert_missing_file_raises
     parsed = PM.parse("---\ntitle: Test\n---\n<%= insert '/nonexistent/file.txt' %>\n")
 
-    error = assert_raises(RuntimeError) { parsed.to_s }
+    error = assert_raises(PM::FileNotFoundError) { parsed.to_s }
     assert_includes error.message, 'insert: file not found'
   end
 
@@ -191,12 +187,12 @@ class PMRegisterDirectiveTest < Minitest::Test
   def test_register_duplicate_raises
     PM.register(:custom) { |_ctx| 'x' }
 
-    error = assert_raises(RuntimeError) { PM.register(:custom) { |_ctx| 'y' } }
+    error = assert_raises(PM::DirectiveAlreadyRegisteredError) { PM.register(:custom) { |_ctx| 'y' } }
     assert_includes error.message, 'Directive already registered: custom'
   end
 
   def test_register_duplicate_of_builtin_raises
-    error = assert_raises(RuntimeError) { PM.register(:include) { |_ctx, path| path } }
+    error = assert_raises(PM::DirectiveAlreadyRegisteredError) { PM.register(:include) { |_ctx, path| path } }
     assert_includes error.message, 'Directive already registered: include'
   end
 
@@ -262,17 +258,15 @@ class PMRegisterDirectiveTest < Minitest::Test
   def test_register_aliases_duplicate_raises
     PM.register(:first, :second) { |_ctx| 'x' }
 
-    error = assert_raises(RuntimeError) { PM.register(:second) { |_ctx| 'y' } }
+    error = assert_raises(PM::DirectiveAlreadyRegisteredError) { PM.register(:second) { |_ctx| 'y' } }
     assert_includes error.message, 'Directive already registered: second'
   end
 
-  def test_register_aliases_rolls_back_none_on_duplicate
+  def test_register_is_atomic_when_any_name_is_taken
     PM.register(:existing) { |_ctx| 'x' }
-
-    assert_raises(RuntimeError) { PM.register(:new_one, :existing) { |_ctx| 'y' } }
-    # :new_one was registered before :existing raised — this is expected behavior
-    # since registration is iterative
-    assert PM.directives.key?(:new_one)
+  
+    assert_raises(PM::DirectiveAlreadyRegisteredError) { PM.register(:new_one, :existing) { |_ctx| 'y' } }
+    refute PM.directives.key?(:new_one), 'no name is registered when any requested name is taken'
   end
 end
 

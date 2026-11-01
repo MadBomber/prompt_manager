@@ -35,7 +35,11 @@ Output: "\n---\ntitle: Test\n---\nContent "
 **When:** Parse time
 **Regex:** `PM::METADATA_REGEXP`
 
-The `---`-delimited front-matter is parsed with `YAML.safe_load` into a Hash, then wrapped in a `PM::Metadata` object. Global defaults for `shell` and `erb` are applied if the file doesn't specify them.
+The `---`-delimited front matter is parsed with `YAML.safe_load` (permitting `Date` and `Time`) into a Hash, validated, and wrapped in a `PM::Metadata` object:
+
+- The front matter must be a mapping (or empty); anything else raises `PM::MetadataError`.
+- `shell` and `erb` are coerced to booleans. When the file does not set one, or the configuration is locked, the global default is used.
+- `parameters` must be a mapping when present.
 
 For file sources, `directory`, `name`, `created_at`, and `modified_at` are added from file stats.
 
@@ -49,30 +53,43 @@ Output: metadata = PM::Metadata(title: "Test", shell: true, erb: true)
 
 **When:** Parse time (if `shell: true`)
 **Method:** `PM.expand_shell`
+**Class:** `PM::ShellExpander`
 
-Two sub-stages run in order:
+A single left-to-right scan over the content (`StringScanner`). At each position the
+expander handles exactly one of:
 
-### 3a. Command Substitution
+| Seen | Action |
+|---|---|
+| A fence line (``` or ~~~) at the start of a line | Copy lines verbatim until the matching closing fence |
+| `\$` | Emit a literal `$` |
+| `$(` | Read to the matching `)`, run the command with `Open3.capture3`, emit stdout (chomped) |
+| `$VAR` or `${VAR}` | Emit `ENV.fetch(name, '')` |
+| Anything else | Copy one character |
 
-`$(command)` sequences are found (with proper nesting of parentheses), executed, and replaced with stdout.
-
-### 3b. Environment Variables
-
-`$VAR` and `${VAR}` patterns (UPPERCASE only) are replaced with the corresponding environment variable value. Missing variables become empty strings.
+Command output is appended to the result and the scan continues **after** the `$(...)`
+in the source, so output is never re-expanded. When the prompt has `erb: true`, `<%`
+in output becomes `<%%` so stage 4 treats it as text.
 
 ```
 Input:  "User: $USER\nDate: $(date +%Y-%m-%d)"
-Output: "User: dewayne\nDate: 2025-01-15"
+Output: "User: dewayne\nDate: 2026-11-01"
 ```
+
+Errors: `PM::ShellCommandError` for a non-zero exit, `PM::ShellExpansionError` for an unmatched `$(`.
 
 ## Stage 4: ERB Rendering
 
 **When:** On demand (`to_s` call, if `erb: true`)
-**Method:** `PM::Parsed#to_s`
+**Classes:** `PM::Renderer`, `PM::RenderScope`
 
-The content is evaluated as an ERB template. Parameter values (defaults merged with `to_s` arguments) and registered directives are available as local methods in the template.
+`Renderer` merges parameter defaults with the `to_s` arguments, checks required
+parameters, builds a `PM::RenderContext`, and evaluates the content as ERB against a
+`RenderScope`. The scope resolves bare names: parameter (no arguments) → directive →
+`nil` (or `PM::UnknownParameterError` in strict mode).
 
-This stage also handles the `include` directive, which recursively parses and renders included files through the full pipeline.
+This stage also handles the `include` directive, which parses the child through
+stages 1 to 3 and renders it through stage 4 with the same parameters, a depth one
+greater, and the ancestor chain extended by the current file.
 
 ```
 Input:  "Hello, <%= name %>!"  (with params: {name: "Alice"})
@@ -86,9 +103,11 @@ Stages 3 and 4 can be independently disabled:
 | Setting | Effect |
 |---------|--------|
 | `shell: false` | Stage 3 skipped; `$VAR` and `$(cmd)` preserved |
-| `erb: false` | Stage 4 skipped; `<%= ... %>` preserved |
+| `erb: false` | Stage 4 skipped; `<%= ... %>` preserved; directives do not run |
 
-Settings can be per-file (YAML metadata) or global (`PM.configure`). Per-file always wins.
+Settings can be per-file (YAML metadata) or global (`PM.configure`). Per-file wins
+unless the configuration is locked with `PM.config.lock!`, in which case the global
+value is final.
 
 ## Data Flow
 

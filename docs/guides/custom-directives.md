@@ -5,9 +5,9 @@ Register custom methods that become available inside ERB templates.
 ## Registering a Directive
 
 ```ruby
-PM.register(:read) { |_ctx, path| File.read(path) }
 PM.register(:env)  { |_ctx, key| ENV.fetch(key, '') }
 PM.register(:run)  { |_ctx, cmd| `#{cmd}`.chomp }
+PM.register(:host) { |_ctx| Socket.gethostname }
 ```
 
 Use them in any prompt file:
@@ -16,10 +16,12 @@ Use them in any prompt file:
 ---
 title: Deploy Prompt
 ---
-Hostname: <%= read '/etc/hostname' %>
+Hostname: <%= host %>
 Environment: <%= env 'DEPLOY_ENV' %>
 Recent commits: <%= run 'git log --oneline -5' %>
 ```
+
+`PM.register` requires a block and raises `ArgumentError` without one.
 
 ## Aliases
 
@@ -36,7 +38,8 @@ All names point to the same block. Use any of them in ERB:
 <%= web 'https://example.com' %>
 ```
 
-Duplicate detection still applies — if any name is already registered, an error is raised.
+Registration is atomic: if any requested name is already taken, nothing is registered
+and `PM::DirectiveAlreadyRegisteredError` is raised.
 
 ## The RenderContext
 
@@ -44,11 +47,11 @@ The first argument to every directive block is a `PM::RenderContext` with access
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `directory` | String | Directory of the file being rendered |
-| `params` | Hash | Merged parameter values |
+| `directory` | String or nil | Directory of the file being rendered (`nil` for string-parsed prompts) |
+| `params` | Hash | Merged parameter values (String keys) |
 | `metadata` | PM::Metadata | Current file's metadata |
 | `depth` | Integer | Include nesting depth (0 for top-level) |
-| `included` | Set | File paths already in the include chain |
+| `included` | Set | Paths of the ancestor files in the include chain |
 
 ```ruby
 PM.register(:current_file) { |ctx| ctx.metadata.name || 'unknown' }
@@ -65,16 +68,36 @@ PM.register(:greet) { |_ctx, name| "Hello, #{name}!" }
 <%= greet 'Alice' %>
 ```
 
+A directive's return value is inserted as-is. It is not shell-expanded or rendered as
+ERB, so a directive that fetches external content cannot have that content executed.
+
+## Name Resolution in Templates
+
+A bare name in a template resolves to a **parameter** first (when called with no
+arguments), then to a directive. A template that declares a parameter named
+`include` and also calls `include 'x.md'` gets the parameter in the first case and
+the directive in the second. See [Parameters](parameters.md#name-resolution).
+
 ## Duplicate Registration
 
-Registering a name that already exists raises an error:
+Registering a name that already exists raises `PM::DirectiveAlreadyRegisteredError`:
 
 ```ruby
 PM.register(:include) { |_ctx, path| path }
-#=> RuntimeError: Directive already registered: include
+#=> PM::DirectiveAlreadyRegisteredError: Directive already registered: include
 ```
 
 This protects built-in directives from being overwritten.
+
+### Registry policy
+
+| Action | Result |
+|---|---|
+| `PM.register` a name nobody holds | Registered |
+| `PM.register` a name that is taken (by a block or a class) | `DirectiveAlreadyRegisteredError`; no name from the call is registered |
+| `register_all` for a name held by another `PM::Directive` subclass | Re-registered; the later subclass wins |
+| `register_all` for a name held by a `PM.register` block | `DirectiveAlreadyRegisteredError` |
+| `register_all` called again | Idempotent |
 
 ## Resetting Directives
 
@@ -82,9 +105,8 @@ Remove all custom directives and restore only the built-ins:
 
 ```ruby
 PM.reset_directives!
+PM.directives.keys   #=> [:include, :insert, :read]
 ```
-
-After reset, only the built-in directives are registered: `include`, `insert`, and `read`.
 
 ## Directives in Included Files
 
@@ -95,7 +117,7 @@ Custom directives are available in included files too. They share the same direc
 <%= include 'child.md' %>
 
 <!-- child.md -->
-<%= read '/etc/hostname' %>
+<%= env 'DEPLOY_ENV' %>
 ```
 
 ## Name Format
@@ -124,7 +146,7 @@ class MyDirectives < PM::Directive
   end
   alias_method :exec, :run
 
-  # No desc — not registered as a directive
+  # No desc: not registered as a directive
   def helper
     "internal"
   end
@@ -170,11 +192,22 @@ PM::Directive.directive_subclasses
 #=> [PM::CoreDirectives, MyDirectives, ...]
 ```
 
-`register_all` iterates this list, creates a singleton instance per subclass, and registers each described method with `PM.register`.
+`register_all` iterates this list, creates a singleton instance per subclass, and registers each described method. Subclasses with no described methods are skipped.
 
 ## Listing Directives
 
 ```ruby
 PM.directives
 #=> { include: #<Proc>, insert: #<Proc>, read: #<Proc>, ... }
+
+PM.directive?(:include)   #=> true
+PM.directive?('nope')     #=> false
 ```
+
+`PM.directives` returns a frozen snapshot. Mutating it has no effect on the registry;
+use `PM.register` and `PM.reset_directives!`.
+
+## Thread safety
+
+The registry is process-global and not synchronized. Register directives at boot,
+before rendering from multiple threads.

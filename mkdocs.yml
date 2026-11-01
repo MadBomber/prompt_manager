@@ -1,9 +1,9 @@
 # MkDocs Configuration for PM (PromptManager) Documentation
 site_name: PM (PromptManager)
-site_description: Parse YAML metadata from markdown prompts with shell expansion and ERB rendering
+site_description: Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand
 site_author: Dewayne VanHoozer
 site_url: https://madbomber.github.io/prompt_manager
-copyright: Copyright &copy; 2025 Dewayne VanHoozer
+copyright: Copyright &copy; 2026 Dewayne VanHoozer
 
 # Repository information
 repo_name: madbomber/prompt_manager
@@ -162,6 +162,7 @@ nav:
       - Including Files: guides/includes.md
       - Custom Directives: guides/custom-directives.md
       - Comment Stripping: guides/comment-stripping.md
+      - Security: guides/security.md
   - API Reference:
       - api/index.md
       - PM Module: api/pm-module.md
@@ -169,6 +170,7 @@ nav:
       - Metadata: api/metadata.md
       - Parsed: api/parsed.md
       - RenderContext: api/render-context.md
+      - Errors: api/errors.md
       - Constants: api/constants.md
   - Architecture:
       - architecture/index.md

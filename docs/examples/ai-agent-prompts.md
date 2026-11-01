@@ -60,7 +60,7 @@ Current environment:
 
 `agents/code_assistant/review.md`:
 
-```markdown
+````markdown
 ---
 title: Code Review Task
 role: user
@@ -76,7 +76,7 @@ Review the following <%= language %> code with a focus on <%= focus %>:
 ```<%= language %>
 <%= code %>
 ```
-```
+````
 
 ## Custom Directives for Agent Integration
 

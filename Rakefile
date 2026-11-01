@@ -3,6 +3,9 @@
 require "bundler/gem_tasks"
 require "rake/testtask"
 
+# Enforce the coverage gate in test_helper when the whole suite runs.
+ENV["COVERAGE"] ||= "1"
+
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"
   t.libs << "lib"

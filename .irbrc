@@ -1,14 +1,6 @@
-require_relative 'lib/prompt_manager'
-require_relative 'lib/prompt_manager/storage/file_system_adapter'
+# Loaded by `irb` when started from the repo root.
+# Gives you PM with the test fixtures as the prompts directory, e.g.
+#   PM.parse(:simple).to_s
+require_relative 'lib/pm'
 
-HERE = Pathname.new __dir__
-
-PromptManager::Storage::FileSystemAdapter.config do |config|
-  config.prompts_dir        = HERE + 'examples/prompts_dir'
-  # config.search_proc      = nil     # default
-  # config.prompt_extension = '.txt'  # default
-  # config.parms+_extension = '.json' # default
-end
-
-PromptManager::Prompt.storage_adapter = PromptManager::Storage::FileSystemAdapter.new
-
+PM.configure { |c| c.prompts_dir = File.join(__dir__, 'test', 'fixtures') }

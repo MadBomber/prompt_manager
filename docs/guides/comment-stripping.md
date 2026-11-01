@@ -18,8 +18,10 @@ After parsing:
 
 ```ruby
 parsed = PM.parse(source)
-parsed.content  #=> "\nContent here. \n"
+parsed.content  #=> "Content here. "
 ```
+
+The comment text is removed; surrounding whitespace and newlines stay where they were.
 
 ## Multiline Comments
 
@@ -38,7 +40,7 @@ Visible content.
 
 ## Comments Before Metadata
 
-Comments before the YAML front-matter are stripped first, so the metadata parser sees clean input:
+Comments before the YAML front matter are stripped first, so the metadata parser sees clean input:
 
 ```markdown
 <!-- Editor note: draft version -->
@@ -47,6 +49,14 @@ title: My Prompt
 ---
 Content
 ```
+
+The blank line left behind by the comment is tolerated: front matter is recognised
+after leading whitespace.
+
+## Comments Inside Code Fences
+
+Comment stripping is a plain text pass and does not know about fenced code blocks.
+A `<!-- ... -->` inside a fence is removed too.
 
 ## Direct Access
 

@@ -9,6 +9,7 @@ Shell expansion replaces environment variable references and command substitutio
 | `$VAR` | Environment variable | `$USER` |
 | `${VAR}` | Environment variable (braced) | `${HOME}` |
 | `$(command)` | Command substitution | `$(date +%Y-%m-%d)` |
+| `\$` | Literal dollar sign | `\$100` writes `$100` |
 
 ## Environment Variables
 
@@ -52,14 +53,75 @@ Nested parentheses are handled correctly:
 $(echo $(echo hello))
 ```
 
-### Failed Commands
+### Command output is inert
 
-A command that exits with a non-zero status raises `RuntimeError`:
+Expansion is a single left-to-right pass. Whatever a command prints is spliced into
+the content verbatim and **not** scanned again:
 
 ```ruby
-PM.parse("Output: $(exit 1)")
-#=> RuntimeError: Command failed with exit status 1: exit 1
+PM.expand_shell(%q{$(printf '$HOME')})   #=> "$HOME"
 ```
+
+When ERB is enabled for the prompt, any `<%` in command output is escaped to `<%%` so
+the output cannot inject Ruby into the later ERB pass. The rendered result shows the
+literal `<%`.
+
+### Standard error
+
+A command's stderr is not part of the content. On success it is forwarded to the
+process's `$stderr`. On failure it is included in the error.
+
+### Failed Commands
+
+A command that exits with a non-zero status raises `PM::ShellCommandError`:
+
+```ruby
+PM.parse_string("Output: $(exit 1)")
+#=> PM::ShellCommandError: Shell command failed (exit 1): exit 1
+```
+
+The error exposes `#command`, `#status` (a `Process::Status`), and `#stderr`.
+
+### Unmatched `$(`
+
+An opening `$(` with no closing parenthesis raises `PM::ShellExpansionError`
+(the superclass of `PM::ShellCommandError`):
+
+```ruby
+PM.expand_shell("Total: $(echo")
+#=> PM::ShellExpansionError: Unmatched $( in shell expansion: $(echo
+```
+
+## Escaping
+
+Write `\$` to produce a literal `$`:
+
+```markdown
+Price: \$100
+Shell syntax for the reader: \$(ls)
+```
+
+```ruby
+#=> "Price: $100\nShell syntax for the reader: $(ls)\n"
+```
+
+## Fenced Code Blocks
+
+Lines inside a fenced code block (``` or ~~~, with an optional language tag) are copied
+through untouched, so a prompt can show shell syntax to the model without running it:
+
+````markdown
+Run this:
+
+```bash
+echo $HOME && $(dangerous)
+```
+
+Your home is $HOME.
+````
+
+Only the last `$HOME` is expanded. A fence closes at a line that starts with at least
+as many of the same fence characters.
 
 ## Direct Access
 
@@ -68,6 +130,8 @@ Shell expansion is available as a standalone method:
 ```ruby
 PM.expand_shell("Hello $USER from $(hostname)")
 #=> "Hello dewayne from venus"
+
+PM.expand_shell(string, erb_safe: true)   # also escapes <% in command output
 ```
 
 ## Disabling Shell Expansion
@@ -88,7 +152,8 @@ Or disable globally:
 PM.configure { |c| c.shell = false }
 ```
 
-Per-file metadata always overrides the global setting. A file with `shell: true` gets shell expansion even when the global default is `false`.
+Per-file metadata overrides the global setting unless the configuration is locked
+with `PM.config.lock!`. See [Configuration](../getting-started/configuration.md#locking).
 
 ## Interaction with ERB
 

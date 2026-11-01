@@ -47,7 +47,7 @@ class PMExpandShellTest < Minitest::Test
   end
 
   def test_failed_command_raises
-    assert_raises(RuntimeError) do
+    assert_raises(PM::ShellCommandError) do
       PM.expand_shell('$(exit 1)')
     end
   end

@@ -9,8 +9,8 @@ A source is treated as a file path when it:
 - Is a `Pathname` object
 - Responds to `to_path`
 - Is a String ending in `.md`
-- Is a Symbol (`.md` is appended, e.g. `:code_review` → `code_review.md`)
-- Is a single word containing only letters, digits, or underscores (`.md` is appended, e.g. `"code_review"` → `code_review.md`)
+- Is a Symbol (`.md` is appended, e.g. `:code_review` becomes `code_review.md`)
+- Is a single word containing only letters, digits, or underscores (`.md` is appended, e.g. `"code_review"` becomes `code_review.md`)
 
 ```ruby
 # String file path
@@ -19,12 +19,14 @@ parsed = PM.parse('code_review.md')
 # Pathname
 parsed = PM.parse(Pathname.new('code_review.md'))
 
-# Symbol (basename — .md appended)
+# Symbol (basename, .md appended)
 parsed = PM.parse(:code_review)
 
-# Single word (basename — .md appended)
+# Single word (basename, .md appended)
 parsed = PM.parse('code_review')
 ```
+
+A missing file raises `Errno::ENOENT`.
 
 When parsing a file, PM adds these keys to the metadata automatically:
 
@@ -32,8 +34,8 @@ When parsing a file, PM adds these keys to the metadata automatically:
 |-----|------|-------------|
 | `directory` | String | Absolute path to the file's parent directory |
 | `name` | String | Filename (e.g., `code_review.md`) |
-| `created_at` | Time | File creation timestamp |
-| `modified_at` | Time | Last modification timestamp |
+| `created_at` | Time | File creation time (birthtime), or `ctime` on filesystems without birthtime |
+| `modified_at` | Time | Last modification time |
 
 ### prompts_dir
 
@@ -61,13 +63,16 @@ Any other string is parsed directly:
 parsed = PM.parse("---\ntitle: Hello\n---\nContent here")
 
 parsed.metadata.title  #=> "Hello"
-parsed.content         #=> "\nContent here\n"
+parsed.content         #=> "Content here"
 ```
+
+The content is everything after the closing `---` line, exactly as written. A
+source that ends in a newline yields content that ends in a newline.
 
 String-parsed prompts do not have `directory`, `name`, `created_at`, or `modified_at` in their metadata.
 
 !!! warning "Include limitations"
-    The `include` directive requires file context to resolve relative paths. It raises an error when used with string-parsed prompts.
+    The `include` directive requires file context to resolve relative paths. It raises `PM::IncludeContextError` when used with string-parsed prompts. `insert` with an absolute path works from any context.
 
 ### PM.parse_string vs PM.parse
 
@@ -95,7 +100,7 @@ Use `PM.parse_string` when:
 
 ## Metadata Extraction
 
-YAML front-matter is delimited by `---` fences:
+YAML front matter is delimited by `---` fences:
 
 ```markdown
 ---
@@ -122,9 +127,24 @@ parsed.metadata.shell   #=> true
 parsed.metadata.shell?  #=> true
 ```
 
+Front matter is loaded with `YAML.safe_load`, permitting `Date` and `Time` values.
+Symbols, aliases, and other objects raise the usual `Psych` errors.
+
+### Validation
+
+| Front matter | Result |
+|---|---|
+| Absent | Empty metadata (plus `shell` and `erb` defaults) |
+| `---\n---` (empty block) | Same as absent |
+| A list, scalar, or anything that is not a mapping | `PM::MetadataError` |
+| `shell:` / `erb:` not a boolean or a true/false/yes/no/on/off string | `PM::MetadataError` |
+| `parameters:` not a mapping | `PM::MetadataError` |
+| Invalid YAML | `Psych::SyntaxError` |
+
 ### No Metadata
 
-Files without front-matter are valid. The metadata object is empty and the entire content is preserved:
+Files without front matter are valid. The metadata object has only the `shell` and
+`erb` flags and the entire content is preserved:
 
 ```ruby
 parsed = PM.parse("Just plain text")
@@ -137,7 +157,8 @@ parsed.content         #=> "Just plain text"
 You can also access metadata with bracket notation:
 
 ```ruby
-parsed[:title]  #=> "My Prompt"
+parsed[:title]       #=> "My Prompt"
+parsed.key?(:title)  #=> true
 ```
 
 ## Pipeline Stages
@@ -149,3 +170,18 @@ After parsing, the content has been through these stages:
 3. Shell expansion applied (if `shell: true`)
 
 ERB rendering happens later, on demand, when `to_s` is called.
+
+## Exporting
+
+A parsed prompt can be turned back into data or markdown:
+
+```ruby
+parsed.to_h
+#=> { metadata: { title: "My Prompt", shell: true, erb: true, ... }, content: "..." }
+
+parsed.to_markdown
+#=> "---\ntitle: My Prompt\nshell: true\nerb: true\n---\n..."
+```
+
+`to_markdown` omits the file-derived keys (`directory`, `name`, `created_at`,
+`modified_at`, `includes`) so the result can be written back to disk and parsed again.

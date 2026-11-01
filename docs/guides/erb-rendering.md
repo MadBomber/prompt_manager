@@ -16,12 +16,15 @@ Today: <%= Time.now.strftime('%Y-%m-%d') %>
 
 ```ruby
 parsed = PM.parse('math.md')
-parsed.to_s  #=> "Result: 4\nToday: 2025-01-15\n"
+parsed.to_s  #=> "Result: 4\nToday: 2026-11-01\n"
 ```
+
+ERB is full Ruby. Anything a template can express, it can run. See
+[Security](security.md).
 
 ## Template Parameters
 
-Parameters declared in the YAML front-matter are available as local methods inside ERB:
+Parameters declared in the YAML front matter are available as local methods inside ERB:
 
 ```markdown
 ---
@@ -38,7 +41,7 @@ parsed.to_s                    #=> "Hello, World!"
 parsed.to_s('name' => 'Alice') #=> "Hello, Alice!"
 ```
 
-See [Parameters](parameters.md) for details on required vs default values.
+See [Parameters](parameters.md) for required vs default values, name resolution, and strict mode.
 
 ## Registered Directives
 
@@ -59,9 +62,11 @@ See [Custom Directives](custom-directives.md) for the full guide.
 
 ## Built-in Directives
 
-PM includes one built-in directive:
+PM ships three built-in directives:
 
-- **`include`** -- Include and render another prompt file. See [Including Files](includes.md).
+- **`include`** -- Parse and render another prompt file in place. See [Including Files](includes.md).
+- **`insert`** -- Copy any file in verbatim.
+- **`read`** -- Alias of `insert`.
 
 ## Disabling ERB
 
@@ -78,8 +83,8 @@ This <%= expression %> is preserved as-is.
 When ERB is disabled:
 
 - `to_s` returns the content without template evaluation
-- Parameters are ignored
-- The `include` directive does not execute
+- Parameters are ignored (missing required parameters are not an error)
+- Directives do not execute
 - `metadata.includes` is an empty array after `to_s`
 
 ### Global Default
@@ -88,7 +93,8 @@ When ERB is disabled:
 PM.configure { |c| c.erb = false }
 ```
 
-Per-file metadata always overrides the global setting. A file with `erb: true` gets ERB rendering even when the global default is `false`.
+Per-file metadata overrides the global setting unless the configuration is locked
+with `PM.config.lock!`. See [Configuration](../getting-started/configuration.md#locking).
 
 ## Pipeline Position
 
@@ -99,4 +105,13 @@ ERB rendering is the last stage of the pipeline, executed on demand:
 3. Shell expansion (at parse time)
 4. **ERB rendering** (at `to_s` time)
 
-This means shell variables are already expanded before ERB sees the content. If content contains both `$VAR` and `<%= param %>`, the shell variable is resolved first, then ERB fills in the parameters.
+This means shell variables are already expanded before ERB sees the content. If content contains both `$VAR` and `<%= param %>`, the shell variable is resolved first, then ERB fills in the parameters. Command output cannot smuggle ERB into stage 4: any `<%` a command prints is escaped during stage 3.
+
+## Errors
+
+| Situation | Error |
+|---|---|
+| Required parameter missing | `PM::MissingParameterError` |
+| Unknown bare name in strict mode | `PM::UnknownParameterError` |
+| Unknown name called with arguments | `NoMethodError` |
+| ERB that does not compile | `SyntaxError` |
