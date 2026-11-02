@@ -4,6 +4,17 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-11-01
+
+### Fixed
+
+- **Parameters named after private Kernel methods.** A parameter called
+  `format`, `test`, `system` or another private `Kernel` method rendered the
+  method instead of the value (`<%= format %>` raised `ArgumentError`).
+  Parameters now shadow private as well as public `Object` methods. Called
+  with arguments or a block (`format('%d', 1)`), the name is still the
+  method. `binding` is never shadowed.
+
 ## [1.1.0] - 2026-11-01
 
 A hardening release. Shell expansion can no longer be hijacked by its own

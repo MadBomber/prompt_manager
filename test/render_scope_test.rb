@@ -71,4 +71,20 @@ class PMRenderScopeTest < Minitest::Test
     assert_kind_of Integer, scope.object_id
   end
 
+  def test_parameters_named_like_private_kernel_methods
+    prompt = "---\nparameters:\n  format: md\n  test: t\n---\n<%= format %> <%= test %>"
+
+    assert_equal 'md t', PM.parse_string(prompt).to_s
+  end
+
+  def test_shadowed_kernel_method_still_works_with_arguments
+    prompt = "---\nparameters:\n  format: md\n---\n<%= format %> <%= format('%03d', 7) %>"
+
+    assert_equal 'md 007', PM.parse_string(prompt).to_s
+  end
+
+  def test_parameter_named_binding_does_not_break_rendering
+    assert_equal 'ok', PM.parse_string("---\nparameters:\n  binding: x\n---\nok").to_s
+  end
+
 end

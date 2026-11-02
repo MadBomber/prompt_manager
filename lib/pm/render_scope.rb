@@ -45,16 +45,30 @@ module PM
 
     private
 
-    # A parameter named like a public Object method (`hash`, `display`, ...)
-    # would otherwise never reach method_missing.
+    # Never shadowed: erb_binding calls `binding`.
+    UNSHADOWED = %i[binding].freeze
+
+    # A parameter named like an Object method -- public (`hash`, `display`)
+    # or private Kernel (`format`, `test`, `system`) -- would otherwise never
+    # reach method_missing. Called bare it is the parameter; called with
+    # arguments or a block it is still the method.
     def shadow_object_methods
       @params.each_key do |key|
         sym = key.to_sym
-        next if Metadata::PROTECTED_METHODS.include?(sym)
-        next unless Object.public_method_defined?(sym)
+        next unless shadowable?(sym)
 
-        define_singleton_method(sym) { @params[key] }
+        define_singleton_method(sym) do |*args, **kwargs, &block|
+          next @params[key] if args.empty? && kwargs.empty? && block.nil?
+
+          super(*args, **kwargs, &block)
+        end
       end
+    end
+
+    def shadowable?(sym)
+      return false if Metadata::PROTECTED_METHODS.include?(sym) || UNSHADOWED.include?(sym)
+
+      Object.public_method_defined?(sym) || Object.private_method_defined?(sym)
     end
   end
 end
