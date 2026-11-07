@@ -12,9 +12,11 @@ module PM
   #
   # Command output is spliced in verbatim and never re-scanned, so a `$VAR` or
   # `$(...)` that a command prints stays literal. With `erb_safe: true` any
-  # `<%` in command output or an environment variable's value is written as
-  # `<%%`, which ERB renders as a literal `<%`, so neither can inject Ruby into
-  # a later ERB pass.
+  # `<%` in command output or an environment variable's value, or one that
+  # forms where an expansion meets the text beside it, is written as `<%%`,
+  # which ERB renders as a literal `<%`, so neither can open an ERB tag. An
+  # expansion written inside an author's own `<% %>` tag is part of that Ruby
+  # code and is not protected.
   #
   # Fenced code blocks (lines starting with ``` or ~~~) are copied through
   # untouched: a prompt can show shell syntax to the model without running it.
@@ -62,16 +64,22 @@ module PM
 
     private
 
-    # Appends text to out. With erb_safe, a `<%` cannot form inside command
-    # output or an env var value, nor where one meets its neighbour (a `<`
-    # on one side and a `%` on the other): the `%` is doubled, so ERB renders
-    # a literal `<%`.
+    # Returns text as it must be appended for erb_safe output. Untrusted text
+    # (command output, env var values) has `<%` written as `<%%`; where a `<`
+    # and a `%` meet across a boundary with untrusted text on either side, the
+    # `%` is doubled. ERB renders both as a literal `<%`.
+    def erb_escape(text, untrusted:, after_untrusted:, after_lt:)
+      return text unless untrusted || after_untrusted
+
+      text = text.gsub('<%', '<%%') if untrusted
+      after_lt && text.start_with?('%') ? "%#{text}" : text
+    end
+
     def append(out, text, untrusted: false)
       return out if text.empty?
 
-      if @erb_safe && (untrusted || @untrusted_tail)
-        text = text.gsub('<%', '<%%') if untrusted
-        text = "%#{text}" if out.end_with?('<') && text.start_with?('%')
+      if @erb_safe
+        text = erb_escape(text, untrusted:, after_untrusted: @untrusted_tail, after_lt: out.end_with?('<'))
       end
       @untrusted_tail = untrusted
       out << text

@@ -99,6 +99,37 @@ class PMShellSafetyTest < Minitest::Test
     ENV.delete('PM_TEST_LT')
   end
 
+  def test_literal_lt_before_command_output_starting_with_percent_stays_literal
+    assert_equal '<%= 6*7 %>', PM.parse_string(%q{<$(printf '%%= 6*7 %%>')}).to_s
+  end
+
+  def test_command_output_ending_in_lt_before_literal_percent_stays_literal
+    assert_equal '<%= 6*7 %>', PM.parse_string(%q{$(printf '<')%= 6*7 %>}).to_s
+  end
+
+  # --- erb_escape, in isolation ---
+
+  def erb_escape(text, untrusted: false, after_untrusted: false, after_lt: false)
+    PM::ShellExpander.new('').send(:erb_escape, text, untrusted:, after_untrusted:, after_lt:)
+  end
+
+  def test_erb_escape_leaves_trusted_text_after_trusted_text_alone
+    assert_equal '%= x', erb_escape('%= x', after_lt: true)
+  end
+
+  def test_erb_escape_doubles_lt_percent_inside_untrusted_text
+    assert_equal 'a<%%b', erb_escape('a<%b', untrusted: true)
+  end
+
+  def test_erb_escape_doubles_leading_percent_after_lt
+    assert_equal '%%=', erb_escape('%=', untrusted: true, after_lt: true)
+    assert_equal '%%', erb_escape('%', after_untrusted: true, after_lt: true)
+  end
+
+  def test_erb_escape_keeps_leading_percent_without_lt
+    assert_equal '%=', erb_escape('%=', untrusted: true)
+  end
+
   def test_empty_env_var_does_not_change_author_erb
     ENV.delete('PM_TEST_EMPTY')
 
