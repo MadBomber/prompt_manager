@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Fixed
+
+- **ERB tags in environment variable values.** When ERB is enabled, a `<%`
+  in the value of a `$VAR` or `${VAR}` is now written as `<%%` and renders as
+  a literal `<%`, the same way command output already was.
+  `PM.expand_shell(str, erb_safe: true)` escapes both.
+
 ## [1.2.0] - 2026-11-01
 
 ### Fixed

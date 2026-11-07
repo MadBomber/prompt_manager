@@ -127,7 +127,7 @@ Expand shell references in the string in a single left-to-right pass.
 - `\$` → literal `$`
 - Fenced code blocks (``` or ~~~) are copied through untouched
 - Command output is inserted verbatim and never re-scanned
-- With `erb_safe: true`, `<%` in command output is written as `<%%`
+- With `erb_safe: true`, `<%` in command output and environment variable values is written as `<%%`
 
 Only UPPERCASE variable names are expanded.
 

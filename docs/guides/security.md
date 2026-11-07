@@ -33,8 +33,8 @@ Only parse content you trust as much as you trust your own Ruby code. In particu
 Shell expansion is a single left-to-right pass. The stdout of a `$(command)` is
 spliced into the content and **never re-scanned**: a `$HOME` or `$(rm -rf /)` that a
 command prints stays literal text. When ERB is enabled for the prompt, any `<%` in
-command output is written as `<%%`, which ERB renders as a literal `<%`, so command
-output cannot inject Ruby into the ERB pass.
+command output, and in the value of a `$VAR` or `${VAR}`, is written as `<%%`, which
+ERB renders as a literal `<%`, so neither can inject Ruby into the ERB pass.
 
 ```ruby
 PM.expand_shell(%q{$(printf '$HOME')})               #=> "$HOME"

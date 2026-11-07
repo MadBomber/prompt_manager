@@ -39,6 +39,34 @@ class PMShellSafetyTest < Minitest::Test
     assert_equal '<%= 6*7 %>', PM.parse_string(%q{$(printf '<%%= 6*7 %%>')}).to_s
   end
 
+  # --- environment variable values are inert ---
+
+  def with_env(name, value)
+    old = ENV.fetch(name, nil)
+    ENV[name] = value
+    yield
+  ensure
+    ENV[name] = old
+  end
+
+  def test_erb_in_env_var_value_is_escaped_when_erb_safe
+    with_env('PM_TEST_ERB', '<%= 1 %>') do
+      assert_equal '<%%= 1 %> <%%= 1 %>', PM.expand_shell('$PM_TEST_ERB ${PM_TEST_ERB}', erb_safe: true)
+    end
+  end
+
+  def test_erb_in_env_var_value_is_kept_when_not_erb_safe
+    with_env('PM_TEST_ERB', '<%= 1 %>') do
+      assert_equal '<%= 1 %>', PM.expand_shell('$PM_TEST_ERB')
+    end
+  end
+
+  def test_parse_string_neutralises_erb_from_env_var_value
+    with_env('PM_TEST_ERB', '<%= 6*7 %>') do
+      assert_equal '<%= 6*7 %>', PM.parse_string('$PM_TEST_ERB').to_s
+    end
+  end
+
   def test_erb_not_escaped_when_erb_is_disabled
     parsed = PM.parse_string("---\nerb: false\n---\n$(printf '<%%= 1 %%>')")
 

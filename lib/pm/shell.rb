@@ -12,8 +12,9 @@ module PM
   #
   # Command output is spliced in verbatim and never re-scanned, so a `$VAR` or
   # `$(...)` that a command prints stays literal. With `erb_safe: true` any
-  # `<%` in command output is written as `<%%`, which ERB renders as a literal
-  # `<%`, so output cannot inject Ruby into a later ERB pass.
+  # `<%` in command output or an environment variable's value is written as
+  # `<%%`, which ERB renders as a literal `<%`, so neither can inject Ruby into
+  # a later ERB pass.
   #
   # Fenced code blocks (lines starting with ``` or ~~~) are copied through
   # untouched: a prompt can show shell syntax to the model without running it.
@@ -47,7 +48,7 @@ module PM
         elsif @scanner.scan(COMMAND_OPEN)
           out << run_command
         elsif @scanner.scan(ENV_VAR_REGEXP)
-          out << ENV.fetch(@scanner[1] || @scanner[2], '')
+          out << erb_escape(ENV.fetch(@scanner[1] || @scanner[2], ''))
         else
           out << @scanner.getch
         end
@@ -84,9 +85,12 @@ module PM
       raise ShellCommandError.new(command, status, stderr) unless status.success?
 
       $stderr.write(stderr) unless stderr.empty? # keep warnings visible, as with 1.0.x
-      output = output.chomp
-      output = output.gsub('<%', '<%%') if @erb_safe
-      output
+      erb_escape(output.chomp)
+    end
+
+    # With erb_safe, writes `<%` as `<%%` so ERB renders it as a literal `<%`.
+    def erb_escape(text)
+      @erb_safe ? text.gsub('<%', '<%%') : text
     end
 
     def read_command
