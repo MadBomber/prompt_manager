@@ -8,13 +8,12 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
-- **ERB tags in environment variable values.** When ERB is enabled, a `<%`
-  in the value of a `$VAR` or `${VAR}` is now written as `<%%` and renders as
-  a literal `<%`, the same way command output already was. A `<%` that only
-  forms where an expansion meets its neighbour (`$A$B` with `A='<'`,
-  `B='%= x %>'`, or `<$(cmd)`) is escaped too. `PM.expand_shell(str, erb_safe: true)`
-  does the same. If you kept ERB in an environment variable on purpose, pass
-  the value as a parameter instead.
+- **Expansion output is literal text in templates.** When ERB is enabled, a
+  `<%` in the value of a `$VAR` or `${VAR}` is now written as `<%%` and
+  renders as a literal `<%`, the same way command output already was, and
+  the same applies where an expansion meets the text beside it.
+  `PM.expand_shell(str, erb_safe: true)` does the same. If you kept ERB in an
+  environment variable on purpose, pass the value as a parameter instead.
 
 ## [1.2.0] - 2026-11-01
 
