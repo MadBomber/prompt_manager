@@ -13,10 +13,10 @@ module PM
   # Command output is spliced in verbatim and never re-scanned, so a `$VAR` or
   # `$(...)` that a command prints stays literal. With `erb_safe: true` any
   # `<%` in command output or an environment variable's value, or one that
-  # forms where an expansion meets the text beside it, is written as `<%%`,
-  # which ERB renders as a literal `<%`, so neither can open an ERB tag. An
-  # expansion written inside an author's own `<% %>` tag is part of that Ruby
-  # code and is not protected.
+  # forms where a non-empty expansion meets the text beside it, is written as
+  # `<%%`, which ERB renders as a literal `<%`, so neither can open an ERB tag.
+  # An expansion written inside an author's own `<% %>` tag is part of that
+  # Ruby code: it is escaped the same way, which does not make it safe.
   #
   # Fenced code blocks (lines starting with ``` or ~~~) are copied through
   # untouched: a prompt can show shell syntax to the model without running it.
@@ -78,7 +78,7 @@ module PM
     def append(out, text, untrusted: false)
       return out if text.empty?
 
-      if @erb_safe
+      if @erb_safe && (untrusted || @untrusted_tail)
         text = erb_escape(text, untrusted:, after_untrusted: @untrusted_tail, after_lt: out.end_with?('<'))
       end
       @untrusted_tail = untrusted

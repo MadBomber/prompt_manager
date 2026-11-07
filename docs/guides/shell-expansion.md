@@ -63,10 +63,10 @@ PM.expand_shell(%q{$(printf '$HOME')})   #=> "$HOME"
 ```
 
 When ERB is enabled for the prompt, any `<%` in command output or in an environment
-variable's value, or one formed where an expansion meets the text beside it, is escaped
+variable's value, or one formed where a non-empty expansion meets the text beside it, is escaped
 to `<%%` so it cannot open a tag in the later ERB pass. The rendered result shows the
-literal `<%`. An expansion written inside an ERB tag is part of that Ruby code and is
-not escaped; see [Security](security.md).
+literal `<%`. An expansion written inside an ERB tag is part of that Ruby code, so the
+escaping does not make it safe; see [Security](security.md).
 
 ### Standard error
 
