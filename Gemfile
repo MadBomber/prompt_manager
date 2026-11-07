@@ -8,5 +8,5 @@ group :development, :test do
   gem 'debug_me'
   gem 'minitest'
   gem 'rake'
-  gem 'simplecov'
+  gem 'simplecov', '>= 1.0'
 end
