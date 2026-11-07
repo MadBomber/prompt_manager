@@ -116,7 +116,7 @@ Literal: \$HOME
 - `$VAR` and `${VAR}` (UPPERCASE names) are replaced with the environment value, or `""` when unset.
 - `$(command)` runs via the shell and is replaced with its stdout (trailing newline removed).
 - `\$` writes a literal `$`.
-- Command output is spliced in verbatim: a `$VAR` or `<%= %>` that a command prints is **not** expanded or evaluated.
+- Command output and environment variable values are never re-scanned: in ordinary text, a `$VAR`, `$(...)` or `<%= %>` inside them is **not** expanded, run, or evaluated. With ERB on, a `<%` in them is stored as `<%%` so it renders literally. Inside your own ERB tag they become Ruby code; see [Security model](#security-model).
 - Fenced code blocks (``` or ~~~) are copied through untouched.
 - A failing command raises `PM::ShellCommandError` (with `#command`, `#status`, `#stderr`); an unmatched `$(` raises `PM::ShellExpansionError`.
 
@@ -210,9 +210,12 @@ bad YAML, `SyntaxError` for bad ERB. See the
 
 Prompt files are **code**: ERB can run any Ruby, `$(...)` runs shell commands, and
 `include` / `insert` read any path the process can. Only parse files you trust.
-Command output and inserted file contents are inert (never expanded or evaluated),
-and `PM.config.lock!` keeps a file from re-enabling a stage you turned off. See the
-[Security guide](https://madbomber.github.io/prompt_manager/guides/security/).
+Inserted file contents are inert (never expanded or evaluated), and so are command
+output and environment variable values in ordinary text. A `$VAR` or `$(...)` you write
+inside your own ERB tag becomes part of that Ruby code, so keep values you do not control
+out of ERB tags and pass them as parameters instead. `PM.config.lock!` keeps a file from
+re-enabling a stage you turned off.
+See the [Security guide](https://madbomber.github.io/prompt_manager/guides/security/).
 
 PM is not thread-safe for configuration or directive registration; configure and
 register at boot, then parse and render from any thread.
