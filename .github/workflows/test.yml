@@ -1,0 +1,28 @@
+name: Test
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # The gemspec floor is 4.0.9; '4.0' resolves to the newest 4.0.x.
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "4.0"
+          bundler-cache: true
+
+      # GitHub sets CI=true, so test_helper enforces the 100% line coverage gate.
+      - name: Run tests
+        run: bundle exec rake test
