@@ -34,6 +34,7 @@ module PM
     def initialize(string, erb_safe: false)
       @scanner  = StringScanner.new(string)
       @erb_safe = erb_safe
+      @untrusted_tail = false
     end
 
     def expand
@@ -42,15 +43,15 @@ module PM
 
       until @scanner.eos?
         if at_line_start && (fence = @scanner.scan(FENCE_OPEN_REGEXP))
-          out << fence << copy_fenced_block(fence)
+          append(out, fence + copy_fenced_block(fence))
         elsif @scanner.scan(ESCAPED_DOLLAR)
-          out << '$'
+          append(out, '$')
         elsif @scanner.scan(COMMAND_OPEN)
-          out << run_command
+          append(out, run_command, untrusted: true)
         elsif @scanner.scan(ENV_VAR_REGEXP)
-          out << erb_escape(ENV.fetch(@scanner[1] || @scanner[2], ''))
+          append(out, ENV.fetch(@scanner[1] || @scanner[2], ''), untrusted: true)
         else
-          out << @scanner.getch
+          append(out, @scanner.getch)
         end
 
         at_line_start = out.end_with?("\n")
@@ -60,6 +61,21 @@ module PM
     end
 
     private
+
+    # Appends text to out. With erb_safe, a `<%` cannot form inside command
+    # output or an env var value, nor where one meets its neighbour (a `<`
+    # on one side and a `%` on the other): the `%` is doubled, so ERB renders
+    # a literal `<%`.
+    def append(out, text, untrusted: false)
+      return out if text.empty?
+
+      if @erb_safe && (untrusted || @untrusted_tail)
+        text = text.gsub('<%', '<%%') if untrusted
+        text = "%#{text}" if out.end_with?('<') && text.start_with?('%')
+      end
+      @untrusted_tail = untrusted
+      out << text
+    end
 
     # Copies lines verbatim up to and including the closing fence (or end of input).
     def copy_fenced_block(open_line)
@@ -85,12 +101,7 @@ module PM
       raise ShellCommandError.new(command, status, stderr) unless status.success?
 
       $stderr.write(stderr) unless stderr.empty? # keep warnings visible, as with 1.0.x
-      erb_escape(output.chomp)
-    end
-
-    # With erb_safe, writes `<%` as `<%%` so ERB renders it as a literal `<%`.
-    def erb_escape(text)
-      @erb_safe ? text.gsub('<%', '<%%') : text
+      output.chomp
     end
 
     def read_command
