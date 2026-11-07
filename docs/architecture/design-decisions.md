@@ -30,8 +30,8 @@ ERB was chosen as the template engine rather than Mustache, Liquid, or a custom 
 **Trade-off:** ERB can execute arbitrary Ruby. PM does not try to sandbox it; the
 [Security guide](../guides/security.md) states the trust model instead. What PM does do
 is keep data from becoming code: command output, environment variable values and
-inserted files are inert, and `PM.config.lock!` stops a file from switching ERB on
-when the host turned it off.
+inserted files are inert in ordinary text (not inside the author's own ERB tag), and
+`PM.config.lock!` stops a file from switching ERB on when the host turned it off.
 
 ## Parse-Time vs Render-Time Split
 

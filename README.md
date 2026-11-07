@@ -116,7 +116,7 @@ Literal: \$HOME
 - `$VAR` and `${VAR}` (UPPERCASE names) are replaced with the environment value, or `""` when unset.
 - `$(command)` runs via the shell and is replaced with its stdout (trailing newline removed).
 - `\$` writes a literal `$`.
-- Command output and environment variable values are never re-scanned: a `$VAR`, `$(...)` or `<%= %>` inside them is **not** expanded, run, or evaluated (with ERB on, a `<%` in them is stored as `<%%` and renders as `<%`).
+- Command output and environment variable values are never re-scanned: in ordinary text, a `$VAR`, `$(...)` or `<%= %>` inside them is **not** expanded, run, or evaluated. With ERB on, PM escapes them (a `<%` is stored as `<%%`) so they render literally. Inside your own ERB tag they become Ruby code; see [Security model](#security-model).
 - Fenced code blocks (``` or ~~~) are copied through untouched.
 - A failing command raises `PM::ShellCommandError` (with `#command`, `#status`, `#stderr`); an unmatched `$(` raises `PM::ShellExpansionError`.
 
