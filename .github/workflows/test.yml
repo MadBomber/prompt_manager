@@ -23,6 +23,6 @@ jobs:
           ruby-version: "4.0"
           bundler-cache: true
 
-      # GitHub sets CI=true, so test_helper enforces the 100% line coverage gate.
+      # rake test (and CI=true) arms the 100% line coverage gate in test_helper.
       - name: Run tests
         run: bundle exec rake test
