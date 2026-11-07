@@ -9,10 +9,11 @@ on:
 permissions:
   contents: read
 
+# A newer push to a PR cancels its older run; each push to main/develop has
+# its own group (head_ref is empty there), so every commit gets a result.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  # Cancel superseded PR runs; every push to main/develop keeps its result.
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -31,6 +32,6 @@ jobs:
           ruby-version: "4.0"
           bundler-cache: true
 
-      # rake test (and CI=true) arms the 100% line coverage gate in test_helper.
+      # rake test sets COVERAGE=1, which arms the 100% line coverage gate.
       - name: Run tests
         run: bundle exec rake test
