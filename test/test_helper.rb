@@ -5,7 +5,7 @@
 # single test file can still be run on its own.
 require 'simplecov'
 SimpleCov.start do
-  add_filter '/test/'
+  skip '/test/'
   enable_coverage :branch
   minimum_coverage line: 100 if ENV['COVERAGE'] == '1' || ENV.key?('CI')
 end
