@@ -3,6 +3,7 @@
 # Coverage is measured on every run; the 100% line gate is enforced when the
 # whole suite runs through `rake test` (which sets COVERAGE=1) or in CI, so a
 # single test file can still be run on its own.
+#
 # SimpleCov 1.x leaves test/ out of the report by default.
 require 'simplecov'
 SimpleCov.start do
