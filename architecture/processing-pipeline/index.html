@@ -1876,7 +1876,8 @@ expander handles exactly one of:</p>
 </table>
 <p>Command output is appended to the result and the scan continues <strong>after</strong> the <code>$(...)</code>
 in the source, so output is never re-expanded. When the prompt has <code>erb: true</code>, <code>&lt;%</code>
-in output becomes <code>&lt;%%</code> so stage 4 treats it as text.</p>
+in output or in an environment variable's value, or formed where a non-empty expansion meets
+the text beside it, becomes <code>&lt;%%</code> so stage 4 treats it as text.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Input:  "User: $USER\nDate: $(date +%Y-%m-%d)"
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Output: "User: dewayne\nDate: 2026-11-01"
 </span></code></pre></div>

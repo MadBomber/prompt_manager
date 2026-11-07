@@ -2012,9 +2012,11 @@
 the content verbatim and <strong>not</strong> scanned again:</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="sx">%q{$(printf '$HOME')}</span><span class="p">)</span><span class="w">   </span><span class="c1">#=&gt; "$HOME"</span>
 </span></code></pre></div>
-<p>When ERB is enabled for the prompt, any <code>&lt;%</code> in command output is escaped to <code>&lt;%%</code> so
-the output cannot inject Ruby into the later ERB pass. The rendered result shows the
-literal <code>&lt;%</code>.</p>
+<p>When ERB is enabled for the prompt, any <code>&lt;%</code> in command output or in an environment
+variable's value, or one formed where a non-empty expansion meets the text beside it, is escaped
+to <code>&lt;%%</code> so it cannot open a tag in the later ERB pass. The rendered result shows the
+literal <code>&lt;%</code>. An expansion written inside an ERB tag is part of that Ruby code, so the
+escaping does not make it safe; see <a href="../security/">Security</a>.</p>
 <h3 id="standard-error">Standard error<a class="headerlink" href="#standard-error" title="Permanent link">&para;</a></h3>
 <p>A command's stderr is not part of the content. On success it is forwarded to the
 process's <code>$stderr</code>. On failure it is included in the error.</p>
@@ -2055,7 +2057,7 @@ as many of the same fence characters.</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="s2">"Hello $USER from $(hostname)"</span><span class="p">)</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1">#=&gt; "Hello dewayne from venus"</span>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="ss">erb_safe</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">)</span><span class="w">   </span><span class="c1"># also escapes &lt;% in command output</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="ss">erb_safe</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">)</span><span class="w">   </span><span class="c1"># also escapes &lt;% in command output and env var values</span>
 </span></code></pre></div>
 <h2 id="disabling-shell-expansion">Disabling Shell Expansion<a class="headerlink" href="#disabling-shell-expansion" title="Permanent link">&para;</a></h2>
 <p>Set <code>shell: false</code> in the file's YAML metadata:</p>

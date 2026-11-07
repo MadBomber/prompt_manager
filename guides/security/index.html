@@ -1931,8 +1931,12 @@ not confined to <code>prompts_dir</code>. <code>../../etc/passwd</code> works.</
 <p>Shell expansion is a single left-to-right pass. The stdout of a <code>$(command)</code> is
 spliced into the content and <strong>never re-scanned</strong>: a <code>$HOME</code> or <code>$(rm -rf /)</code> that a
 command prints stays literal text. When ERB is enabled for the prompt, any <code>&lt;%</code> in
-command output is written as <code>&lt;%%</code>, which ERB renders as a literal <code>&lt;%</code>, so command
-output cannot inject Ruby into the ERB pass.</p>
+command output, in the value of a <code>$VAR</code> or <code>${VAR}</code>, or formed where a non-empty
+expansion meets the text beside it, is written as <code>&lt;%%</code>, which ERB renders as a literal <code>&lt;%</code>.</p>
+<p>This covers expansions in ordinary text. An expansion you write <em>inside</em> your own ERB
+tag, such as <code>&lt;%= "$VAR" %&gt;</code>, is substituted before ERB runs and becomes part of that
+Ruby code. Keep variables and commands you do not control out of ERB tags and
+pass such values as parameters instead.</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="sx">%q{$(printf '$HOME')}</span><span class="p">)</span><span class="w">               </span><span class="c1">#=&gt; "$HOME"</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="sx">%q{$(printf '&lt;%%= 6*7 %%&gt;')}</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span><span class="w">   </span><span class="c1">#=&gt; "&lt;%= 6*7 %&gt;"</span>
 </span></code></pre></div>

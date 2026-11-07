@@ -2120,7 +2120,7 @@
 <li><code>\$</code> → literal <code>$</code></li>
 <li>Fenced code blocks (``` or ~~~) are copied through untouched</li>
 <li>Command output is inserted verbatim and never re-scanned</li>
-<li>With <code>erb_safe: true</code>, <code>&lt;%</code> in command output is written as <code>&lt;%%</code></li>
+<li>With <code>erb_safe: true</code>, <code>&lt;%</code> in command output and environment variable values, or formed where a non-empty expansion meets adjacent text, is written as <code>&lt;%%</code></li>
 </ul>
 <p>Only UPPERCASE variable names are expanded.</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="s2">"User: $USER, Date: $(date +%Y-%m-%d)"</span><span class="p">)</span>
