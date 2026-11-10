@@ -98,14 +98,14 @@ parsed.metadata.includes
 
 ## Nested Includes
 
-Components can include other components. For example, `system_context.md` could include a `team_info.md`:
+Components can include other components. For example, `system_context.md` could include a `team_info.md` stored beside it in `common/`. Include paths resolve relative to the including file's directory, so the nested include names the file without the `common/` prefix:
 
 ```markdown
 ---
 title: System Context
 ---
 You are a senior software engineer.
-<%= include 'common/team_info.md' %>
+<%= include 'team_info.md' %>
 ```
 
 The include tree reflects the nesting:
