@@ -53,7 +53,7 @@ Current environment:
 - User: $USER
 - Working directory: $(pwd)
 
-<%= include '../common/safety.md' %>
+<%= include '../../common/safety.md' %>
 ```
 
 ## Task Prompts with Parameters
@@ -69,7 +69,7 @@ parameters:
   language: null
   focus: general
 ---
-<%= include '../common/output_markdown.md' %>
+<%= include '../../common/output_markdown.md' %>
 
 Review the following <%= language %> code with a focus on <%= focus %>:
 
