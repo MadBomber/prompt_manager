@@ -196,6 +196,12 @@ behaviour that did.
 - Added new error classes for better error handling.
 - Improved parameter handling and directive processing.
 
+## [0.5.2] - 2025-04-18
+- Made comment removal in `Prompt` markdown-aware so fenced ```markdown blocks are preserved and HTML comments are stripped.
+
+## [0.5.1] - 2025-04-14
+- Fixed parameter handling in the file system adapter so parameters are parsed from the prompt text and merged with values stored on disk (ref issue #14 / PR #15).
+
 ## [0.5.0] - 2025-03-29
 - Major refactoring of to improve processing of parameters and directives.
 - Added PromptManager::DirectiveProcessor as an example of how to implement custom directives.
