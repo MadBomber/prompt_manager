@@ -1876,12 +1876,12 @@
 </span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="c1">#   ]</span>
 </span></code></pre></div>
 <h2 id="nested-includes">Nested Includes<a class="headerlink" href="#nested-includes" title="Permanent link">&para;</a></h2>
-<p>Components can include other components. For example, <code>system_context.md</code> could include a <code>team_info.md</code>:</p>
+<p>Components can include other components. For example, <code>system_context.md</code> could include a <code>team_info.md</code> stored beside it in <code>common/</code>. Include paths <a href="../../guides/includes/#path-resolution">resolve relative to the including file's directory</a>, so the nested include drops the <code>common/</code> prefix:</p>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>---
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="gu">title: System Context</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="gu">---</span>
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>You are a senior software engineer.
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>&lt;%= include 'common/team_info.md' %&gt;
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>&lt;%= include 'team_info.md' %&gt;
 </span></code></pre></div>
 <p>The include tree reflects the nesting:</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">parsed</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">includes</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="ss">:includes</span><span class="o">]</span>
