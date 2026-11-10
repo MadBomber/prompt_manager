@@ -98,7 +98,7 @@ parsed.metadata.includes
 
 ## Nested Includes
 
-Components can include other components. For example, `system_context.md` could include a `team_info.md` stored beside it in `common/`. Include paths resolve relative to the including file's directory, so the nested include names the file without the `common/` prefix:
+Components can include other components. For example, `system_context.md` could include a `team_info.md` stored beside it in `common/`. Include paths [resolve relative to the including file's directory](../guides/includes.md#path-resolution), so the nested include drops the `common/` prefix:
 
 ```markdown
 ---
