@@ -107,13 +107,12 @@ class PMConfigurationTest < Minitest::Test
   # --- Global shell config ---
 
   def test_global_shell_false_disables_shell_expansion
-    ENV['PM_TEST_CONF'] = 'should_not_expand'
-    PM.config.shell = false
-    parsed = PM.parse("---\ntitle: Test\n---\nValue: $PM_TEST_CONF\n")
+    with_env('PM_TEST_CONF' => 'should_not_expand') do
+      PM.config.shell = false
+      parsed = PM.parse("---\ntitle: Test\n---\nValue: $PM_TEST_CONF\n")
 
-    assert_includes parsed.content, '$PM_TEST_CONF'
-  ensure
-    ENV.delete('PM_TEST_CONF')
+      assert_includes parsed.content, '$PM_TEST_CONF'
+    end
   end
 
   def test_global_shell_false_applies_to_files

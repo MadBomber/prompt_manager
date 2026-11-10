@@ -62,12 +62,11 @@ class PMParseTest < Minitest::Test
   end
 
   def test_parse_expands_shell_vars
-    ENV['PM_TEST_PARSE'] = 'expanded'
-    parsed = PM.parse("---\ntitle: Test\n---\nValue: $PM_TEST_PARSE\n")
+    with_env('PM_TEST_PARSE' => 'expanded') do
+      parsed = PM.parse("---\ntitle: Test\n---\nValue: $PM_TEST_PARSE\n")
 
-    assert_includes parsed.content, 'Value: expanded'
-  ensure
-    ENV.delete('PM_TEST_PARSE')
+      assert_includes parsed.content, 'Value: expanded'
+    end
   end
 
   def test_parse_skips_shell_when_disabled
