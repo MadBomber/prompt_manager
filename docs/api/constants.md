@@ -11,7 +11,7 @@ Regular expressions, markers, and key lists defined in the `PM` module.
 ### PM::VERSION
 
 ```ruby
-PM::VERSION  #=> the gem version, e.g. "1.1.0"
+PM::VERSION  #=> the gem version, e.g. "1.2.0"
 ```
 
 Defined in `lib/pm/version.rb`.
