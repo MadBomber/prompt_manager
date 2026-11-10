@@ -42,61 +42,45 @@ class PMShellSafetyTest < Minitest::Test
   # --- environment variable values are inert ---
 
   def test_erb_in_env_var_value_is_escaped_when_erb_safe
-    ENV['PM_TEST_ERB'] = '<%= 1 %>'
-
-    assert_equal '<%%= 1 %> <%%= 1 %>', PM.expand_shell('$PM_TEST_ERB ${PM_TEST_ERB}', erb_safe: true)
-  ensure
-    ENV.delete('PM_TEST_ERB')
+    with_env('PM_TEST_ERB' => '<%= 1 %>') do
+      assert_equal '<%%= 1 %> <%%= 1 %>', PM.expand_shell('$PM_TEST_ERB ${PM_TEST_ERB}', erb_safe: true)
+    end
   end
 
   def test_erb_in_env_var_value_is_kept_when_not_erb_safe
-    ENV['PM_TEST_ERB'] = '<%= 1 %>'
-
-    assert_equal '<%= 1 %>', PM.expand_shell('$PM_TEST_ERB')
-  ensure
-    ENV.delete('PM_TEST_ERB')
+    with_env('PM_TEST_ERB' => '<%= 1 %>') do
+      assert_equal '<%= 1 %>', PM.expand_shell('$PM_TEST_ERB')
+    end
   end
 
   def test_parse_string_neutralises_erb_from_env_var_value
-    ENV['PM_TEST_ERB'] = '<%= 6*7 %>'
-
-    assert_equal '<%= 6*7 %>', PM.parse_string('$PM_TEST_ERB').to_s
-  ensure
-    ENV.delete('PM_TEST_ERB')
+    with_env('PM_TEST_ERB' => '<%= 6*7 %>') do
+      assert_equal '<%= 6*7 %>', PM.parse_string('$PM_TEST_ERB').to_s
+    end
   end
 
   def test_erb_tag_split_across_adjacent_env_vars_stays_literal
-    ENV['PM_TEST_LT']  = '<'
-    ENV['PM_TEST_ERB'] = '%= 6*7 %>'
-
-    assert_equal '<%= 6*7 %>', PM.parse_string('$PM_TEST_LT$PM_TEST_ERB').to_s
-  ensure
-    ENV.delete('PM_TEST_LT')
-    ENV.delete('PM_TEST_ERB')
+    with_env('PM_TEST_LT' => '<', 'PM_TEST_ERB' => '%= 6*7 %>') do
+      assert_equal '<%= 6*7 %>', PM.parse_string('$PM_TEST_LT$PM_TEST_ERB').to_s
+    end
   end
 
   def test_erb_tag_split_between_env_var_and_command_output_stays_literal
-    ENV['PM_TEST_LT'] = '<'
-
-    assert_equal '<%= 6*7 %>', PM.parse_string(%q{$PM_TEST_LT$(printf '%%= 6*7 %%>')}).to_s
-  ensure
-    ENV.delete('PM_TEST_LT')
+    with_env('PM_TEST_LT' => '<') do
+      assert_equal '<%= 6*7 %>', PM.parse_string(%q{$PM_TEST_LT$(printf '%%= 6*7 %%>')}).to_s
+    end
   end
 
   def test_literal_lt_before_env_var_value_starting_with_percent_stays_literal
-    ENV['PM_TEST_ERB'] = '%= 6*7 %>'
-
-    assert_equal '<%= 6*7 %>', PM.parse_string('<$PM_TEST_ERB').to_s
-  ensure
-    ENV.delete('PM_TEST_ERB')
+    with_env('PM_TEST_ERB' => '%= 6*7 %>') do
+      assert_equal '<%= 6*7 %>', PM.parse_string('<$PM_TEST_ERB').to_s
+    end
   end
 
   def test_env_var_value_ending_in_lt_before_literal_percent_stays_literal
-    ENV['PM_TEST_LT'] = '<'
-
-    assert_equal '<%= 6*7 %>', PM.parse_string('$PM_TEST_LT%= 6*7 %>').to_s
-  ensure
-    ENV.delete('PM_TEST_LT')
+    with_env('PM_TEST_LT' => '<') do
+      assert_equal '<%= 6*7 %>', PM.parse_string('$PM_TEST_LT%= 6*7 %>').to_s
+    end
   end
 
   def test_literal_lt_before_command_output_starting_with_percent_stays_literal
@@ -131,9 +115,9 @@ class PMShellSafetyTest < Minitest::Test
   end
 
   def test_empty_env_var_does_not_change_author_erb
-    ENV.delete('PM_TEST_EMPTY')
-
-    assert_equal '42', PM.parse_string('<$PM_TEST_EMPTY%= 6*7 %>').to_s
+    with_env('PM_TEST_EMPTY' => nil) do
+      assert_equal '42', PM.parse_string('<$PM_TEST_EMPTY%= 6*7 %>').to_s
+    end
   end
 
   def test_erb_not_escaped_when_erb_is_disabled
@@ -235,11 +219,9 @@ class PMShellSafetyTest < Minitest::Test
   end
 
   def test_env_var_inside_command_is_handled_by_the_shell
-    ENV['PM_SAFETY_TEST'] = 'v'
-
-    assert_equal 'v', PM.expand_shell('$(echo $PM_SAFETY_TEST)')
-  ensure
-    ENV.delete('PM_SAFETY_TEST')
+    with_env('PM_SAFETY_TEST' => 'v') do
+      assert_equal 'v', PM.expand_shell('$(echo $PM_SAFETY_TEST)')
+    end
   end
 
   def test_command_spanning_lines

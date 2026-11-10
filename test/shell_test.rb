@@ -4,28 +4,27 @@ require_relative 'test_helper'
 
 class PMExpandShellTest < Minitest::Test
   def test_expand_env_var_bare
-    ENV['PM_TEST_VAR'] = 'hello'
-    result = PM.expand_shell('Value: $PM_TEST_VAR')
+    with_env('PM_TEST_VAR' => 'hello') do
+      result = PM.expand_shell('Value: $PM_TEST_VAR')
 
-    assert_equal 'Value: hello', result
-  ensure
-    ENV.delete('PM_TEST_VAR')
+      assert_equal 'Value: hello', result
+    end
   end
 
   def test_expand_env_var_braced
-    ENV['PM_TEST_VAR'] = 'world'
-    result = PM.expand_shell('Value: ${PM_TEST_VAR}')
+    with_env('PM_TEST_VAR' => 'world') do
+      result = PM.expand_shell('Value: ${PM_TEST_VAR}')
 
-    assert_equal 'Value: world', result
-  ensure
-    ENV.delete('PM_TEST_VAR')
+      assert_equal 'Value: world', result
+    end
   end
 
   def test_missing_env_var_replaced_with_empty_string
-    ENV.delete('PM_NONEXISTENT_VAR')
-    result = PM.expand_shell('Value: $PM_NONEXISTENT_VAR end')
+    with_env('PM_NONEXISTENT_VAR' => nil) do
+      result = PM.expand_shell('Value: $PM_NONEXISTENT_VAR end')
 
-    assert_equal 'Value:  end', result
+      assert_equal 'Value:  end', result
+    end
   end
 
   def test_expand_command_substitution
@@ -53,16 +52,13 @@ class PMExpandShellTest < Minitest::Test
   end
 
   def test_expand_shell_in_parse_file
-    ENV['PM_TEST_USER'] = 'alice'
-    ENV['PM_TEST_HOME'] = '/home/alice'
-    parsed = PM.parse(fixture('with_shell.md'))
+    with_env('PM_TEST_USER' => 'alice', 'PM_TEST_HOME' => '/home/alice') do
+      parsed = PM.parse(fixture('with_shell.md'))
 
-    assert_includes parsed.content, 'User: alice'
-    assert_includes parsed.content, 'Home: /home/alice'
-    assert_includes parsed.content, 'Echo: hello'
-  ensure
-    ENV.delete('PM_TEST_USER')
-    ENV.delete('PM_TEST_HOME')
+      assert_includes parsed.content, 'User: alice'
+      assert_includes parsed.content, 'Home: /home/alice'
+      assert_includes parsed.content, 'Echo: hello'
+    end
   end
 
   def test_does_not_expand_lowercase_vars
@@ -86,14 +82,11 @@ class PMShellFlagTest < Minitest::Test
   end
 
   def test_shell_enabled_by_default
-    ENV['PM_TEST_USER'] = 'alice'
-    ENV['PM_TEST_HOME'] = '/home/alice'
-    parsed = PM.parse(fixture('with_shell.md'))
+    with_env('PM_TEST_USER' => 'alice', 'PM_TEST_HOME' => '/home/alice') do
+      parsed = PM.parse(fixture('with_shell.md'))
 
-    assert_includes parsed.content, 'User: alice'
-  ensure
-    ENV.delete('PM_TEST_USER')
-    ENV.delete('PM_TEST_HOME')
+      assert_includes parsed.content, 'User: alice'
+    end
   end
 
   def test_shell_flag_in_metadata
