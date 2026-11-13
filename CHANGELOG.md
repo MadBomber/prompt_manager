@@ -23,6 +23,11 @@ All notable changes to this project are documented here. The format follows
   a template instead of the method; a bare call still returns a same-named
   parameter. Reserved names such as `to_s`, `tap` and `binding` stay the
   `Object` method.
+- **Front matter fences must be on their own lines.** Front matter in files
+  with CRLF line endings is now read instead of becoming content, and an
+  indented `---` (or a value ending in `---`) inside the YAML no longer
+  closes it early. An opening fence with text after it on the same line
+  (`---title: x`) is no longer front matter. (#42)
 
 ## [1.2.0] - 2026-11-01
 
