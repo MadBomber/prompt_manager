@@ -24,7 +24,7 @@ StandardError
 │   └── PM::DirectiveAlreadyRegisteredError
 └── ArgumentError
     └── PM::ParameterError
-        ├── PM::MissingParameterError
+        ├── PM::MissingParameterError      #names
         └── PM::UnknownParameterError
 ```
 
@@ -40,7 +40,7 @@ StandardError
 | `IncludeContextError` | `include` | Used from a string-parsed prompt (no directory) |
 | `FileNotFoundError` | `insert` / `read` | The path is not an existing regular file |
 | `DirectiveAlreadyRegisteredError` | `PM.register`, `PM::Directive.register_all` | A requested name is already taken (see [Custom Directives](../guides/custom-directives.md) for the exact policy) |
-| `MissingParameterError` | `Parsed#to_s` | A parameter with a `null` default was not supplied. Message: `Missing required parameters: a, b` |
+| `MissingParameterError` | `Parsed#to_s` | A parameter with a `null` default was not supplied. `#names` is the Array of missing names; message: `Missing required parameters: a, b` |
 | `UnknownParameterError` | `Parsed#to_s` | Strict mode only: a template used a name that is neither a parameter nor a directive |
 
 ## Standard-library errors that pass through
@@ -60,7 +60,7 @@ StandardError
 begin
   PM.parse(path).to_s(values)
 rescue PM::MissingParameterError => e
-  # ask for the missing values
+  # ask for the missing values listed in e.names
 rescue PM::IncludeError => e
   # circular, too deep, or no file context
 rescue PM::ShellCommandError => e

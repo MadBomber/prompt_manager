@@ -24,6 +24,12 @@ All notable changes to this project are documented here. The format follows
   parameter. Reserved names such as `to_s`, `tap` and `binding` stay the
   `Object` method.
 
+### Added
+
+- **`PM::MissingParameterError#names`.** The error now carries the missing
+  parameter names as an Array of Strings, so callers no longer have to parse
+  the message. The message text is unchanged. (#44)
+
 ## [1.2.0] - 2026-11-01
 
 ### Fixed
