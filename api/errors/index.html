@@ -1800,7 +1800,7 @@ errors, which subclass <code>ArgumentError</code> so that code written against 1
 <tr>
 <td><code>ShellExpansionError</code></td>
 <td>shell expansion</td>
-<td>An unmatched <code>$(</code></td>
+<td>An unmatched <code>$(</code>, or a <code>$(command)</code> that cannot be started (command not found, empty <code>$()</code>); the <code>SystemCallError</code> is the <code>#cause</code></td>
 </tr>
 <tr>
 <td><code>ShellCommandError</code></td>

@@ -2126,7 +2126,7 @@
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">expand_shell</span><span class="p">(</span><span class="s2">"User: $USER, Date: $(date +%Y-%m-%d)"</span><span class="p">)</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1">#=&gt; "User: dewayne, Date: 2026-11-01"</span>
 </span></code></pre></div>
-<p><strong>Raises:</strong> <code>PM::ShellCommandError</code> if a command exits non-zero (<code>#command</code>, <code>#status</code>, <code>#stderr</code>); <code>PM::ShellExpansionError</code> for an unmatched <code>$(</code>.</p>
+<p><strong>Raises:</strong> <code>PM::ShellCommandError</code> if a command exits non-zero (<code>#command</code>, <code>#status</code>, <code>#stderr</code>); <code>PM::ShellExpansionError</code> for an unmatched <code>$(</code> or a command that cannot be started.</p>
 <hr />
 <h2 id="directives">Directives<a class="headerlink" href="#directives" title="Permanent link">&para;</a></h2>
 <h3 id="pmregisternames-block-nil">PM.register(*names, &amp;block) → nil<a class="headerlink" href="#pmregisternames-block-nil" title="Permanent link">&para;</a></h3>
