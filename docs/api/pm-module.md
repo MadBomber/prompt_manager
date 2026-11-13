@@ -136,7 +136,7 @@ PM.expand_shell("User: $USER, Date: $(date +%Y-%m-%d)")
 #=> "User: dewayne, Date: 2026-11-01"
 ```
 
-**Raises:** `PM::ShellCommandError` if a command exits non-zero (`#command`, `#status`, `#stderr`); `PM::ShellExpansionError` for an unmatched `$(`.
+**Raises:** `PM::ShellCommandError` if a command exits non-zero (`#command`, `#status`, `#stderr`); `PM::ShellExpansionError` for an unmatched `$(` or a command that cannot be started.
 
 ---
 

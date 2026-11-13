@@ -84,6 +84,17 @@ PM.parse_string("Output: $(exit 1)")
 
 The error exposes `#command`, `#status` (a `Process::Status`), and `#stderr`.
 
+### Commands That Cannot Run
+
+A command that cannot be started at all, such as a mistyped name or an empty
+`$()`, raises `PM::ShellExpansionError`. The underlying `SystemCallError` (for
+example `Errno::ENOENT`) is available as `#cause`:
+
+```ruby
+PM.parse_string("Output: $(no_such_cmd)")
+#=> PM::ShellExpansionError: Shell command could not be run (No such file or directory - no_such_cmd): no_such_cmd
+```
+
 ### Unmatched `$(`
 
 An opening `$(` with no closing parenthesis raises `PM::ShellExpansionError`

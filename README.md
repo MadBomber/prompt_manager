@@ -118,7 +118,7 @@ Literal: \$HOME
 - `\$` writes a literal `$`.
 - Command output and environment variable values are never re-scanned: in ordinary text, a `$VAR`, `$(...)` or `<%= %>` inside them is **not** expanded, run, or evaluated. With ERB on, a `<%` in them is stored as `<%%` so it renders literally. Inside your own ERB tag they become Ruby code; see [Security model](#security-model).
 - Fenced code blocks (``` or ~~~) are copied through untouched.
-- A failing command raises `PM::ShellCommandError` (with `#command`, `#status`, `#stderr`); an unmatched `$(` raises `PM::ShellExpansionError`.
+- A failing command raises `PM::ShellCommandError` (with `#command`, `#status`, `#stderr`); an unmatched `$(` or a command that cannot be started (not found, empty `$()`) raises `PM::ShellExpansionError`.
 
 ## Composing prompts
 

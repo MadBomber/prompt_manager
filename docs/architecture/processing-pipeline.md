@@ -76,7 +76,7 @@ Input:  "User: $USER\nDate: $(date +%Y-%m-%d)"
 Output: "User: dewayne\nDate: 2026-11-01"
 ```
 
-Errors: `PM::ShellCommandError` for a non-zero exit, `PM::ShellExpansionError` for an unmatched `$(`.
+Errors: `PM::ShellCommandError` for a non-zero exit, `PM::ShellExpansionError` for an unmatched `$(` or a command that cannot be started.
 
 ## Stage 4: ERB Rendering
 
