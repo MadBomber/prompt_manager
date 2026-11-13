@@ -27,6 +27,12 @@ All notable changes to this project are documented here. The format follows
   `insert`/`read` directive no longer fail on non-ASCII text when
   `Encoding.default_external` is not UTF-8 (`LANG=C`). (#37)
 
+### Added
+
+- **`PM::MissingParameterError#names`.** The error now carries the missing
+  parameter names as an Array of Strings, so callers no longer have to parse
+  the message. The message text is unchanged. (#44)
+
 ## [1.2.0] - 2026-11-01
 
 ### Fixed
