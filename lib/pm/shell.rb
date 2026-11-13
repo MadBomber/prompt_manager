@@ -21,8 +21,9 @@ module PM
   # Fenced code blocks (lines starting with ``` or ~~~) are copied through
   # untouched: a prompt can show shell syntax to the model without running it.
   #
-  # Raises PM::ShellExpansionError for an unmatched `$(` and
-  # PM::ShellCommandError when a command exits non-zero.
+  # Raises PM::ShellExpansionError for an unmatched `$(` or a command that
+  # cannot be started (not found, empty), and PM::ShellCommandError when a
+  # command exits non-zero.
   def self.expand_shell(string, erb_safe: false)
     ShellExpander.new(string, erb_safe: erb_safe).expand
   end
@@ -104,12 +105,21 @@ module PM
     # ")" (honouring nested parentheses), runs the command, and returns its stdout.
     def run_command
       command = read_command
-      output, stderr, status = Open3.capture3(command)
+      output, stderr, status = capture(command)
 
       raise ShellCommandError.new(command, status, stderr) unless status.success?
 
       $stderr.write(stderr) unless stderr.empty? # keep warnings visible, as with 1.0.x
       output.chomp
+    end
+
+    # Runs command and returns [stdout, stderr, status]. A command that cannot
+    # be started at all (not found, empty, not executable) raises
+    # ShellExpansionError with the SystemCallError as its cause.
+    def capture(command)
+      Open3.capture3(command)
+    rescue SystemCallError => e
+      raise ShellExpansionError, "Shell command could not be run (#{e.message}): #{command}"
     end
 
     def read_command

@@ -23,6 +23,10 @@ All notable changes to this project are documented here. The format follows
   a template instead of the method; a bare call still returns a same-named
   parameter. Reserved names such as `to_s`, `tap` and `binding` stay the
   `Object` method.
+- **A missing `$(command)` raises a PM error.** A command that cannot be
+  started (not found, empty `$()`) now raises `PM::ShellExpansionError`
+  with the `SystemCallError` as its `cause`, instead of a bare
+  `Errno::ENOENT` that looked like a missing prompt file. (#38)
 
 ## [1.2.0] - 2026-11-01
 
