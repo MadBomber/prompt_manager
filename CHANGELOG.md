@@ -18,6 +18,11 @@ All notable changes to this project are documented here. The format follows
   the same applies where an expansion meets the text beside it.
   `PM.expand_shell(str, erb_safe: true)` does the same. If you kept ERB in an
   environment variable on purpose, pass the value as a parameter instead.
+- **Directives named like Kernel methods.** A directive registered as
+  `format`, `test`, `exec` or another `Kernel` method name is now called from
+  a template instead of the method; a bare call still returns a same-named
+  parameter. Reserved names such as `to_s`, `tap` and `binding` stay the
+  `Object` method.
 
 ## [1.2.0] - 2026-11-01
 

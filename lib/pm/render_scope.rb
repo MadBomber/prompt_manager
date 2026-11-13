@@ -9,7 +9,10 @@ module PM
   #   3. nil -- or PM::UnknownParameterError when PM.config.strict_parameters is on
   #
   # So a parameter shadows a zero-argument directive call of the same name, and
-  # a directive call with arguments is never confused with a parameter.
+  # a directive call with arguments is never confused with a parameter. Names
+  # that are also Object or Kernel methods (`format`, `test`) take the same
+  # route through #resolve_shadowed, where a call with keywords or a block
+  # also counts as a call with arguments.
   class RenderScope
     def initialize(params, directives, context, strict: false)
       @params     = params
@@ -31,7 +34,8 @@ module PM
       elsif (directive = @directives[name])
         directive.call(@context, *args, &block)
       elsif @strict
-        raise UnknownParameterError, "Unknown parameter or directive: #{name}"
+        # Kernel.raise, not raise: a directive may be named `raise`.
+        Kernel.raise UnknownParameterError, "Unknown parameter or directive: #{name}"
       elsif args.empty?
         nil
       else
@@ -45,24 +49,40 @@ module PM
 
     private
 
-    # Never shadowed: erb_binding calls `binding`.
-    UNSHADOWED = %i[binding].freeze
+    # Never shadowed: erb_binding calls `binding`; shadow_object_methods
+    # calls `define_singleton_method`, which fires the singleton hooks.
+    UNSHADOWED = %i[
+      binding define_singleton_method
+      singleton_method_added singleton_method_removed singleton_method_undefined
+    ].freeze
 
-    # A parameter named like an Object method -- public (`hash`, `display`)
-    # or private Kernel (`format`, `test`, `system`) -- would otherwise never
-    # reach method_missing. Called bare it is the parameter; called with
-    # arguments or a block it is still the method.
+    # A parameter or directive named like an Object method -- public (`hash`,
+    # `display`) or private Kernel (`format`, `test`, `exec`) -- would
+    # otherwise never reach method_missing, so each one gets a singleton
+    # method that hands the call to #resolve_shadowed.
     def shadow_object_methods
-      @params.each_key do |key|
-        sym = key.to_sym
+      (@params.keys.map(&:to_sym) | @directives.keys).each do |sym|
         next unless shadowable?(sym)
 
         define_singleton_method(sym) do |*args, **kwargs, &block|
-          next @params[key] if args.empty? && kwargs.empty? && block.nil?
-
-          super(*args, **kwargs, &block)
+          resolve_shadowed(sym, args, kwargs, block)
         end
       end
+    end
+
+    # Called bare, a parameter of that name wins; otherwise a directive of that
+    # name is called; failing both, it is still the Object method.
+    def resolve_shadowed(sym, args, kwargs, block)
+      key = sym.to_s
+      return @params[key] if args.empty? && kwargs.empty? && block.nil? && @params.key?(key)
+
+      if @directives.key?(sym)
+        # Keywords arrive as a trailing Hash, the same as through method_missing.
+        positional = kwargs.empty? ? args : [*args, kwargs]
+        return @directives[sym].call(@context, *positional, &block)
+      end
+
+      self.class.instance_method(sym).bind_call(self, *args, **kwargs, &block)
     end
 
     def shadowable?(sym)
