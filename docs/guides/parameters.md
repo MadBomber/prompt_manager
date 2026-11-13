@@ -91,11 +91,12 @@ parameters:
 <%= nothing_here %>         <!-- "" -->
 ```
 
-Calling an unknown name **with** arguments raises `NoMethodError`, as in plain Ruby.
+Calling an unknown name **with** arguments raises `NoMethodError`, as in plain Ruby
+(`PM::UnknownParameterError` in strict mode).
 
 ### Strict mode
 
-Turn step 3 into an error:
+Turn step 3, and the `NoMethodError` above, into `PM::UnknownParameterError`:
 
 ```ruby
 PM.configure { |c| c.strict_parameters = true }

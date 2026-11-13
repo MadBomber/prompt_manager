@@ -123,7 +123,8 @@ PM.configure { |c| c.max_include_depth = 3 }
 ## strict_parameters
 
 By default an unknown bare name in a template renders as an empty string. With strict
-parameters on, it raises `PM::UnknownParameterError` instead.
+parameters on, it raises `PM::UnknownParameterError` instead, and so does an unknown
+name called with arguments (which otherwise raises `NoMethodError`).
 
 ```ruby
 PM.configure { |c| c.strict_parameters = true }

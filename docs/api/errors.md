@@ -52,7 +52,7 @@ StandardError
 | `Psych::DisallowedClass` | Front matter uses a Symbol or other non-permitted type (`Date` and `Time` are allowed) |
 | `Psych::AliasesNotEnabled` | Front matter uses YAML anchors/aliases |
 | `SyntaxError` | The ERB in the content does not compile |
-| `NoMethodError` | A template called an unknown name **with arguments** (an unknown bare name renders as `""`, or raises `UnknownParameterError` in strict mode) |
+| `NoMethodError` | A template called an unknown name **with arguments** and strict mode is off (an unknown bare name renders as `""`; in strict mode both raise `UnknownParameterError` instead) |
 
 ## Rescuing
 
