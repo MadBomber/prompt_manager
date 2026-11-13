@@ -46,7 +46,8 @@ module PM
   # When source is a Pathname, responds to :to_path, is a String ending in
   # ".md", a Symbol, or a single word (e.g. "greeting"), it is treated as a
   # file path. Symbols and single-word strings become "name.md" basenames.
-  # Relative paths are resolved against PM.config.prompts_dir. The file is
+  # Relative paths are resolved against PM.config.prompts_dir, or against the
+  # current directory when it is '' or nil. The file is
   # read and `directory`, `name`, `created_at`, `modified_at` are added to
   # the metadata.
   #
@@ -114,7 +115,7 @@ module PM
 
   def self.resolve_path(source)
     raw = source.respond_to?(:to_path) ? source.to_path : source
-    raw = (Pathname.new(config.prompts_dir) + raw).to_s unless config.prompts_dir.empty?
+    raw = (Pathname.new(config.prompts_dir) + raw).to_s unless config.prompts_dir.to_s.empty?
     File.expand_path(raw)
   end
   private_class_method :resolve_path

@@ -8,6 +8,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- **`nil` and empty-directory Pathname `prompts_dir` values work.** `nil` now
+  means no prompts directory, like `''`, instead of raising `NoMethodError`.
+  A `Pathname` to a directory with no entries was ignored, so relative paths
+  resolved against the current directory; it is now prepended. (#32)
 - **Expansion output is literal text in templates.** When ERB is enabled, a
   `<%` in the value of a `$VAR` or `${VAR}` is now written as `<%%` and
   renders as a literal `<%`, the same way command output already was, and
