@@ -112,6 +112,6 @@ This means shell variables are already expanded before ERB sees the content. If 
 | Situation | Error |
 |---|---|
 | Required parameter missing | `PM::MissingParameterError` |
-| Unknown bare name in strict mode | `PM::UnknownParameterError` |
-| Unknown name called with arguments | `NoMethodError` |
+| Unknown name in strict mode | `PM::UnknownParameterError` |
+| Unknown name called with arguments, strict mode off | `NoMethodError` |
 | ERB that does not compile | `SyntaxError` |
