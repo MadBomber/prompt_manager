@@ -1779,7 +1779,7 @@ errors, which subclass <code>ArgumentError</code> so that code written against 1
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│   └── PM::DirectiveAlreadyRegisteredError
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>└── ArgumentError
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    └── PM::ParameterError
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        ├── PM::MissingParameterError
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        ├── PM::MissingParameterError      #names
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>        └── PM::UnknownParameterError
 </span></code></pre></div>
 <h2 id="when-each-is-raised">When each is raised<a class="headerlink" href="#when-each-is-raised" title="Permanent link">&para;</a></h2>
@@ -1835,7 +1835,7 @@ errors, which subclass <code>ArgumentError</code> so that code written against 1
 <tr>
 <td><code>MissingParameterError</code></td>
 <td><code>Parsed#to_s</code></td>
-<td>A parameter with a <code>null</code> default was not supplied. Message: <code>Missing required parameters: a, b</code></td>
+<td>A parameter with a <code>null</code> default was not supplied. <code>#names</code> is the Array of missing names; message: <code>Missing required parameters: a, b</code></td>
 </tr>
 <tr>
 <td><code>UnknownParameterError</code></td>
@@ -1883,7 +1883,7 @@ errors, which subclass <code>ArgumentError</code> so that code written against 1
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">begin</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">rescue</span><span class="w"> </span><span class="no">PM</span><span class="o">::</span><span class="no">MissingParameterError</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">e</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="c1"># ask for the missing values</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="c1"># ask for the missing values listed in e.names</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">rescue</span><span class="w"> </span><span class="no">PM</span><span class="o">::</span><span class="no">IncludeError</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">e</span>
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="c1"># circular, too deep, or no file context</span>
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="k">rescue</span><span class="w"> </span><span class="no">PM</span><span class="o">::</span><span class="no">ShellCommandError</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">e</span>

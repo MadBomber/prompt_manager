@@ -1919,8 +1919,10 @@ when the file declares none.</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">parsed</span><span class="o">.</span><span class="n">to_s</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">#=&gt; PM::MissingParameterError: Missing required parameters: code</span>
 </span></code></pre></div>
-<p>The error message lists all missing parameters. <code>PM::MissingParameterError</code> is a
-subclass of <code>ArgumentError</code>, so code that rescues <code>ArgumentError</code> keeps working.</p>
+<p>The error message lists all missing parameters, and <code>#names</code> returns them as an
+Array of Strings (<code>["code"]</code>), so you can ask for the values without parsing the
+message. <code>PM::MissingParameterError</code> is a subclass of <code>ArgumentError</code>, so code
+that rescues <code>ArgumentError</code> keeps working.</p>
 <h2 id="name-resolution">Name Resolution<a class="headerlink" href="#name-resolution" title="Permanent link">&para;</a></h2>
 <p>Inside a template, a bare identifier is looked up in this order:</p>
 <ol>
