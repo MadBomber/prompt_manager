@@ -10,13 +10,14 @@ require 'yaml'
 # Not thread-safe: PM.config and the directive registry are process-wide state.
 # Configure and register directives at boot, then parse and render from any thread.
 module PM
+  # Both fences must be `---` on a line of their own; trailing blanks and a
+  # CR (Windows line endings) are allowed after each.
   METADATA_REGEXP = /
     \A
     [[:space:]]*
-    ---
+    ---[[:blank:]\r]*\n
     (?<metadata>.*?)
-    ---
-    [[:blank:]]*$[\n\r]?
+    ^---[[:blank:]\r]*$\n?
     (?<content>.*)
     \z
   /mx
