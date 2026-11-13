@@ -1891,7 +1891,7 @@
 </span></code></pre></div>
 <p>Defined in <code>lib/pm/version.rb</code>.</p>
 <h3 id="pmmetadata_regexp">PM::METADATA_REGEXP<a class="headerlink" href="#pmmetadata_regexp" title="Permanent link">&para;</a></h3>
-<p>Matches YAML front matter delimited by <code>---</code> fences at the start of the document (leading whitespace allowed). Captures the YAML content between the fences and the remaining body.</p>
+<p>Matches YAML front matter delimited by <code>---</code> fences at the start of the document (leading whitespace allowed). Each fence must be <code>---</code> on a line of its own, optionally followed by blanks and a CR, so files with Windows (CRLF) line endings parse and an indented <code>---</code> inside the YAML does not close the front matter. Captures the YAML content between the fences and the remaining body.</p>
 <p>Used internally by <code>PM.parse</code> to separate metadata from content.</p>
 <h3 id="pmhtml_comment_regexp">PM::HTML_COMMENT_REGEXP<a class="headerlink" href="#pmhtml_comment_regexp" title="Permanent link">&para;</a></h3>
 <p>Matches HTML comments (<code>&lt;!-- ... --&gt;</code>), including multiline comments.</p>

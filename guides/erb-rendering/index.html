@@ -1939,6 +1939,10 @@ with <code>PM.config.lock!</code>. See <a href="../../getting-started/configurat
 </tr>
 </tbody>
 </table>
+<p>For a prompt read from a file, including one pulled in with <code>include</code>, the
+backtrace of an error raised inside ERB names that file (<code>/path/to/inner.md:2</code>)
+instead of <code>(erb):2</code>. Line numbers count from the first line after the front
+matter. String-parsed prompts still show <code>(erb)</code>.</p>
 
 
 
