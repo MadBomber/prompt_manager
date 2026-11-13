@@ -23,6 +23,9 @@ All notable changes to this project are documented here. The format follows
   a template instead of the method; a bare call still returns a same-named
   parameter. Reserved names such as `to_s`, `tap` and `binding` stay the
   `Object` method.
+- **Prompt files are read as UTF-8 under any locale.** `PM.parse` and the
+  `insert`/`read` directive no longer fail on non-ASCII text when
+  `Encoding.default_external` is not UTF-8 (`LANG=C`). (#37)
 
 ## [1.2.0] - 2026-11-01
 
