@@ -115,3 +115,8 @@ This means shell variables are already expanded before ERB sees the content. If 
 | Unknown name in strict mode | `PM::UnknownParameterError` |
 | Unknown name called with arguments, strict mode off | `NoMethodError` |
 | ERB that does not compile | `SyntaxError` |
+
+For a prompt read from a file, including one pulled in with `include`, the
+backtrace of an error raised inside ERB names that file (`/path/to/inner.md:2`)
+instead of `(erb):2`. Line numbers count from the first line after the front
+matter. String-parsed prompts still show `(erb)`.
