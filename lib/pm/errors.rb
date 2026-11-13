@@ -68,8 +68,16 @@ module PM
   class ParameterError < ArgumentError; end
 
   # A parameter declared with a `null` default was not supplied to `to_s`.
-  # The message always starts with "Missing required parameters:".
-  class MissingParameterError < ParameterError; end
+  # #names lists the missing parameter names (Strings). The message always
+  # starts with "Missing required parameters:".
+  class MissingParameterError < ParameterError
+    attr_reader :names
+
+    def initialize(names = [])
+      @names = Array(names).map(&:to_s).freeze
+      super("Missing required parameters: #{@names.join(', ')}")
+    end
+  end
 
   # Strict mode only: a template referenced a name that is neither a
   # parameter nor a registered directive.

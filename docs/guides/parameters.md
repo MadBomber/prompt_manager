@@ -70,8 +70,10 @@ parsed.to_s
 #=> PM::MissingParameterError: Missing required parameters: code
 ```
 
-The error message lists all missing parameters. `PM::MissingParameterError` is a
-subclass of `ArgumentError`, so code that rescues `ArgumentError` keeps working.
+The error message lists all missing parameters, and `#names` returns them as an
+Array of Strings (`["code"]`), so you can ask for the values without parsing the
+message. `PM::MissingParameterError` is a subclass of `ArgumentError`, so code
+that rescues `ArgumentError` keeps working.
 
 ## Name Resolution
 
