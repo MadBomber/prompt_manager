@@ -17,8 +17,8 @@ module PM
   # Shell expansion could not complete (for example an unmatched `$(`).
   class ShellExpansionError < Error; end
 
-  # A `$(command)` exited non-zero. Carries the command, its Process::Status,
-  # and whatever it wrote to stderr.
+  # A `$(command)` exited non-zero or was killed by a signal. Carries the
+  # command, its Process::Status, and whatever it wrote to stderr.
   class ShellCommandError < ShellExpansionError
     attr_reader :command, :status, :stderr
 
@@ -32,9 +32,15 @@ module PM
     private
 
     def build_message
-      message = "Shell command failed (exit #{status.exitstatus}): #{command}"
+      message = "Shell command failed (#{exit_reason}): #{command}"
       detail  = stderr.strip
       detail.empty? ? message : "#{message}\n#{detail}"
+    end
+
+    # "exit N", or "signal N" when the command was killed by a signal
+    # (exitstatus is nil then).
+    def exit_reason
+      status.signaled? ? "signal #{status.termsig}" : "exit #{status.exitstatus}"
     end
   end
 

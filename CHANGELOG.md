@@ -23,6 +23,9 @@ All notable changes to this project are documented here. The format follows
   a template instead of the method; a bare call still returns a same-named
   parameter. Reserved names such as `to_s`, `tap` and `binding` stay the
   `Object` method.
+- **A command killed by a signal is named in the error.** A `$(command)`
+  killed by a signal now raises `PM::ShellCommandError` with
+  `(signal 9)` in the message instead of `(exit )`. (#39)
 - **ERB errors name the prompt file.** For a prompt read from a file, an
   error raised inside its ERB now has the file's path in the backtrace
   instead of `(erb)`, so a failure in an included file can be traced.
