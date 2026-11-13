@@ -201,6 +201,13 @@ class PMShellSafetyTest < Minitest::Test
     assert_equal 'Shell command failed (exit 2): exit 2', error.message
   end
 
+  def test_command_killed_by_signal_names_the_signal
+    error = assert_raises(PM::ShellCommandError) { PM.expand_shell('$(kill -9 $$)') }
+
+    assert_predicate error.status, :signaled?
+    assert_equal 'Shell command failed (signal 9): kill -9 $$', error.message
+  end
+
   def test_shell_command_error_hierarchy
     assert_operator PM::ShellCommandError, :<, PM::ShellExpansionError
     assert_operator PM::ShellExpansionError, :<, PM::Error
