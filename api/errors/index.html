@@ -1875,7 +1875,7 @@ errors, which subclass <code>ArgumentError</code> so that code written against 1
 </tr>
 <tr>
 <td><code>NoMethodError</code></td>
-<td>A template called an unknown name <strong>with arguments</strong> (an unknown bare name renders as <code>""</code>, or raises <code>UnknownParameterError</code> in strict mode)</td>
+<td>A template called an unknown name <strong>with arguments</strong> and strict mode is off (an unknown bare name renders as <code>""</code>; in strict mode both raise <code>UnknownParameterError</code> instead)</td>
 </tr>
 </tbody>
 </table>

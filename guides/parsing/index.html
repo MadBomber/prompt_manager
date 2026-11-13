@@ -1962,7 +1962,7 @@
 </tbody>
 </table>
 <h3 id="prompts_dir">prompts_dir<a class="headerlink" href="#prompts_dir" title="Permanent link">&para;</a></h3>
-<p>Relative file paths are resolved against <code>PM.config.prompts_dir</code>:</p>
+<p>Relative file paths are resolved against <code>PM.config.prompts_dir</code>, a String or Pathname. When it is <code>''</code> (the default) or <code>nil</code>, they resolve against the current directory:</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">c</span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'~/.prompts'</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'agents/summarize.md'</span><span class="p">)</span>

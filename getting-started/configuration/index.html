@@ -1882,7 +1882,7 @@
 </span></code></pre></div>
 <p><code>PM.configure</code> yields the singleton and returns it.</p>
 <h2 id="prompts_dir">prompts_dir<a class="headerlink" href="#prompts_dir" title="Permanent link">&para;</a></h2>
-<p>Prepended to relative file paths passed to <code>PM.parse</code>. Absolute paths bypass it. Symbols and single words are converted to <code>.md</code> basenames first.</p>
+<p>Prepended to relative file paths passed to <code>PM.parse</code>. Absolute paths bypass it. Symbols and single words are converted to <code>.md</code> basenames first. It may be a String or a Pathname; <code>''</code> (the default) or <code>nil</code> means none, so relative paths resolve against the current directory.</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">c</span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">prompts_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'/usr/share/prompts'</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'code_review.md'</span><span class="p">)</span>
@@ -1956,7 +1956,8 @@ adds one. Exceeding the limit raises <code>PM::IncludeDepthError</code>. Set it 
 </span></code></pre></div>
 <h2 id="strict_parameters">strict_parameters<a class="headerlink" href="#strict_parameters" title="Permanent link">&para;</a></h2>
 <p>By default an unknown bare name in a template renders as an empty string. With strict
-parameters on, it raises <code>PM::UnknownParameterError</code> instead.</p>
+parameters on, it raises <code>PM::UnknownParameterError</code> instead, and so does an unknown
+name called with arguments (which otherwise raises <code>NoMethodError</code>).</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">c</span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">strict_parameters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">true</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">'&lt;%= nope %&gt;'</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>

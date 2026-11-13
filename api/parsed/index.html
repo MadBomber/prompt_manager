@@ -1988,7 +1988,7 @@
 </tbody>
 </table>
 <p><strong>Returns:</strong> Rendered prompt as String.</p>
-<p><strong>Raises:</strong> <code>PM::MissingParameterError</code> (an <code>ArgumentError</code>) if required parameters (those with <code>nil</code> defaults) are not provided; <code>PM::UnknownParameterError</code> in strict mode for an unknown bare name; the include and shell errors from any directive that runs.</p>
+<p><strong>Raises:</strong> <code>PM::MissingParameterError</code> (an <code>ArgumentError</code>) if required parameters (those with <code>nil</code> defaults) are not provided; <code>PM::UnknownParameterError</code> in strict mode for an unknown name; <code>NoMethodError</code> for an unknown name called with arguments when strict mode is off; the include and shell errors from any directive that runs.</p>
 <p><strong>Behavior:</strong></p>
 <ol>
 <li>Resets <code>metadata.includes</code> to <code>[]</code></li>

@@ -1936,9 +1936,10 @@ subclass of <code>ArgumentError</code>, so code that rescues <code>ArgumentError
 </span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>&lt;%= include 'other.md' %&gt;   &lt;!-- the directive --&gt;
 </span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>&lt;%= nothing_here %&gt;         &lt;!-- "" --&gt;
 </span></code></pre></div>
-<p>Calling an unknown name <strong>with</strong> arguments raises <code>NoMethodError</code>, as in plain Ruby.</p>
+<p>Calling an unknown name <strong>with</strong> arguments raises <code>NoMethodError</code>, as in plain Ruby
+(<code>PM::UnknownParameterError</code> in strict mode).</p>
 <h3 id="strict-mode">Strict mode<a class="headerlink" href="#strict-mode" title="Permanent link">&para;</a></h3>
-<p>Turn step 3 into an error:</p>
+<p>Turn step 3, and the <code>NoMethodError</code> above, into <code>PM::UnknownParameterError</code>:</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">c</span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">strict_parameters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">true</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">'&lt;%= nothing_here %&gt;'</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>
