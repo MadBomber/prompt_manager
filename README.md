@@ -180,7 +180,7 @@ arguments, then to a **directive**, then to `nil`. Set
 
 ```ruby
 PM.configure do |c|
-  c.prompts_dir        = '~/.prompts'  # default ''
+  c.prompts_dir        = '~/.prompts'  # default ''; String or Pathname, nil = none
   c.shell              = true          # default true
   c.erb                = true          # default true
   c.max_include_depth  = 10            # default 10; nil = unlimited

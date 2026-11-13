@@ -39,7 +39,7 @@ When parsing a file, PM adds these keys to the metadata automatically:
 
 ### prompts_dir
 
-Relative file paths are resolved against `PM.config.prompts_dir`:
+Relative file paths are resolved against `PM.config.prompts_dir`, a String or Pathname. When it is `''` (the default) or `nil`, they resolve against the current directory:
 
 ```ruby
 PM.configure { |c| c.prompts_dir = '~/.prompts' }
