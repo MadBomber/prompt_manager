@@ -18,7 +18,7 @@ Defined in `lib/pm/version.rb`.
 
 ### PM::METADATA_REGEXP
 
-Matches YAML front matter delimited by `---` fences at the start of the document (leading whitespace allowed). Captures the YAML content between the fences and the remaining body.
+Matches YAML front matter delimited by `---` fences at the start of the document (leading whitespace allowed). Each fence must be `---` on a line of its own, optionally followed by blanks and a CR, so files with Windows (CRLF) line endings parse and an indented `---` inside the YAML does not close the front matter. Captures the YAML content between the fences and the remaining body.
 
 Used internally by `PM.parse` to separate metadata from content.
 

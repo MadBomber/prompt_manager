@@ -80,6 +80,21 @@ class PMParsedExportTest < Minitest::Test
     assert_equal 'Missing required parameters: code, lang', error.message
   end
 
+  def test_missing_parameter_error_exposes_names
+    parsed = PM.parse_string("---\nparameters:\n  a: null\n  b: null\n  c: set\n---\n<%= a %><%= b %>")
+    error  = assert_raises(PM::MissingParameterError) { parsed.to_s }
+
+    assert_equal %w[a b], error.names
+  end
+
+  def test_missing_parameter_error_names_can_hold_commas
+    error = PM::MissingParameterError.new(['a,b', :c])
+
+    assert_equal ['a,b', 'c'], error.names
+    assert_equal 'Missing required parameters: a,b, c', error.message
+    assert_predicate error.names, :frozen?
+  end
+
   def test_render_context_defaults
     ctx = PM::RenderContext.new
 

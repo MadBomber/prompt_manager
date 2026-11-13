@@ -41,7 +41,7 @@ module PM
       params   = defaults.merge(values.transform_keys(&:to_s))
 
       missing = params.select { |_, value| value.nil? }.keys
-      raise MissingParameterError, "Missing required parameters: #{missing.join(', ')}" unless missing.empty?
+      raise MissingParameterError, missing unless missing.empty?
 
       params
     end

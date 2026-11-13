@@ -27,6 +27,24 @@ All notable changes to this project are documented here. The format follows
   error raised inside its ERB now has the file's path in the backtrace
   instead of `(erb)`, so a failure in an included file can be traced.
   (#43)
+- **Front matter fences must be on their own lines.** Front matter in files
+  with CRLF line endings is now read instead of becoming content, and an
+  indented `---` (or a value ending in `---`) inside the YAML no longer
+  closes it early. An opening fence with text after it on the same line
+  (`---title: x`) is no longer front matter. (#42)
+- **A missing `$(command)` raises a PM error.** A command that cannot be
+  started (not found, empty `$()`) now raises `PM::ShellExpansionError`
+  with the `SystemCallError` as its `cause`, instead of a bare
+  `Errno::ENOENT` that looked like a missing prompt file. (#38)
+- **Prompt files are read as UTF-8 under any locale.** `PM.parse` and the
+  `insert`/`read` directive no longer fail on non-ASCII text when
+  `Encoding.default_external` is not UTF-8 (`LANG=C`). (#37)
+
+### Added
+
+- **`PM::MissingParameterError#names`.** The error now carries the missing
+  parameter names as an Array of Strings, so callers no longer have to parse
+  the message. The message text is unchanged. (#44)
 
 ## [1.2.0] - 2026-11-01
 
