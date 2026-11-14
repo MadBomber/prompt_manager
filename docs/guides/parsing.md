@@ -112,6 +112,21 @@ temperature: 0.3
 The prompt content starts here.
 ```
 
+Each fence must be `---` on a line of its own (see
+[`PM::METADATA_REGEXP`](../api/constants.md#pmmetadata_regexp)). Blanks and a CR may
+follow it, so files with Windows (CRLF) line endings work. An opening line with text
+after the fence, such as `---title: x`, is not front matter, and the whole file is
+content. An indented `---` inside the YAML does not close the front matter:
+
+```ruby
+parsed = PM.parse_string("---\nnote: |\n  ---\n  still YAML\n---\nBody\n")
+parsed.metadata.note  #=> "---\nstill YAML\n"
+parsed.content        #=> "Body\n"
+```
+
+`PM.parse` and the `insert`/`read` directive read files as UTF-8 whatever the locale or
+`Encoding.default_external` is, so non-ASCII text works under `LANG=C`.
+
 All YAML keys become accessible via dot notation on the `PM::Metadata` object:
 
 ```ruby
