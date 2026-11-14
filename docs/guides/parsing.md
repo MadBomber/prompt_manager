@@ -112,12 +112,11 @@ temperature: 0.3
 The prompt content starts here.
 ```
 
-Each fence must be `---` on a line of its own (see
-[`PM::METADATA_REGEXP`](../api/constants.md#pmmetadata_regexp)). Blanks and a CR may
-follow it, so files with Windows (CRLF) line endings work. The closing fence must start
-its line. If either fence has other text on its line (`---title: x`, `--- # end`) or
-the closing fence is indented, there is no front matter and the whole file is content.
-An indented `---` inside the YAML does not close the front matter:
+Whitespace before the opening fence is ignored. After that, each fence must be `---` on
+a line of its own (see [`PM::METADATA_REGEXP`](../api/constants.md#pmmetadata_regexp)).
+Blanks and a CR may follow it, so files with Windows (CRLF) line endings work. A line
+with other text on it (`---title: x`, `--- # end`) or an indented `---` is not a fence,
+so an indented `---` inside the YAML does not close the front matter:
 
 ```ruby
 parsed = PM.parse_string("---\nnote: |\n  ---\n  still YAML\n---\nBody\n")
