@@ -31,13 +31,35 @@ class PMFileEncodingTest < Minitest::Test
     assert result.valid_encoding?
   end
 
+  # Fails if assign_default_external stops silencing the -w warning.
+  # Turns verbose warnings on so the check holds however the file is run.
+  def test_switching_default_external_does_not_warn
+    with_verbose(true) do
+      assert_silent { with_default_external('US-ASCII') {} }
+    end
+  end
+
   private
 
   def with_default_external(encoding)
     saved = Encoding.default_external
-    Encoding.default_external = encoding
+    assign_default_external(encoding)
     yield
   ensure
-    Encoding.default_external = saved
+    assign_default_external(saved)
+  end
+
+  # Ruby warns on every Encoding.default_external= under -w, which
+  # Rake::TestTask passes by default. Silence just this assignment.
+  def assign_default_external(encoding)
+    with_verbose(nil) { Encoding.default_external = encoding }
+  end
+
+  def with_verbose(value)
+    saved = $VERBOSE
+    $VERBOSE = value
+    yield
+  ensure
+    $VERBOSE = saved
   end
 end
