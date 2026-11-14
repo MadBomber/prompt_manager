@@ -224,7 +224,7 @@ register at boot, then parse and render from any thread.
 
 ```bash
 bundle install
-bundle exec rake test     # runs the suite with a 100% line-coverage gate
+bundle exec rake test     # runs the suite with 100% line and branch coverage gates
 ```
 
 ## License
