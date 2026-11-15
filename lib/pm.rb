@@ -61,7 +61,7 @@ module PM
     return parse_string(source) unless file_source?(source)
 
     path   = resolve_path(source)
-    parsed = parse_string(read_file(path))
+    parsed = parse_file(path)
     stat   = File.stat(path)
 
     metadata = build_metadata(
@@ -112,6 +112,14 @@ module PM
   end
 
   # --- Internals ---
+
+  # Parses the file at path; a MetadataError names the file, as Psych does.
+  def self.parse_file(path)
+    parse_string(read_file(path))
+  rescue MetadataError => e
+    raise MetadataError, "(#{path}): #{e.message}"
+  end
+  private_class_method :parse_file
 
   def self.file_source?(source)
     source.respond_to?(:to_path) || (source.is_a?(String) && source.end_with?('.md'))

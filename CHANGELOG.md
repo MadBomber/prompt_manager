@@ -45,6 +45,10 @@ All notable changes to this project are documented here. The format follows
 - **Prompt files are read as UTF-8 under any locale.** `PM.parse` and the
   `insert`/`read` directive no longer fail on non-ASCII text when
   `Encoding.default_external` is not UTF-8 (`LANG=C`). (#37)
+- **Front-matter `MetadataError`s name the prompt file.** For a prompt read
+  from a file, the message now starts with `(<path>): `, the format Psych
+  uses, so a bad `shell:` or `parameters:` in an included file can be
+  traced. The original error is the `cause`. (#67)
 
 ### Added
 

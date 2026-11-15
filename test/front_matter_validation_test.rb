@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'test_helper'
+require 'tmpdir'
 
 class PMFrontMatterValidationTest < Minitest::Test
   def teardown
@@ -62,5 +63,37 @@ class PMFrontMatterValidationTest < Minitest::Test
   def test_metadata_error_is_a_pm_error
     assert_operator PM::MetadataError, :<, PM::Error
     assert_operator PM::Error, :<, StandardError
+  end
+end
+
+class PMFrontMatterErrorPathTest < Minitest::Test
+  def setup
+    @dir = Dir.mktmpdir('pm-metadata-error')
+    File.write(File.join(@dir, 'bad.md'), "---\nshell: maybe\n---\nhi\n")
+    File.write(File.join(@dir, 'outer.md'), "Outer\n<%= include 'bad.md' %>\n")
+  end
+
+  def teardown
+    FileUtils.remove_entry(@dir)
+  end
+
+  def test_metadata_error_names_the_file
+    path  = File.join(@dir, 'bad.md')
+    error = assert_raises(PM::MetadataError) { PM.parse(path) }
+
+    assert_equal %((#{path}): shell must be true or false, got "maybe"), error.message
+    assert_kind_of PM::MetadataError, error.cause
+  end
+
+  def test_metadata_error_in_included_file_names_that_file
+    error = assert_raises(PM::MetadataError) { PM.parse(File.join(@dir, 'outer.md')).to_s }
+
+    assert error.message.start_with?("(#{File.join(@dir, 'bad.md')}): ")
+  end
+
+  def test_metadata_error_from_string_prompt_has_no_path
+    error = assert_raises(PM::MetadataError) { PM.parse_string("---\nshell: maybe\n---\nhi") }
+
+    assert_equal 'shell must be true or false, got "maybe"', error.message
   end
 end
