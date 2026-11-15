@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'test_helper'
+require 'tmpdir'
 
 class PMIncludeTest < Minitest::Test
   def test_basic_include
@@ -208,24 +209,28 @@ class PMRegisterDirectiveTest < Minitest::Test
 
   def test_custom_directive_with_render_context
     PM.register(:current_file) { |ctx| ctx.metadata.name || 'unknown' }
-    parsed = PM.parse(fixture('with_erb.md'))
 
-    # with_erb.md has its own ERB, but let's test with a controlled template
-    parsed = PM.parse("---\ntitle: Test\n---\n<%= current_file %>\n")
-    result = parsed.to_s
+    Dir.mktmpdir do |dir|
+      path = File.join(dir, 'named.md')
+      File.write(path, "<%= current_file %>\n")
 
-    # No directory context from parse, so name is nil
-    assert_includes result, 'unknown'
+      assert_equal "named.md\n", PM.parse(path).to_s
+    end
+
+    # A prompt parsed from a string has no file name
+    assert_equal "unknown\n", PM.parse("<%= current_file %>\n").to_s
   end
 
   def test_custom_directive_available_in_included_files
     PM.register(:shout) { |_ctx, text| text.upcase + '!' }
 
-    # Create a simple test — directives are set up for every render_with call
-    parsed = PM.parse("---\ntitle: Test\n---\n<%= shout 'hey' %>\n")
-    result = parsed.to_s
+    Dir.mktmpdir do |dir|
+      File.write(File.join(dir, 'inner.md'), "<%= shout 'hey' %>\n")
+      outer = File.join(dir, 'outer.md')
+      File.write(outer, "<%= include 'inner.md' %>\n")
 
-    assert_includes result, 'HEY!'
+      assert_includes PM.parse(outer).to_s, 'HEY!'
+    end
   end
 
   def test_accepts_string_name
