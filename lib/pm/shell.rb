@@ -52,7 +52,7 @@ module PM
         elsif @scanner.scan(COMMAND_OPEN)
           append(out, run_command, untrusted: true)
         elsif @scanner.scan(ENV_VAR_REGEXP)
-          append(out, ENV.fetch(@scanner[1] || @scanner[2], ''), untrusted: true)
+          append(out, utf8(ENV.fetch(@scanner[1] || @scanner[2], '')), untrusted: true)
         else
           append(out, @scanner.getch)
         end
@@ -110,7 +110,13 @@ module PM
       raise ShellCommandError.new(command, status, stderr) unless status.success?
 
       $stderr.write(stderr) unless stderr.empty? # keep warnings visible, as with 1.0.x
-      output.chomp
+      utf8(output).chomp
+    end
+
+    # ENV values and command output carry the locale's encoding (BINARY or
+    # US-ASCII under LANG=C); treat them as UTF-8 like prompt files.
+    def utf8(text)
+      text.dup.force_encoding(Encoding::UTF_8).scrub
     end
 
     # Runs command and returns [stdout, stderr, status]. A command that cannot

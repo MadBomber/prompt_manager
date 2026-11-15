@@ -96,3 +96,42 @@ class PMShellFlagTest < Minitest::Test
     assert_equal false, parsed.metadata.shell?
   end
 end
+
+# Under LANG=C (launchd, cron, minimal containers) ENV values come back as
+# BINARY and command output in the locale encoding; expansion must still work.
+class PMShellEncodingTest < Minitest::Test
+  def test_command_output_is_utf8_under_ascii_locale
+    result = with_default_external('US-ASCII') { PM.expand_shell("café $(printf 'h\\303\\251')") }
+
+    assert_equal 'café hé', result
+    assert_equal Encoding::UTF_8, result.encoding
+  end
+
+  def test_env_var_is_utf8_under_c_locale
+    env    = { 'LANG' => 'C', 'LC_ALL' => 'C', 'PM_TEST_FOO' => 'héllo' }
+    script = 'print PM.expand_shell("caf\u00e9 $PM_TEST_FOO")'
+    lib    = File.expand_path('../lib', __dir__)
+    out, err, status = Open3.capture3(env, RbConfig.ruby, '-I', lib, '-rpm', '-e', script)
+
+    assert status.success?, err
+    assert_equal 'café héllo', out.force_encoding(Encoding::UTF_8)
+  end
+
+  private
+
+  def with_default_external(encoding)
+    saved = Encoding.default_external
+    assign_default_external(encoding)
+    yield
+  ensure
+    assign_default_external(saved)
+  end
+
+  def assign_default_external(encoding)
+    saved_verbose = $VERBOSE
+    $VERBOSE = nil
+    Encoding.default_external = encoding
+  ensure
+    $VERBOSE = saved_verbose
+  end
+end

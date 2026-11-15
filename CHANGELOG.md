@@ -45,6 +45,10 @@ All notable changes to this project are documented here. The format follows
 - **Prompt files are read as UTF-8 under any locale.** `PM.parse` and the
   `insert`/`read` directive no longer fail on non-ASCII text when
   `Encoding.default_external` is not UTF-8 (`LANG=C`). (#37)
+- **Shell expansion under a non-UTF-8 locale.** With `LANG=C`, a `$VAR` or
+  `$(command)` that expands to non-ASCII text in a prompt with non-ASCII
+  text no longer raises `Encoding::CompatibilityError`; the value is read as
+  UTF-8, like prompt files. (#60)
 
 ### Added
 
