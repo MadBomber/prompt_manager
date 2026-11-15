@@ -32,7 +32,7 @@ module PM
       full_path = File.expand_path(path, ctx.directory)
       raise FileNotFoundError, "insert: file not found: #{full_path}" unless File.file?(full_path)
 
-      File.read(full_path, encoding: Encoding::UTF_8)
+      File.read(full_path, mode: 'r:BOM|UTF-8')
     end
     alias_method :read, :insert
 

@@ -60,7 +60,7 @@ module PM
     return parse_string(source) unless file_source?(source)
 
     path   = resolve_path(source)
-    parsed = parse_string(File.read(path, encoding: Encoding::UTF_8))
+    parsed = parse_string(File.read(path, mode: 'r:BOM|UTF-8'))
     stat   = File.stat(path)
 
     metadata = build_metadata(
