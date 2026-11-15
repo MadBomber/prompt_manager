@@ -1805,7 +1805,7 @@ errors, which subclass <code>ArgumentError</code> so that code written against 1
 <tr>
 <td><code>ShellCommandError</code></td>
 <td>shell expansion</td>
-<td>A <code>$(command)</code> exited non-zero. <code>#command</code>, <code>#status</code> (Process::Status), <code>#stderr</code> are available; the message includes stderr when present</td>
+<td>A <code>$(command)</code> exited non-zero or was killed by a signal (the message then says <code>signal N</code> instead of <code>exit N</code>). <code>#command</code>, <code>#status</code> (Process::Status), <code>#stderr</code> are available; the message includes stderr when present</td>
 </tr>
 <tr>
 <td><code>CircularIncludeError</code></td>
