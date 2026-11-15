@@ -24,6 +24,7 @@ module PM
 
   HTML_COMMENT_REGEXP = /<!--.*?-->/m
   ENV_VAR_REGEXP      = /\$\{([A-Z_][A-Z0-9_]*)\}|\$([A-Z_][A-Z0-9_]*)/
+  UTF8_BOM            = "\xEF\xBB\xBF".b.freeze
   COMMAND_START       = '$('
 
   # Front-matter keys that control the pipeline and must be true/false.
@@ -60,7 +61,7 @@ module PM
     return parse_string(source) unless file_source?(source)
 
     path   = resolve_path(source)
-    parsed = parse_string(File.read(path, encoding: Encoding::UTF_8))
+    parsed = parse_string(read_file(path))
     stat   = File.stat(path)
 
     metadata = build_metadata(
@@ -99,6 +100,15 @@ module PM
   # Strips HTML comments from a string.
   def self.strip_comments(string)
     string.gsub(HTML_COMMENT_REGEXP, '')
+  end
+
+
+  # Reads a file as UTF-8 whatever the locale, dropping a leading UTF-8
+  # byte order mark. Converts to Encoding.default_internal when it is set,
+  # as File.read does (Ruby's 'r:BOM|UTF-8' mode skips that conversion).
+  def self.read_file(path)
+    text = File.binread(path).delete_prefix(UTF8_BOM).force_encoding(Encoding::UTF_8)
+    Encoding.default_internal ? text.encode(Encoding.default_internal) : text
   end
 
   # --- Internals ---

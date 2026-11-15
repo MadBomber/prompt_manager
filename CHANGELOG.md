@@ -8,6 +8,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- **A UTF-8 byte order mark no longer hides front matter.** Prompt files
+  and `insert`ed files saved with a BOM now have it dropped when read, so
+  their front matter parses and no U+FEFF reaches the rendered text.
 - **`nil` and empty-directory Pathname `prompts_dir` values work.** `nil` now
   means no prompts directory, like `''`, instead of raising `NoMethodError`.
   A `Pathname` to a directory with no entries was ignored, so relative paths
