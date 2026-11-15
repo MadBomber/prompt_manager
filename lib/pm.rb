@@ -102,6 +102,7 @@ module PM
     string.gsub(HTML_COMMENT_REGEXP, '')
   end
 
+
   # Reads a file as UTF-8 whatever the locale, dropping a leading UTF-8
   # byte order mark. Converts to Encoding.default_internal when it is set,
   # as File.read does (Ruby's 'r:BOM|UTF-8' mode skips that conversion).
