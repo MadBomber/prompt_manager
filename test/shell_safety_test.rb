@@ -211,7 +211,7 @@ class PMShellSafetyTest < Minitest::Test
   def test_missing_command_raises_shell_expansion_error
     error = assert_raises(PM::ShellExpansionError) { PM.parse_string('x $(no_such_cmd_zz) y').to_s }
 
-    assert_equal 'Shell command could not be run (No such file or directory - no_such_cmd_zz): no_such_cmd_zz',
+    assert_equal 'Shell command could not be run (No such file or directory - no_such_cmd_zz): $(no_such_cmd_zz)',
                  error.message
     assert_kind_of Errno::ENOENT, error.cause
   end
@@ -219,7 +219,13 @@ class PMShellSafetyTest < Minitest::Test
   def test_empty_command_raises_shell_expansion_error
     error = assert_raises(PM::ShellExpansionError) { PM.expand_shell('x $() y') }
 
-    assert_kind_of SystemCallError, error.cause
+    assert_equal 'Empty shell command: $()', error.message
+  end
+
+  def test_blank_command_raises_shell_expansion_error
+    error = assert_raises(PM::ShellExpansionError) { PM.expand_shell('x $( ) y') }
+
+    assert_equal 'Empty shell command: $()', error.message
   end
 
   def test_shell_command_error_hierarchy
