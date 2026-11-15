@@ -32,6 +32,14 @@ module PM
       hash.each { |key, value| self[key] = value }
     end
 
+    # dup and clone get their own table (and accessors), so writes to a copy
+    # never reach the original.
+    def initialize_copy(source)
+      super
+      @table = {}
+      source.each { |key, value| self[key] = value }
+    end
+
     def [](key)
       @table[key.to_sym]
     end

@@ -45,6 +45,10 @@ All notable changes to this project are documented here. The format follows
 - **Prompt files are read as UTF-8 under any locale.** `PM.parse` and the
   `insert`/`read` directive no longer fail on non-ASCII text when
   `Encoding.default_external` is not UTF-8 (`LANG=C`). (#37)
+- **`Metadata#dup` and `#clone` copy the table.** A copy no longer shares
+  its table with the original, so writing to it leaves the original alone,
+  and a `dup` keeps the accessors for keys named like `Object` methods
+  (`display`, `hash`). (#66)
 
 ### Added
 
