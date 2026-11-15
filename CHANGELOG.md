@@ -45,6 +45,9 @@ All notable changes to this project are documented here. The format follows
 - **Prompt files are read as UTF-8 under any locale.** `PM.parse` and the
   `insert`/`read` directive no longer fail on non-ASCII text when
   `Encoding.default_external` is not UTF-8 (`LANG=C`). (#37)
+- **A leading `~` is expanded when `prompts_dir` is set.** `PM.parse("~/x.md")`
+  read `<prompts_dir>/~/x.md` and raised `Errno::ENOENT`; it now reads the
+  file in the home directory, as `include '~/x.md'` already did. (#69)
 
 ### Added
 
