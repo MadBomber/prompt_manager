@@ -45,6 +45,10 @@ All notable changes to this project are documented here. The format follows
 - **Prompt files are read as UTF-8 under any locale.** `PM.parse` and the
   `insert`/`read` directive no longer fail on non-ASCII text when
   `Encoding.default_external` is not UTF-8 (`LANG=C`). (#37)
+- **Non-boolean `PM.config.shell` and `erb` values.** A string such as
+  `"false"` is now coerced with the same rules as front matter, and any
+  other value raises `PM::MetadataError` naming `PM.config.shell` or
+  `PM.config.erb`, instead of a `NoMethodError` from `PM::Metadata`. (#70)
 
 ### Added
 
