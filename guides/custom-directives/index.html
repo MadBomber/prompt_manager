@@ -1037,6 +1037,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Name Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reserved-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reserved names
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1890,6 +1907,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Name Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reserved-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reserved names
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2137,6 +2171,26 @@ the directive in the second. See <a href="../parameters/#name-resolution">Parame
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="ss">:my_helper</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">_ctx</span><span class="o">|</span><span class="w"> </span><span class="s2">"works"</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="no">PM</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'other_helper'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">_ctx</span><span class="o">|</span><span class="w"> </span><span class="s2">"also works"</span><span class="w"> </span><span class="p">}</span>
 </span></code></pre></div>
+<h3 id="reserved-names">Reserved names<a class="headerlink" href="#reserved-names" title="Permanent link">&para;</a></h3>
+<p><code>PM.register</code> accepts any name, but a template can't call a directive with
+one of these names. The call reaches the object the template renders in
+instead, so it returns that method's result or raises
+(<code>&lt;%= tap %&gt;</code> raises <code>LocalJumpError</code>):</p>
+<ul>
+<li><code>__id__</code>, <code>__send__</code>, <code>binding</code>, <code>clone</code>, <code>define_singleton_method</code>, <code>dup</code>,
+  <code>enum_for</code>, <code>eql?</code>, <code>equal?</code>, <code>freeze</code>, <code>frozen?</code>, <code>inspect</code>,
+  <code>instance_of?</code>, <code>instance_variable_get</code>, <code>instance_variable_set</code>,
+  <code>instance_variables</code>, <code>is_a?</code>, <code>itself</code>, <code>kind_of?</code>, <code>object_id</code>,
+  <code>public_send</code>, <code>respond_to?</code>, <code>send</code>, <code>singleton_method_added</code>,
+  <code>singleton_method_removed</code>, <code>singleton_method_undefined</code>, <code>tap</code>,
+  <code>to_enum</code>, <code>to_s</code></li>
+<li>the render scope's own methods: <code>erb_binding</code>, <code>method_missing</code>,
+  <code>resolve_shadowed</code>, <code>respond_to_missing?</code>, <code>shadow_object_methods</code>,
+  <code>shadowable?</code></li>
+</ul>
+<p>Ruby keywords such as <code>class</code> and <code>then</code> can't be called bare either.</p>
+<p>Other names that <code>Object</code> or <code>Kernel</code> already define do work as directives:
+<code>format</code>, <code>test</code>, <code>exec</code>, <code>puts</code> and <code>raise</code> all call the directive.</p>
 <h2 id="class-based-directives">Class-Based Directives<a class="headerlink" href="#class-based-directives" title="Permanent link">&para;</a></h2>
 <p>For organized groups of directives, subclass <code>PM::Directive</code>:</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyDirectives</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">PM</span><span class="o">::</span><span class="no">Directive</span>
