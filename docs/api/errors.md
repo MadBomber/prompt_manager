@@ -34,7 +34,7 @@ StandardError
 |---|---|---|
 | `MetadataError` | `PM.parse`, `PM.parse_string` | Front matter is not a YAML mapping; `shell:`/`erb:` is not a boolean (or true/false/yes/no/on/off string); `parameters:` is not a mapping |
 | `ShellExpansionError` | shell expansion | An unmatched `$(`, or a `$(command)` that cannot be started (command not found, empty `$()`); the `SystemCallError` is the `#cause` |
-| `ShellCommandError` | shell expansion | A `$(command)` exited non-zero. `#command`, `#status` (Process::Status), `#stderr` are available; the message includes stderr when present |
+| `ShellCommandError` | shell expansion | A `$(command)` exited non-zero or was killed by a signal (the message then says `signal N` instead of `exit N`). `#command`, `#status` (Process::Status), `#stderr` are available; the message includes stderr when present |
 | `CircularIncludeError` | `include` | The file to include is an ancestor in the current include chain |
 | `IncludeDepthError` | `include` | Nesting would exceed `PM.config.max_include_depth` |
 | `IncludeContextError` | `include` | Used from a string-parsed prompt (no directory) |
