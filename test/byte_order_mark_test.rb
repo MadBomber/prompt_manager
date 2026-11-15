@@ -37,9 +37,33 @@ class PMByteOrderMarkTest < Minitest::Test
     refute_includes result, "\uFEFF"
   end
 
+
+  def test_read_file_converts_to_default_internal_like_file_read
+    path = File.join(@dir, 'plain.txt')
+    File.binwrite(path, "naïve\n")
+
+    text = with_default_internal('ISO-8859-1') { PM.read_file(path) }
+
+    assert_equal Encoding::ISO_8859_1, text.encoding
+    assert_equal "naïve\n", text.encode(Encoding::UTF_8)
+  end
+
+
   private
 
   def write(name, text)
     File.binwrite(File.join(@dir, name), BOM + text.b)
+  end
+
+
+  def with_default_internal(encoding)
+    verbose = $VERBOSE
+    $VERBOSE = nil # setting default_internal warns
+    saved = Encoding.default_internal
+    Encoding.default_internal = encoding
+    yield
+  ensure
+    Encoding.default_internal = saved
+    $VERBOSE = verbose
   end
 end
