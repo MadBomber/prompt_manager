@@ -222,7 +222,7 @@ class PMRegisterDirectiveTest < Minitest::Test
   end
 
   def test_custom_directive_available_in_included_files
-    PM.register(:shout) { |_ctx, text| text.upcase + '!' }
+    PM.register(:shout) { |_ctx, text| "#{text.upcase}!" }
 
     Dir.mktmpdir do |dir|
       File.write(File.join(dir, 'inner.md'), "<%= shout 'hey' %>\n")
