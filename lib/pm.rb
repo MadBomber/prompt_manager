@@ -61,7 +61,7 @@ module PM
     return parse_string(source) unless file_source?(source)
 
     path   = resolve_path(source)
-    parsed = parse_string(read_file(path))
+    parsed = parse_text(read_file(path), path)
     stat   = File.stat(path)
 
     metadata = build_metadata(
@@ -81,20 +81,7 @@ module PM
   # when `shell`, `erb`, or `parameters` have values of the wrong type.
   # YAML syntax errors raise Psych::SyntaxError.
   def self.parse_string(string)
-    stripped = strip_comments(string)
-    match    = stripped.match(METADATA_REGEXP)
-
-    if match
-      metadata = build_metadata(load_front_matter(match[:metadata]))
-      content  = match[:content]
-    else
-      metadata = build_metadata({})
-      content  = stripped
-    end
-
-    content = expand_shell(content, erb_safe: metadata.erb?) if metadata.shell?
-
-    Parsed.new(metadata: metadata, content: content)
+    parse_text(string)
   end
 
   # Strips HTML comments from a string.
@@ -112,6 +99,27 @@ module PM
   end
 
   # --- Internals ---
+
+  # Parses text read from path (nil for a string prompt). YAML errors name
+  # the path and count lines from the top of the text.
+  def self.parse_text(string, path = nil)
+    stripped = strip_comments(string)
+    match    = stripped.match(METADATA_REGEXP)
+
+    if match
+      offset   = stripped[0...match.begin(:metadata)].count("\n")
+      metadata = build_metadata(load_front_matter(match[:metadata], path, offset))
+      content  = match[:content]
+    else
+      metadata = build_metadata({})
+      content  = stripped
+    end
+
+    content = expand_shell(content, erb_safe: metadata.erb?) if metadata.shell?
+
+    Parsed.new(metadata: metadata, content: content)
+  end
+  private_class_method :parse_text
 
   def self.file_source?(source)
     source.respond_to?(:to_path) || (source.is_a?(String) && source.end_with?('.md'))
@@ -140,8 +148,8 @@ module PM
   end
   private_class_method :birthtime
 
-  def self.load_front_matter(yaml)
-    data = YAML.safe_load(yaml, permitted_classes: [Date, Time])
+  def self.load_front_matter(yaml, path = nil, offset = 0)
+    data = YAML.safe_load(("\n" * offset) + yaml, permitted_classes: [Date, Time], filename: path)
     return {} if data.nil?
     raise MetadataError, "Front matter must be a YAML mapping, got #{data.class}" unless data.is_a?(Hash)
 

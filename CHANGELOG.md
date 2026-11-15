@@ -45,6 +45,10 @@ All notable changes to this project are documented here. The format follows
 - **Prompt files are read as UTF-8 under any locale.** `PM.parse` and the
   `insert`/`read` directive no longer fail on non-ASCII text when
   `Encoding.default_external` is not UTF-8 (`LANG=C`). (#37)
+- **Front-matter YAML errors name the prompt file.** A `Psych::SyntaxError`
+  from a prompt file's front matter now names that file instead of
+  `<unknown>`, including for an `include`d file, and reports the line in
+  the file rather than counting from after the opening fence. (#61)
 
 ### Added
 
