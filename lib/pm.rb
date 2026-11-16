@@ -81,20 +81,7 @@ module PM
   # when `shell`, `erb`, or `parameters` have values of the wrong type.
   # YAML syntax errors raise Psych::SyntaxError.
   def self.parse_string(string)
-    stripped = strip_comments(string)
-    match    = stripped.match(METADATA_REGEXP)
-
-    if match
-      metadata = build_metadata(load_front_matter(match[:metadata]))
-      content  = match[:content]
-    else
-      metadata = build_metadata({})
-      content  = stripped
-    end
-
-    content = expand_shell(content, erb_safe: metadata.erb?) if metadata.shell?
-
-    Parsed.new(metadata: metadata, content: content)
+    parse_text(string)
   end
 
   # Strips HTML comments from a string.
@@ -113,9 +100,30 @@ module PM
 
   # --- Internals ---
 
+  # Parses text read from path (nil for a string prompt). YAML errors name
+  # the path and count lines from the top of the text.
+  def self.parse_text(string, path = nil)
+    stripped = strip_comments(string)
+    match    = stripped.match(METADATA_REGEXP)
+
+    if match
+      offset   = stripped[0...match.begin(:metadata)].count("\n")
+      metadata = build_metadata(load_front_matter(match[:metadata], path, offset))
+      content  = match[:content]
+    else
+      metadata = build_metadata({})
+      content  = stripped
+    end
+
+    content = expand_shell(content, erb_safe: metadata.erb?) if metadata.shell?
+
+    Parsed.new(metadata: metadata, content: content)
+  end
+  private_class_method :parse_text
+
   # Parses the file at path; a MetadataError names the file, as Psych does.
   def self.parse_file(path)
-    parse_string(read_file(path))
+    parse_text(read_file(path), path)
   rescue MetadataError => e
     raise MetadataError, "(#{path}): #{e.message}"
   end
@@ -134,8 +142,8 @@ module PM
 
   def self.resolve_path(source)
     raw = source.respond_to?(:to_path) ? source.to_path : source
-    raw = (Pathname.new(config.prompts_dir) + raw).to_s unless config.prompts_dir.to_s.empty?
-    File.expand_path(raw)
+    dir = config.prompts_dir
+    File.expand_path(raw, dir.to_s.empty? ? nil : dir)
   end
   private_class_method :resolve_path
 
@@ -148,8 +156,8 @@ module PM
   end
   private_class_method :birthtime
 
-  def self.load_front_matter(yaml)
-    data = YAML.safe_load(yaml, permitted_classes: [Date, Time])
+  def self.load_front_matter(yaml, path = nil, offset = 0)
+    data = YAML.safe_load(("\n" * offset) + yaml, permitted_classes: [Date, Time], filename: path)
     return {} if data.nil?
     raise MetadataError, "Front matter must be a YAML mapping, got #{data.class}" unless data.is_a?(Hash)
 
@@ -165,7 +173,11 @@ module PM
     FLAG_KEYS.each do |key|
       global = config.public_send(key)
       value  = attrs[key]
-      attrs[key] = config.locked? || value.nil? ? global : coerce_flag(key, value)
+      attrs[key] = if config.locked? || value.nil?
+                     coerce_flag("PM.config.#{key}", global)
+                   else
+                     coerce_flag(key, value)
+                   end
     end
 
     params = attrs['parameters']

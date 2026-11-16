@@ -37,6 +37,22 @@ class PMFrontMatterValidationTest < Minitest::Test
     assert_equal true,  PM.parse_string("---\nerb: ' on '\n---\nx").metadata.erb?
   end
 
+  def test_string_config_flag_values_are_coerced
+    PM.config.shell = 'false'
+    PM.config.erb   = 'yes'
+    metadata = PM.parse_string('hi').metadata
+
+    assert_equal false, metadata.shell
+    assert_equal true,  metadata.erb
+  end
+
+  def test_invalid_config_flag_raises_metadata_error_naming_config
+    PM.config.erb = nil
+    error = assert_raises(PM::MetadataError) { PM.parse_string('hi') }
+
+    assert_equal 'PM.config.erb must be true or false, got nil', error.message
+  end
+
   def test_coerced_string_flag_actually_controls_the_stage
     parsed = PM.parse_string("---\nerb: 'false'\n---\n<%= 1 + 1 %>")
 

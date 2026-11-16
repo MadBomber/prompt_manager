@@ -45,6 +45,32 @@ All notable changes to this project are documented here. The format follows
 - **Prompt files are read as UTF-8 under any locale.** `PM.parse` and the
   `insert`/`read` directive no longer fail on non-ASCII text when
   `Encoding.default_external` is not UTF-8 (`LANG=C`). (#37)
+- **A CRLF closing fence ends a fenced code block.** In a prompt with CRLF
+  line endings, `$VAR` and `$(...)` after a fenced code block were left
+  unexpanded because the closing fence was not recognised. (#68)
+- **An empty `$()` names the problem.** An empty or blank `$()` now raises
+  `PM::ShellExpansionError` with `Empty shell command: $()` instead of a
+  message ending in a dangling `: `, and a command that cannot be started is
+  quoted as `$(command)` in the message. (#53)
+- **`Metadata#dup` and `#clone` copy the table.** A copy no longer shares
+  its table with the original, so writing to it leaves the original alone,
+  and a `dup` keeps the accessors for keys named like `Object` methods
+  (`display`, `hash`). (#66)
+- **A leading `~` is expanded when `prompts_dir` is set.** `PM.parse("~/x.md")`
+  read `<prompts_dir>/~/x.md` and raised `Errno::ENOENT`; it now reads the
+  file in the home directory, as `include '~/x.md'` already did. (#69)
+- **Non-boolean `PM.config.shell` and `erb` values.** A string such as
+  `"false"` is now coerced with the same rules as front matter, and any
+  other value raises `PM::MetadataError` naming `PM.config.shell` or
+  `PM.config.erb`, instead of a `NoMethodError` from `PM::Metadata`. (#70)
+- **Shell expansion under a non-UTF-8 locale.** With `LANG=C`, a `$VAR` or
+  `$(command)` that expands to non-ASCII text in a prompt with non-ASCII
+  text no longer raises `Encoding::CompatibilityError`; the value is read as
+  UTF-8, like prompt files. (#60)
+- **Front-matter YAML errors name the prompt file.** A `Psych::SyntaxError`
+  from a prompt file's front matter now names that file instead of
+  `<unknown>`, including for an `include`d file, and reports the line in
+  the file rather than counting from after the opening fence. (#61)
 - **Front-matter `MetadataError`s name the prompt file.** For a prompt read
   from a file, the message now starts with `(<path>): `, the format Psych
   uses, so a bad `shell:` or `parameters:` in an included file can be

@@ -154,6 +154,12 @@ class PMShellSafetyTest < Minitest::Test
     assert_equal source, PM.expand_shell(source)
   end
 
+  def test_crlf_closing_fence_ends_the_block
+    source = "```sh\r\n$(echo in)\r\n```\r\nafter: $(echo ran)\r\n"
+
+    assert_equal "```sh\r\n$(echo in)\r\n```\r\nafter: ran\r\n", PM.expand_shell(source)
+  end
+
   def test_unclosed_fence_runs_to_end_of_input
     source = "```\n$(echo X)\n"
 
@@ -211,7 +217,7 @@ class PMShellSafetyTest < Minitest::Test
   def test_missing_command_raises_shell_expansion_error
     error = assert_raises(PM::ShellExpansionError) { PM.parse_string('x $(no_such_cmd_zz) y').to_s }
 
-    assert_equal 'Shell command could not be run (No such file or directory - no_such_cmd_zz): no_such_cmd_zz',
+    assert_equal 'Shell command could not be run (No such file or directory - no_such_cmd_zz): $(no_such_cmd_zz)',
                  error.message
     assert_kind_of Errno::ENOENT, error.cause
   end
@@ -219,7 +225,13 @@ class PMShellSafetyTest < Minitest::Test
   def test_empty_command_raises_shell_expansion_error
     error = assert_raises(PM::ShellExpansionError) { PM.expand_shell('x $() y') }
 
-    assert_kind_of SystemCallError, error.cause
+    assert_equal 'Empty shell command: $()', error.message
+  end
+
+  def test_blank_command_raises_shell_expansion_error
+    error = assert_raises(PM::ShellExpansionError) { PM.expand_shell('x $( ) y') }
+
+    assert_equal 'Empty shell command: $()', error.message
   end
 
   def test_shell_command_error_hierarchy
