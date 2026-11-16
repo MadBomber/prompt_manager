@@ -63,6 +63,10 @@ All notable changes to this project are documented here. The format follows
   `"false"` is now coerced with the same rules as front matter, and any
   other value raises `PM::MetadataError` naming `PM.config.shell` or
   `PM.config.erb`, instead of a `NoMethodError` from `PM::Metadata`. (#70)
+- **Shell expansion under a non-UTF-8 locale.** With `LANG=C`, a `$VAR` or
+  `$(command)` that expands to non-ASCII text in a prompt with non-ASCII
+  text no longer raises `Encoding::CompatibilityError`; the value is read as
+  UTF-8, like prompt files. (#60)
 
 ### Added
 
