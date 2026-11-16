@@ -154,6 +154,12 @@ class PMShellSafetyTest < Minitest::Test
     assert_equal source, PM.expand_shell(source)
   end
 
+  def test_crlf_closing_fence_ends_the_block
+    source = "```sh\r\n$(echo in)\r\n```\r\nafter: $(echo ran)\r\n"
+
+    assert_equal "```sh\r\n$(echo in)\r\n```\r\nafter: ran\r\n", PM.expand_shell(source)
+  end
+
   def test_unclosed_fence_runs_to_end_of_input
     source = "```\n$(echo X)\n"
 
