@@ -126,8 +126,8 @@ module PM
 
   def self.resolve_path(source)
     raw = source.respond_to?(:to_path) ? source.to_path : source
-    raw = (Pathname.new(config.prompts_dir) + raw).to_s unless config.prompts_dir.to_s.empty?
-    File.expand_path(raw)
+    dir = config.prompts_dir
+    File.expand_path(raw, dir.to_s.empty? ? nil : dir)
   end
   private_class_method :resolve_path
 
@@ -157,7 +157,11 @@ module PM
     FLAG_KEYS.each do |key|
       global = config.public_send(key)
       value  = attrs[key]
-      attrs[key] = config.locked? || value.nil? ? global : coerce_flag(key, value)
+      attrs[key] = if config.locked? || value.nil?
+                     coerce_flag("PM.config.#{key}", global)
+                   else
+                     coerce_flag(key, value)
+                   end
     end
 
     params = attrs['parameters']

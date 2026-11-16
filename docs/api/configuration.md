@@ -10,7 +10,7 @@ Global configuration for PM behavior. Accessed via `PM.config` or `PM.configure`
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `prompts_dir` | String | `''` | Prepended to relative file paths in `PM.parse` |
+| `prompts_dir` | String, Pathname, or nil | `''` | Prepended to relative file paths in `PM.parse`; `''` or `nil` means none |
 | `shell` | Boolean | `true` | Default shell expansion setting for new parses |
 | `erb` | Boolean | `true` | Default ERB rendering setting for new parses |
 | `max_include_depth` | Integer or nil | `10` | Deepest `include` nesting allowed; `nil` for unlimited |

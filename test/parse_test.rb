@@ -187,6 +187,14 @@ class PMParseShorthandTest < Minitest::Test
     assert_includes parsed.content, 'simple prompt with no parameters'
   end
 
+  def test_parse_expands_leading_tilde_despite_prompts_dir
+    with_env('HOME' => FIXTURES) do
+      PM.config.prompts_dir = File.join(FIXTURES, 'includes')
+
+      assert_equal 'Simple Prompt', PM.parse('~/simple.md').metadata.title
+    end
+  end
+
   def test_parse_symbol_with_subdirectory_fixture
     parsed = PM.parse(:'includes/header')
 
