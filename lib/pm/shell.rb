@@ -89,7 +89,7 @@ module PM
     # Copies lines verbatim up to and including the closing fence (or end of input).
     def copy_fenced_block(open_line)
       marker = open_line[/`{3,}|~{3,}/]
-      close  = /\A[ ]{0,3}#{Regexp.escape(marker[0])}{#{marker.length},}[ \t]*(?:\n|\z)\z/
+      close  = /\A[ ]{0,3}#{Regexp.escape(marker[0])}{#{marker.length},}[[:blank:]\r]*(?:\n|\z)\z/
       out    = +''
 
       until @scanner.eos?
