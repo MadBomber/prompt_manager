@@ -48,6 +48,10 @@ All notable changes to this project are documented here. The format follows
 - **A CRLF closing fence ends a fenced code block.** In a prompt with CRLF
   line endings, `$VAR` and `$(...)` after a fenced code block were left
   unexpanded because the closing fence was not recognised. (#68)
+- **An empty `$()` names the problem.** An empty or blank `$()` now raises
+  `PM::ShellExpansionError` with `Empty shell command: $()` instead of a
+  message ending in a dangling `: `, and a command that cannot be started is
+  quoted as `$(command)` in the message. (#53)
 
 ### Added
 

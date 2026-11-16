@@ -113,13 +113,15 @@ module PM
       output.chomp
     end
 
-    # Runs command and returns [stdout, stderr, status]. A command that cannot
-    # be started at all (not found, empty, not executable) raises
-    # ShellExpansionError with the SystemCallError as its cause.
+    # Runs command and returns [stdout, stderr, status]. An empty or blank
+    # command raises ShellExpansionError; one that cannot be started at all
+    # (not found, not executable) raises it with the SystemCallError as its cause.
     def capture(command)
+      raise ShellExpansionError, 'Empty shell command: $()' if command.strip.empty?
+
       Open3.capture3(command)
     rescue SystemCallError => e
-      raise ShellExpansionError, "Shell command could not be run (#{e.message}): #{command}"
+      raise ShellExpansionError, "Shell command could not be run (#{e.message}): $(#{command})"
     end
 
     def read_command
