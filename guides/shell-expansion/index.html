@@ -2049,12 +2049,14 @@ process's <code>$stderr</code>. On failure it is included in the error.</p>
 </span></code></pre></div>
 <p>The error exposes <code>#command</code>, <code>#status</code> (a <code>Process::Status</code>), and <code>#stderr</code>.</p>
 <h3 id="commands-that-cannot-run">Commands That Cannot Run<a class="headerlink" href="#commands-that-cannot-run" title="Permanent link">&para;</a></h3>
-<p>A command that cannot be started at all, such as a mistyped name or an empty
-<code>$()</code>, raises <code>PM::ShellExpansionError</code>. The underlying <code>SystemCallError</code> (for
-example <code>Errno::ENOENT</code>) is available as <code>#cause</code>:</p>
+<p>A command that cannot be started at all, such as a mistyped name, raises
+<code>PM::ShellExpansionError</code>. The underlying <code>SystemCallError</code> (for example
+<code>Errno::ENOENT</code>) is available as <code>#cause</code>:</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s2">"Output: $(no_such_cmd)"</span><span class="p">)</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1">#=&gt; PM::ShellExpansionError: Shell command could not be run (No such file or directory - no_such_cmd): no_such_cmd</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1">#=&gt; PM::ShellExpansionError: Shell command could not be run (No such file or directory - no_such_cmd): $(no_such_cmd)</span>
 </span></code></pre></div>
+<p>An empty or blank <code>$()</code> raises <code>PM::ShellExpansionError</code> with the message
+<code>Empty shell command: $()</code>.</p>
 <h3 id="unmatched">Unmatched <code>$(</code><a class="headerlink" href="#unmatched" title="Permanent link">&para;</a></h3>
 <p>An opening <code>$(</code> with no closing parenthesis raises <code>PM::ShellExpansionError</code>
 (the superclass of <code>PM::ShellCommandError</code>):</p>
