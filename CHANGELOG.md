@@ -52,6 +52,10 @@ All notable changes to this project are documented here. The format follows
   `PM::ShellExpansionError` with `Empty shell command: $()` instead of a
   message ending in a dangling `: `, and a command that cannot be started is
   quoted as `$(command)` in the message. (#53)
+- **`Metadata#dup` and `#clone` copy the table.** A copy no longer shares
+  its table with the original, so writing to it leaves the original alone,
+  and a `dup` keeps the accessors for keys named like `Object` methods
+  (`display`, `hash`). (#66)
 
 ### Added
 
