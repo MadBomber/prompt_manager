@@ -67,6 +67,10 @@ All notable changes to this project are documented here. The format follows
   `$(command)` that expands to non-ASCII text in a prompt with non-ASCII
   text no longer raises `Encoding::CompatibilityError`; the value is read as
   UTF-8, like prompt files. (#60)
+- **Front-matter YAML errors name the prompt file.** A `Psych::SyntaxError`
+  from a prompt file's front matter now names that file instead of
+  `<unknown>`, including for an `include`d file, and reports the line in
+  the file rather than counting from after the opening fence. (#61)
 
 ### Added
 
