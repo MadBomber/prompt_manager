@@ -19,6 +19,23 @@ class PMMetadataHashTest < Minitest::Test
     refute @meta.key?(:zzz)
   end
 
+  def test_dup_has_its_own_table
+    copy = @meta.dup
+    copy[:x] = 1
+
+    refute @meta.key?(:x)
+  end
+
+  def test_clone_has_its_own_table
+    @meta.clone.a = 9
+
+    assert_equal 1, @meta.a
+  end
+
+  def test_dup_keeps_accessor_for_object_method_key
+    assert_equal 'shown', PM::Metadata.new(display: 'shown').dup.display
+  end
+
   def test_respond_to_for_present_keys_only
     assert_respond_to @meta, :a
     refute_respond_to @meta, :zzz

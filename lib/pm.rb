@@ -126,8 +126,8 @@ module PM
 
   def self.resolve_path(source)
     raw = source.respond_to?(:to_path) ? source.to_path : source
-    raw = (Pathname.new(config.prompts_dir) + raw).to_s unless config.prompts_dir.to_s.empty?
-    File.expand_path(raw)
+    dir = config.prompts_dir
+    File.expand_path(raw, dir.to_s.empty? ? nil : dir)
   end
   private_class_method :resolve_path
 
