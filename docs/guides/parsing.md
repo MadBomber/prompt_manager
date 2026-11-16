@@ -48,7 +48,7 @@ PM.parse('agents/summarize.md')
 #=> reads ~/.prompts/agents/summarize.md
 ```
 
-Absolute paths bypass `prompts_dir`:
+Absolute paths, and paths starting with `~`, bypass `prompts_dir`:
 
 ```ruby
 PM.parse('/etc/prompts/system.md')

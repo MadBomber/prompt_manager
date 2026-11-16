@@ -56,6 +56,9 @@ All notable changes to this project are documented here. The format follows
   its table with the original, so writing to it leaves the original alone,
   and a `dup` keeps the accessors for keys named like `Object` methods
   (`display`, `hash`). (#66)
+- **A leading `~` is expanded when `prompts_dir` is set.** `PM.parse("~/x.md")`
+  read `<prompts_dir>/~/x.md` and raised `Errno::ENOENT`; it now reads the
+  file in the home directory, as `include '~/x.md'` already did. (#69)
 
 ### Added
 
