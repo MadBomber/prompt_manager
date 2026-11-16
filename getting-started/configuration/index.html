@@ -1918,7 +1918,9 @@
 </span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>User: $USER
 </span></code></pre></div>
 <p>The front matter value may be a YAML boolean or one of the strings <code>true</code>, <code>false</code>,
-<code>yes</code>, <code>no</code>, <code>on</code>, <code>off</code>. Anything else raises <code>PM::MetadataError</code>.</p>
+<code>yes</code>, <code>no</code>, <code>on</code>, <code>off</code>. Anything else raises <code>PM::MetadataError</code>. The same
+rules apply to <code>PM.config.shell</code> and <code>PM.config.erb</code> when a file uses the global
+value; a bad value raises <code>PM::MetadataError</code> naming <code>PM.config.shell</code> or <code>PM.config.erb</code>.</p>
 <h2 id="erb">erb<a class="headerlink" href="#erb" title="Permanent link">&para;</a></h2>
 <p>Controls whether ERB rendering runs during <code>to_s</code>. Defaults to <code>true</code>.</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="no">PM</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">c</span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">erb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">false</span><span class="w"> </span><span class="p">}</span>
