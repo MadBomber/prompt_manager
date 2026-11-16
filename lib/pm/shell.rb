@@ -52,7 +52,7 @@ module PM
         elsif @scanner.scan(COMMAND_OPEN)
           append(out, run_command, untrusted: true)
         elsif @scanner.scan(ENV_VAR_REGEXP)
-          append(out, ENV.fetch(@scanner[1] || @scanner[2], ''), untrusted: true)
+          append(out, utf8(ENV.fetch(@scanner[1] || @scanner[2], '')), untrusted: true)
         else
           append(out, @scanner.getch)
         end
@@ -89,7 +89,7 @@ module PM
     # Copies lines verbatim up to and including the closing fence (or end of input).
     def copy_fenced_block(open_line)
       marker = open_line[/`{3,}|~{3,}/]
-      close  = /\A[ ]{0,3}#{Regexp.escape(marker[0])}{#{marker.length},}[ \t]*(?:\n|\z)\z/
+      close  = /\A[ ]{0,3}#{Regexp.escape(marker[0])}{#{marker.length},}[[:blank:]\r]*(?:\n|\z)\z/
       out    = +''
 
       until @scanner.eos?
@@ -110,16 +110,24 @@ module PM
       raise ShellCommandError.new(command, status, stderr) unless status.success?
 
       $stderr.write(stderr) unless stderr.empty? # keep warnings visible, as with 1.0.x
-      output.chomp
+      utf8(output).chomp
     end
 
-    # Runs command and returns [stdout, stderr, status]. A command that cannot
-    # be started at all (not found, empty, not executable) raises
-    # ShellExpansionError with the SystemCallError as its cause.
+    # ENV values and command output carry the locale's encoding (BINARY or
+    # US-ASCII under LANG=C); treat them as UTF-8 like prompt files.
+    def utf8(text)
+      text.dup.force_encoding(Encoding::UTF_8).scrub
+    end
+
+    # Runs command and returns [stdout, stderr, status]. An empty or blank
+    # command raises ShellExpansionError; one that cannot be started at all
+    # (not found, not executable) raises it with the SystemCallError as its cause.
     def capture(command)
+      raise ShellExpansionError, 'Empty shell command: $()' if command.strip.empty?
+
       Open3.capture3(command)
     rescue SystemCallError => e
-      raise ShellExpansionError, "Shell command could not be run (#{e.message}): #{command}"
+      raise ShellExpansionError, "Shell command could not be run (#{e.message}): $(#{command})"
     end
 
     def read_command
