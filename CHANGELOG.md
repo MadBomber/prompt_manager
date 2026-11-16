@@ -71,6 +71,10 @@ All notable changes to this project are documented here. The format follows
   from a prompt file's front matter now names that file instead of
   `<unknown>`, including for an `include`d file, and reports the line in
   the file rather than counting from after the opening fence. (#61)
+- **Front-matter `MetadataError`s name the prompt file.** For a prompt read
+  from a file, the message now starts with `(<path>): `, the format Psych
+  uses, so a bad `shell:` or `parameters:` in an included file can be
+  traced. The original error is the `cause`. (#67)
 
 ### Added
 
