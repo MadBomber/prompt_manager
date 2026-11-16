@@ -59,6 +59,10 @@ All notable changes to this project are documented here. The format follows
 - **A leading `~` is expanded when `prompts_dir` is set.** `PM.parse("~/x.md")`
   read `<prompts_dir>/~/x.md` and raised `Errno::ENOENT`; it now reads the
   file in the home directory, as `include '~/x.md'` already did. (#69)
+- **Non-boolean `PM.config.shell` and `erb` values.** A string such as
+  `"false"` is now coerced with the same rules as front matter, and any
+  other value raises `PM::MetadataError` naming `PM.config.shell` or
+  `PM.config.erb`, instead of a `NoMethodError` from `PM::Metadata`. (#70)
 
 ### Added
 

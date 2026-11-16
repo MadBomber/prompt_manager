@@ -157,7 +157,11 @@ module PM
     FLAG_KEYS.each do |key|
       global = config.public_send(key)
       value  = attrs[key]
-      attrs[key] = config.locked? || value.nil? ? global : coerce_flag(key, value)
+      attrs[key] = if config.locked? || value.nil?
+                     coerce_flag("PM.config.#{key}", global)
+                   else
+                     coerce_flag(key, value)
+                   end
     end
 
     params = attrs['parameters']

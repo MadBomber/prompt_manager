@@ -67,7 +67,9 @@ User: $USER
 ```
 
 The front matter value may be a YAML boolean or one of the strings `true`, `false`,
-`yes`, `no`, `on`, `off`. Anything else raises `PM::MetadataError`.
+`yes`, `no`, `on`, `off`. Anything else raises `PM::MetadataError`. The same
+rules apply to `PM.config.shell` and `PM.config.erb` when a file uses the global
+value; a bad value raises `PM::MetadataError` naming `PM.config.shell` or `PM.config.erb`.
 
 ## erb
 
