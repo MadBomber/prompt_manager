@@ -90,7 +90,7 @@ title: Code Review with Context
 parameters:
   code: null
 ---
-Repository: $(basename $(git rev-parse --toplevel))
+Repository: $(basename $(git rev-parse --show-toplevel))
 Branch: $(git rev-parse --abbrev-ref HEAD)
 Reviewer: $USER
 

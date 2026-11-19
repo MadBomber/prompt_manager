@@ -39,6 +39,87 @@ class PMShellSafetyTest < Minitest::Test
     assert_equal '<%= 6*7 %>', PM.parse_string(%q{$(printf '<%%= 6*7 %%>')}).to_s
   end
 
+  # --- environment variable values are inert ---
+
+  def test_erb_in_env_var_value_is_escaped_when_erb_safe
+    with_env('PM_TEST_ERB' => '<%= 1 %>') do
+      assert_equal '<%%= 1 %> <%%= 1 %>', PM.expand_shell('$PM_TEST_ERB ${PM_TEST_ERB}', erb_safe: true)
+    end
+  end
+
+  def test_erb_in_env_var_value_is_kept_when_not_erb_safe
+    with_env('PM_TEST_ERB' => '<%= 1 %>') do
+      assert_equal '<%= 1 %>', PM.expand_shell('$PM_TEST_ERB')
+    end
+  end
+
+  def test_parse_string_neutralises_erb_from_env_var_value
+    with_env('PM_TEST_ERB' => '<%= 6*7 %>') do
+      assert_equal '<%= 6*7 %>', PM.parse_string('$PM_TEST_ERB').to_s
+    end
+  end
+
+  def test_erb_tag_split_across_adjacent_env_vars_stays_literal
+    with_env('PM_TEST_LT' => '<', 'PM_TEST_ERB' => '%= 6*7 %>') do
+      assert_equal '<%= 6*7 %>', PM.parse_string('$PM_TEST_LT$PM_TEST_ERB').to_s
+    end
+  end
+
+  def test_erb_tag_split_between_env_var_and_command_output_stays_literal
+    with_env('PM_TEST_LT' => '<') do
+      assert_equal '<%= 6*7 %>', PM.parse_string(%q{$PM_TEST_LT$(printf '%%= 6*7 %%>')}).to_s
+    end
+  end
+
+  def test_literal_lt_before_env_var_value_starting_with_percent_stays_literal
+    with_env('PM_TEST_ERB' => '%= 6*7 %>') do
+      assert_equal '<%= 6*7 %>', PM.parse_string('<$PM_TEST_ERB').to_s
+    end
+  end
+
+  def test_env_var_value_ending_in_lt_before_literal_percent_stays_literal
+    with_env('PM_TEST_LT' => '<') do
+      assert_equal '<%= 6*7 %>', PM.parse_string('$PM_TEST_LT%= 6*7 %>').to_s
+    end
+  end
+
+  def test_literal_lt_before_command_output_starting_with_percent_stays_literal
+    assert_equal '<%= 6*7 %>', PM.parse_string(%q{<$(printf '%%= 6*7 %%>')}).to_s
+  end
+
+  def test_command_output_ending_in_lt_before_literal_percent_stays_literal
+    assert_equal '<%= 6*7 %>', PM.parse_string(%q{$(printf '<')%= 6*7 %>}).to_s
+  end
+
+  # --- erb_escape, in isolation ---
+
+  def erb_escape(text, untrusted: false, after_untrusted: false, after_lt: false)
+    PM::ShellExpander.new('').send(:erb_escape, text, untrusted:, after_untrusted:, after_lt:)
+  end
+
+  def test_erb_escape_leaves_trusted_text_after_trusted_text_alone
+    assert_equal '%= x', erb_escape('%= x', after_lt: true)
+  end
+
+  def test_erb_escape_doubles_lt_percent_inside_untrusted_text
+    assert_equal 'a<%%b', erb_escape('a<%b', untrusted: true)
+  end
+
+  def test_erb_escape_doubles_leading_percent_after_lt
+    assert_equal '%%=', erb_escape('%=', untrusted: true, after_lt: true)
+    assert_equal '%%', erb_escape('%', after_untrusted: true, after_lt: true)
+  end
+
+  def test_erb_escape_keeps_leading_percent_without_lt
+    assert_equal '%=', erb_escape('%=', untrusted: true)
+  end
+
+  def test_empty_env_var_does_not_change_author_erb
+    with_env('PM_TEST_EMPTY' => nil) do
+      assert_equal '42', PM.parse_string('<$PM_TEST_EMPTY%= 6*7 %>').to_s
+    end
+  end
+
   def test_erb_not_escaped_when_erb_is_disabled
     parsed = PM.parse_string("---\nerb: false\n---\n$(printf '<%%= 1 %%>')")
 
@@ -71,6 +152,12 @@ class PMShellSafetyTest < Minitest::Test
     source = "````\n```\n$(echo X)\n````\n"
 
     assert_equal source, PM.expand_shell(source)
+  end
+
+  def test_crlf_closing_fence_ends_the_block
+    source = "```sh\r\n$(echo in)\r\n```\r\nafter: $(echo ran)\r\n"
+
+    assert_equal "```sh\r\n$(echo in)\r\n```\r\nafter: ran\r\n", PM.expand_shell(source)
   end
 
   def test_unclosed_fence_runs_to_end_of_input
@@ -120,6 +207,33 @@ class PMShellSafetyTest < Minitest::Test
     assert_equal 'Shell command failed (exit 2): exit 2', error.message
   end
 
+  def test_command_killed_by_signal_names_the_signal
+    error = assert_raises(PM::ShellCommandError) { PM.expand_shell('$(kill -9 $$)') }
+
+    assert_predicate error.status, :signaled?
+    assert_equal 'Shell command failed (signal 9): kill -9 $$', error.message
+  end
+
+  def test_missing_command_raises_shell_expansion_error
+    error = assert_raises(PM::ShellExpansionError) { PM.parse_string('x $(no_such_cmd_zz) y').to_s }
+
+    assert_equal 'Shell command could not be run (No such file or directory - no_such_cmd_zz): $(no_such_cmd_zz)',
+                 error.message
+    assert_kind_of Errno::ENOENT, error.cause
+  end
+
+  def test_empty_command_raises_shell_expansion_error
+    error = assert_raises(PM::ShellExpansionError) { PM.expand_shell('x $() y') }
+
+    assert_equal 'Empty shell command: $()', error.message
+  end
+
+  def test_blank_command_raises_shell_expansion_error
+    error = assert_raises(PM::ShellExpansionError) { PM.expand_shell('x $( ) y') }
+
+    assert_equal 'Empty shell command: $()', error.message
+  end
+
   def test_shell_command_error_hierarchy
     assert_operator PM::ShellCommandError, :<, PM::ShellExpansionError
     assert_operator PM::ShellExpansionError, :<, PM::Error
@@ -138,11 +252,9 @@ class PMShellSafetyTest < Minitest::Test
   end
 
   def test_env_var_inside_command_is_handled_by_the_shell
-    ENV['PM_SAFETY_TEST'] = 'v'
-
-    assert_equal 'v', PM.expand_shell('$(echo $PM_SAFETY_TEST)')
-  ensure
-    ENV.delete('PM_SAFETY_TEST')
+    with_env('PM_SAFETY_TEST' => 'v') do
+      assert_equal 'v', PM.expand_shell('$(echo $PM_SAFETY_TEST)')
+    end
   end
 
   def test_command_spanning_lines

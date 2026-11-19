@@ -17,8 +17,8 @@ module PM
   # Shell expansion could not complete (for example an unmatched `$(`).
   class ShellExpansionError < Error; end
 
-  # A `$(command)` exited non-zero. Carries the command, its Process::Status,
-  # and whatever it wrote to stderr.
+  # A `$(command)` exited non-zero or was killed by a signal. Carries the
+  # command, its Process::Status, and whatever it wrote to stderr.
   class ShellCommandError < ShellExpansionError
     attr_reader :command, :status, :stderr
 
@@ -32,9 +32,15 @@ module PM
     private
 
     def build_message
-      message = "Shell command failed (exit #{status.exitstatus}): #{command}"
+      message = "Shell command failed (#{exit_reason}): #{command}"
       detail  = stderr.strip
       detail.empty? ? message : "#{message}\n#{detail}"
+    end
+
+    # "exit N", or "signal N" when the command was killed by a signal
+    # (exitstatus is nil then).
+    def exit_reason
+      status.signaled? ? "signal #{status.termsig}" : "exit #{status.exitstatus}"
     end
   end
 
@@ -62,8 +68,16 @@ module PM
   class ParameterError < ArgumentError; end
 
   # A parameter declared with a `null` default was not supplied to `to_s`.
-  # The message always starts with "Missing required parameters:".
-  class MissingParameterError < ParameterError; end
+  # #names lists the missing parameter names (Strings). The message always
+  # starts with "Missing required parameters:".
+  class MissingParameterError < ParameterError
+    attr_reader :names
+
+    def initialize(names = [])
+      @names = Array(names).map(&:to_s).freeze
+      super("Missing required parameters: #{@names.join(', ')}")
+    end
+  end
 
   # Strict mode only: a template referenced a name that is neither a
   # parameter nor a registered directive.

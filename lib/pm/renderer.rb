@@ -22,17 +22,26 @@ module PM
       context = build_context(params, included, depth)
       scope   = RenderScope.new(params, PM.directives, context, strict: PM.config.strict_parameters?)
 
-      ERB.new(@parsed.content).result(scope.erb_binding)
+      erb_template.result(scope.erb_binding)
     end
 
     private
+
+    # The ERB template for the content. A prompt read from a file names that
+    # file, so ERB errors point at it instead of "(erb)". Line numbers count
+    # from the start of the content, after the front matter.
+    def erb_template
+      erb = ERB.new(@parsed.content)
+      erb.filename = own_path if own_path
+      erb
+    end
 
     def merge_params(values)
       defaults = (@metadata.parameters || {}).transform_keys(&:to_s)
       params   = defaults.merge(values.transform_keys(&:to_s))
 
       missing = params.select { |_, value| value.nil? }.keys
-      raise MissingParameterError, "Missing required parameters: #{missing.join(', ')}" unless missing.empty?
+      raise MissingParameterError, missing unless missing.empty?
 
       params
     end

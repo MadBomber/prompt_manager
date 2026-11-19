@@ -127,7 +127,7 @@ Expand shell references in the string in a single left-to-right pass.
 - `\$` → literal `$`
 - Fenced code blocks (``` or ~~~) are copied through untouched
 - Command output is inserted verbatim and never re-scanned
-- With `erb_safe: true`, `<%` in command output is written as `<%%`
+- With `erb_safe: true`, `<%` in command output and environment variable values, or formed where a non-empty expansion meets adjacent text, is written as `<%%`
 
 Only UPPERCASE variable names are expanded.
 
@@ -136,7 +136,7 @@ PM.expand_shell("User: $USER, Date: $(date +%Y-%m-%d)")
 #=> "User: dewayne, Date: 2026-11-01"
 ```
 
-**Raises:** `PM::ShellCommandError` if a command exits non-zero (`#command`, `#status`, `#stderr`); `PM::ShellExpansionError` for an unmatched `$(`.
+**Raises:** `PM::ShellCommandError` if a command exits non-zero (`#command`, `#status`, `#stderr`); `PM::ShellExpansionError` for an unmatched `$(` or a command that cannot be started.
 
 ---
 

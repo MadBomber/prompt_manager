@@ -128,8 +128,6 @@ module PM
         return if original == method_name || !directive_descriptions.key?(original)
 
         (directive_aliases[original] ||= []) << method_name
-      rescue NameError
-        # The method may reference constants that are not yet defined at load time.
       end
     end
   end

@@ -63,7 +63,7 @@ DEPENDENCIES
   minitest
   prompt_manager!
   rake
-  simplecov
+  simplecov (~> 1.0)
 
 CHECKSUMS
   aigcm (0.3.3) sha256=51607ca70852958b8a2c1191af83e002713d97f3995e9b4a5232898d7e865c38

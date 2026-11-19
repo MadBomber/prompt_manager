@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'tmpdir'
 require_relative 'test_helper'
 
 class PMConfigurationTest < Minitest::Test
@@ -95,7 +96,7 @@ class PMConfigurationTest < Minitest::Test
     assert_equal 'Simple Prompt', parsed.metadata.title
   end
 
-  # --- prompts_dir empty string ---
+  # --- prompts_dir empty string or nil ---
 
   def test_empty_prompts_dir_does_not_alter_path
     PM.config.prompts_dir = ''
@@ -104,16 +105,38 @@ class PMConfigurationTest < Minitest::Test
     assert_equal 'Simple Prompt', parsed.metadata.title
   end
 
+  def test_nil_prompts_dir_resolves_against_current_directory
+    PM.config.prompts_dir = nil
+    real_fixtures = File.realpath(FIXTURES)
+    relative = Pathname.new(File.join(real_fixtures, 'simple.md')).relative_path_from(Dir.pwd).to_s
+    parsed = PM.parse(relative)
+
+    assert_equal 'Simple Prompt', parsed.metadata.title
+    assert_equal real_fixtures, parsed.metadata.directory
+  end
+
+  # --- prompts_dir Pathname ---
+
+  # Pathname#empty? asks the filesystem whether the directory has entries,
+  # so an existing empty directory must still be prepended.
+  def test_pathname_to_empty_directory_is_still_prepended
+    Dir.mktmpdir do |dir|
+      PM.config.prompts_dir = Pathname.new(dir)
+      error = assert_raises(Errno::ENOENT) { PM.parse('missing.md') }
+
+      assert_includes error.message, File.join(dir, 'missing.md')
+    end
+  end
+
   # --- Global shell config ---
 
   def test_global_shell_false_disables_shell_expansion
-    ENV['PM_TEST_CONF'] = 'should_not_expand'
-    PM.config.shell = false
-    parsed = PM.parse("---\ntitle: Test\n---\nValue: $PM_TEST_CONF\n")
+    with_env('PM_TEST_CONF' => 'should_not_expand') do
+      PM.config.shell = false
+      parsed = PM.parse("---\ntitle: Test\n---\nValue: $PM_TEST_CONF\n")
 
-    assert_includes parsed.content, '$PM_TEST_CONF'
-  ensure
-    ENV.delete('PM_TEST_CONF')
+      assert_includes parsed.content, '$PM_TEST_CONF'
+    end
   end
 
   def test_global_shell_false_applies_to_files

@@ -4,6 +4,84 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Fixed
+
+- **A UTF-8 byte order mark no longer hides front matter.** Prompt files
+  and `insert`ed files saved with a BOM now have it dropped when read, so
+  their front matter parses and no U+FEFF reaches the rendered text.
+- **`nil` and empty-directory Pathname `prompts_dir` values work.** `nil` now
+  means no prompts directory, like `''`, instead of raising `NoMethodError`.
+  A `Pathname` to a directory with no entries was ignored, so relative paths
+  resolved against the current directory; it is now prepended. (#32)
+- **Expansion output is literal text in templates.** When ERB is enabled, a
+  `<%` in the value of a `$VAR` or `${VAR}` is now written as `<%%` and
+  renders as a literal `<%`, the same way command output already was, and
+  the same applies where an expansion meets the text beside it.
+  `PM.expand_shell(str, erb_safe: true)` does the same. If you kept ERB in an
+  environment variable on purpose, pass the value as a parameter instead.
+- **Directives named like Kernel methods.** A directive registered as
+  `format`, `test`, `exec` or another `Kernel` method name is now called from
+  a template instead of the method; a bare call still returns a same-named
+  parameter. Reserved names such as `to_s`, `tap` and `binding` stay the
+  `Object` method.
+- **A command killed by a signal is named in the error.** A `$(command)`
+  killed by a signal now raises `PM::ShellCommandError` with
+  `(signal 9)` in the message instead of `(exit )`. (#39)
+- **ERB errors name the prompt file.** For a prompt read from a file, an
+  error raised inside its ERB now has the file's path in the backtrace
+  instead of `(erb)`, so a failure in an included file can be traced.
+  (#43)
+- **Front matter fences must be on their own lines.** Front matter in files
+  with CRLF line endings is now read instead of becoming content, and an
+  indented `---` (or a value ending in `---`) inside the YAML no longer
+  closes it early. An opening fence with text after it on the same line
+  (`---title: x`) is no longer front matter. (#42)
+- **A missing `$(command)` raises a PM error.** A command that cannot be
+  started (not found, empty `$()`) now raises `PM::ShellExpansionError`
+  with the `SystemCallError` as its `cause`, instead of a bare
+  `Errno::ENOENT` that looked like a missing prompt file. (#38)
+- **Prompt files are read as UTF-8 under any locale.** `PM.parse` and the
+  `insert`/`read` directive no longer fail on non-ASCII text when
+  `Encoding.default_external` is not UTF-8 (`LANG=C`). (#37)
+- **A CRLF closing fence ends a fenced code block.** In a prompt with CRLF
+  line endings, `$VAR` and `$(...)` after a fenced code block were left
+  unexpanded because the closing fence was not recognised. (#68)
+- **An empty `$()` names the problem.** An empty or blank `$()` now raises
+  `PM::ShellExpansionError` with `Empty shell command: $()` instead of a
+  message ending in a dangling `: `, and a command that cannot be started is
+  quoted as `$(command)` in the message. (#53)
+- **`Metadata#dup` and `#clone` copy the table.** A copy no longer shares
+  its table with the original, so writing to it leaves the original alone,
+  and a `dup` keeps the accessors for keys named like `Object` methods
+  (`display`, `hash`). (#66)
+- **A leading `~` is expanded when `prompts_dir` is set.** `PM.parse("~/x.md")`
+  read `<prompts_dir>/~/x.md` and raised `Errno::ENOENT`; it now reads the
+  file in the home directory, as `include '~/x.md'` already did. (#69)
+- **Non-boolean `PM.config.shell` and `erb` values.** A string such as
+  `"false"` is now coerced with the same rules as front matter, and any
+  other value raises `PM::MetadataError` naming `PM.config.shell` or
+  `PM.config.erb`, instead of a `NoMethodError` from `PM::Metadata`. (#70)
+- **Shell expansion under a non-UTF-8 locale.** With `LANG=C`, a `$VAR` or
+  `$(command)` that expands to non-ASCII text in a prompt with non-ASCII
+  text no longer raises `Encoding::CompatibilityError`; the value is read as
+  UTF-8, like prompt files. (#60)
+- **Front-matter YAML errors name the prompt file.** A `Psych::SyntaxError`
+  from a prompt file's front matter now names that file instead of
+  `<unknown>`, including for an `include`d file, and reports the line in
+  the file rather than counting from after the opening fence. (#61)
+- **Front-matter `MetadataError`s name the prompt file.** For a prompt read
+  from a file, the message now starts with `(<path>): `, the format Psych
+  uses, so a bad `shell:` or `parameters:` in an included file can be
+  traced. The original error is the `cause`. (#67)
+
+### Added
+
+- **`PM::MissingParameterError#names`.** The error now carries the missing
+  parameter names as an Array of Strings, so callers no longer have to parse
+  the message. The message text is unchanged. (#44)
+
 ## [1.2.0] - 2026-11-01
 
 ### Fixed
@@ -184,6 +262,12 @@ behaviour that did.
 - Updated documentation and versioning.
 - Added new error classes for better error handling.
 - Improved parameter handling and directive processing.
+
+## [0.5.2] - 2025-04-18
+- Made comment removal in `Prompt` markdown-aware so fenced ```markdown blocks are preserved and HTML comments are stripped.
+
+## [0.5.1] - 2025-04-14
+- Fixed parameter handling in the file system adapter so parameters are parsed from the prompt text and merged with values stored on disk (ref issue #14 / PR #15).
 
 ## [0.5.0] - 2025-03-29
 - Major refactoring of to improve processing of parameters and directives.

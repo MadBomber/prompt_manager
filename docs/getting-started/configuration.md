@@ -18,7 +18,7 @@ end
 
 ## prompts_dir
 
-Prepended to relative file paths passed to `PM.parse`. Absolute paths bypass it. Symbols and single words are converted to `.md` basenames first.
+Prepended to relative file paths passed to `PM.parse`. Absolute paths and paths starting with `~` bypass it. Symbols and single words are converted to `.md` basenames first. It may be a String or a Pathname; `''` (the default) or `nil` means none, so relative paths resolve against the current directory.
 
 ```ruby
 PM.configure { |c| c.prompts_dir = '/usr/share/prompts' }
@@ -67,7 +67,9 @@ User: $USER
 ```
 
 The front matter value may be a YAML boolean or one of the strings `true`, `false`,
-`yes`, `no`, `on`, `off`. Anything else raises `PM::MetadataError`.
+`yes`, `no`, `on`, `off`. Anything else raises `PM::MetadataError`. The same
+rules apply to `PM.config.shell` and `PM.config.erb` when a file uses the global
+value; a bad value raises `PM::MetadataError` naming `PM.config.shell` or `PM.config.erb`.
 
 ## erb
 
@@ -123,7 +125,8 @@ PM.configure { |c| c.max_include_depth = 3 }
 ## strict_parameters
 
 By default an unknown bare name in a template renders as an empty string. With strict
-parameters on, it raises `PM::UnknownParameterError` instead.
+parameters on, it raises `PM::UnknownParameterError` instead, and so does an unknown
+name called with arguments (which otherwise raises `NoMethodError`).
 
 ```ruby
 PM.configure { |c| c.strict_parameters = true }

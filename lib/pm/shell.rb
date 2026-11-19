@@ -12,14 +12,18 @@ module PM
   #
   # Command output is spliced in verbatim and never re-scanned, so a `$VAR` or
   # `$(...)` that a command prints stays literal. With `erb_safe: true` any
-  # `<%` in command output is written as `<%%`, which ERB renders as a literal
-  # `<%`, so output cannot inject Ruby into a later ERB pass.
+  # `<%` in command output or an environment variable's value, or one that
+  # forms where a non-empty expansion meets the text beside it, is written as
+  # `<%%`, which ERB renders as a literal `<%`, so neither can open an ERB tag.
+  # An expansion written inside an author's own `<% %>` tag is part of that
+  # Ruby code: it is escaped the same way, which does not make it safe.
   #
   # Fenced code blocks (lines starting with ``` or ~~~) are copied through
   # untouched: a prompt can show shell syntax to the model without running it.
   #
-  # Raises PM::ShellExpansionError for an unmatched `$(` and
-  # PM::ShellCommandError when a command exits non-zero.
+  # Raises PM::ShellExpansionError for an unmatched `$(` or a command that
+  # cannot be started (not found, empty), and PM::ShellCommandError when a
+  # command exits non-zero.
   def self.expand_shell(string, erb_safe: false)
     ShellExpander.new(string, erb_safe: erb_safe).expand
   end
@@ -33,6 +37,7 @@ module PM
     def initialize(string, erb_safe: false)
       @scanner  = StringScanner.new(string)
       @erb_safe = erb_safe
+      @untrusted_tail = false
     end
 
     def expand
@@ -41,15 +46,15 @@ module PM
 
       until @scanner.eos?
         if at_line_start && (fence = @scanner.scan(FENCE_OPEN_REGEXP))
-          out << fence << copy_fenced_block(fence)
+          append(out, fence + copy_fenced_block(fence))
         elsif @scanner.scan(ESCAPED_DOLLAR)
-          out << '$'
+          append(out, '$')
         elsif @scanner.scan(COMMAND_OPEN)
-          out << run_command
+          append(out, run_command, untrusted: true)
         elsif @scanner.scan(ENV_VAR_REGEXP)
-          out << ENV.fetch(@scanner[1] || @scanner[2], '')
+          append(out, utf8(ENV.fetch(@scanner[1] || @scanner[2], '')), untrusted: true)
         else
-          out << @scanner.getch
+          append(out, @scanner.getch)
         end
 
         at_line_start = out.end_with?("\n")
@@ -60,10 +65,31 @@ module PM
 
     private
 
+    # Returns text as it must be appended for erb_safe output. Untrusted text
+    # (command output, env var values) has `<%` written as `<%%`; where a `<`
+    # and a `%` meet across a boundary with untrusted text on either side, the
+    # `%` is doubled. ERB renders both as a literal `<%`.
+    def erb_escape(text, untrusted:, after_untrusted:, after_lt:)
+      return text unless untrusted || after_untrusted
+
+      text = text.gsub('<%', '<%%') if untrusted
+      after_lt && text.start_with?('%') ? "%#{text}" : text
+    end
+
+    def append(out, text, untrusted: false)
+      return out if text.empty?
+
+      if @erb_safe && (untrusted || @untrusted_tail)
+        text = erb_escape(text, untrusted:, after_untrusted: @untrusted_tail, after_lt: out.end_with?('<'))
+      end
+      @untrusted_tail = untrusted
+      out << text
+    end
+
     # Copies lines verbatim up to and including the closing fence (or end of input).
     def copy_fenced_block(open_line)
       marker = open_line[/`{3,}|~{3,}/]
-      close  = /\A[ ]{0,3}#{Regexp.escape(marker[0])}{#{marker.length},}[ \t]*(?:\n|\z)\z/
+      close  = /\A[ ]{0,3}#{Regexp.escape(marker[0])}{#{marker.length},}[[:blank:]\r]*(?:\n|\z)\z/
       out    = +''
 
       until @scanner.eos?
@@ -79,14 +105,29 @@ module PM
     # ")" (honouring nested parentheses), runs the command, and returns its stdout.
     def run_command
       command = read_command
-      output, stderr, status = Open3.capture3(command)
+      output, stderr, status = capture(command)
 
       raise ShellCommandError.new(command, status, stderr) unless status.success?
 
       $stderr.write(stderr) unless stderr.empty? # keep warnings visible, as with 1.0.x
-      output = output.chomp
-      output = output.gsub('<%', '<%%') if @erb_safe
-      output
+      utf8(output).chomp
+    end
+
+    # ENV values and command output carry the locale's encoding (BINARY or
+    # US-ASCII under LANG=C); treat them as UTF-8 like prompt files.
+    def utf8(text)
+      text.dup.force_encoding(Encoding::UTF_8).scrub
+    end
+
+    # Runs command and returns [stdout, stderr, status]. An empty or blank
+    # command raises ShellExpansionError; one that cannot be started at all
+    # (not found, not executable) raises it with the SystemCallError as its cause.
+    def capture(command)
+      raise ShellExpansionError, 'Empty shell command: $()' if command.strip.empty?
+
+      Open3.capture3(command)
+    rescue SystemCallError => e
+      raise ShellExpansionError, "Shell command could not be run (#{e.message}): $(#{command})"
     end
 
     def read_command

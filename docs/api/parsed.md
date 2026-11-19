@@ -55,7 +55,7 @@ Render the prompt content with ERB template evaluation.
 
 **Returns:** Rendered prompt as String.
 
-**Raises:** `PM::MissingParameterError` (an `ArgumentError`) if required parameters (those with `nil` defaults) are not provided; `PM::UnknownParameterError` in strict mode for an unknown bare name; the include and shell errors from any directive that runs.
+**Raises:** `PM::MissingParameterError` (an `ArgumentError`) if required parameters (those with `nil` defaults) are not provided; `PM::UnknownParameterError` in strict mode for an unknown name; `NoMethodError` for an unknown name called with arguments when strict mode is off; the include and shell errors from any directive that runs.
 
 **Behavior:**
 

@@ -129,6 +129,29 @@ PM.register(:my_helper) { |_ctx| "works" }
 PM.register('other_helper') { |_ctx| "also works" }
 ```
 
+### Reserved names
+
+`PM.register` accepts any name, but a template can't call a directive with
+one of these names. The call reaches the object the template renders in
+instead, so it returns that method's result or raises
+(`<%= tap %>` raises `LocalJumpError`):
+
+- `__id__`, `__send__`, `binding`, `clone`, `define_singleton_method`, `dup`,
+  `enum_for`, `eql?`, `equal?`, `freeze`, `frozen?`, `inspect`,
+  `instance_of?`, `instance_variable_get`, `instance_variable_set`,
+  `instance_variables`, `is_a?`, `itself`, `kind_of?`, `object_id`,
+  `public_send`, `respond_to?`, `send`, `singleton_method_added`,
+  `singleton_method_removed`, `singleton_method_undefined`, `tap`,
+  `to_enum`, `to_s`
+- the render scope's own methods: `erb_binding`, `method_missing`,
+  `resolve_shadowed`, `respond_to_missing?`, `shadow_object_methods`,
+  `shadowable?`
+
+Ruby keywords such as `class` and `then` can't be called bare either.
+
+Other names that `Object` or `Kernel` already define do work as directives:
+`format`, `test`, `exec`, `puts` and `raise` all call the directive.
+
 ## Class-Based Directives
 
 For organized groups of directives, subclass `PM::Directive`:

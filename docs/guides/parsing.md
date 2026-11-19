@@ -39,7 +39,7 @@ When parsing a file, PM adds these keys to the metadata automatically:
 
 ### prompts_dir
 
-Relative file paths are resolved against `PM.config.prompts_dir`:
+Relative file paths are resolved against `PM.config.prompts_dir`, a String or Pathname. When it is `''` (the default) or `nil`, they resolve against the current directory:
 
 ```ruby
 PM.configure { |c| c.prompts_dir = '~/.prompts' }
@@ -48,7 +48,7 @@ PM.parse('agents/summarize.md')
 #=> reads ~/.prompts/agents/summarize.md
 ```
 
-Absolute paths bypass `prompts_dir`:
+Absolute paths, and paths starting with `~`, bypass `prompts_dir`:
 
 ```ruby
 PM.parse('/etc/prompts/system.md')
@@ -111,6 +111,22 @@ temperature: 0.3
 ---
 The prompt content starts here.
 ```
+
+Whitespace may come before the opening fence. After that, each fence must be `---` on
+a line of its own (see [`PM::METADATA_REGEXP`](../api/constants.md#pmmetadata_regexp)).
+Blanks and a CR may follow it, so files with Windows (CRLF) line endings work. An
+opening line such as `---title: x`, or a missing closing fence, means there is no front
+matter and the text is all content. Below the opening fence, an indented `---` or one
+with other text on its line (`--- # end`) does not close the front matter:
+
+```ruby
+parsed = PM.parse_string("---\nnote: |\n  ---\n  still YAML\n---\nBody\n")
+parsed.metadata.note  #=> "---\nstill YAML\n"
+parsed.content        #=> "Body\n"
+```
+
+`PM.parse` and the `insert`/`read` directive read files as UTF-8 whatever the locale or
+`Encoding.default_external` is (for example under `LANG=C`).
 
 All YAML keys become accessible via dot notation on the `PM::Metadata` object:
 

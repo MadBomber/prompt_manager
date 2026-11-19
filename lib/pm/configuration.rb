@@ -3,7 +3,7 @@
 module PM
   # Global settings. Reach it through PM.config or PM.configure.
   #
-  #   prompts_dir        -- prepended to relative paths given to PM.parse ('' = none)
+  #   prompts_dir        -- prepended to relative paths given to PM.parse ('' or nil = none)
   #   shell              -- default for shell expansion when a file does not say
   #   erb                -- default for ERB rendering when a file does not say
   #   locked             -- when true, per-file `shell:` / `erb:` cannot override the globals

@@ -44,6 +44,14 @@ class PMRenderScopeTest < Minitest::Test
     assert_raises(NoMethodError) { PM.parse_string('<%= nope 1 %>').to_s }
   end
 
+  def test_strict_mode_raises_for_unknown_call_with_arguments
+    PM.config.strict_parameters = true
+
+    error = assert_raises(PM::UnknownParameterError) { PM.parse_string('<%= nope 1 %>').to_s }
+
+    assert_includes error.message, 'nope'
+  end
+
   def test_parameter_named_like_an_object_method_still_resolves
     source = "---\nparameters:\n  hash: h\n  display: d\n  method: m\n---\n<%= hash %>-<%= display %>-<%= method %>"
 

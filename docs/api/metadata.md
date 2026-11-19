@@ -82,7 +82,7 @@ meta.respond_to?(:title?)  #=> false
 | `each` / `each_pair` | Yield `[key, value]`; `Enumerable` is included |
 | `size` / `length` / `empty?` | Counts |
 | `to_h` | A copy of the underlying Hash (Symbol keys) |
-| `==` | Compares with another `Metadata` or a Hash |
+| `==` | Equal only to another `Metadata` with the same contents |
 | `respond_to?(name)` | True for present keys and their predicates |
 
 ```ruby

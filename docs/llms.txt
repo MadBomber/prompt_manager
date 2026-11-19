@@ -1,0 +1,58 @@
+# PM (PromptManager)
+
+> Parse YAML front matter from markdown prompts, expand shell references, compose prompts from other files, and render ERB on demand
+
+PM (PromptManager) treats a prompt file as a composable, parameterized template. Write prompts in markdown with YAML front matter, shell references, and ERB. PM handles the rest.
+
+Every prompt passes through four stages:
+
+1. Strip HTML comments -- `<!-- ... -->` removed before anything else
+2. Extract YAML metadata -- front matter between `---` fences parsed into `PM::Metadata`
+3. Shell expansion -- environment variables and commands expanded (when `shell: true`)
+4. ERB rendering -- templates evaluated on demand when `to_s` is called (when `erb: true`)
+
+A prompt file can run Ruby (ERB), run shell commands ($(...)), and read any file (include / insert). Treat prompt files as code and read the Security guide before parsing files you did not write.
+
+## Getting Started
+
+  - [Index](https://madbomber.github.io/prompt_manager/getting-started/index): This section covers everything you need to start using PM in your Ruby projects.
+  - [Installation](https://madbomber.github.io/prompt_manager/getting-started/installation): Add PM to your Gemfile:
+  - [Quick Start](https://madbomber.github.io/prompt_manager/getting-started/quick-start): parsed = PM.parse("---\ntitle: Hello\n---\nContent here")
+  - [Configuration](https://madbomber.github.io/prompt_manager/getting-started/configuration): PM has one global PM::Configuration object, reached through PM.config or PM.configure.
+
+## Guides
+
+  - [Index](https://madbomber.github.io/prompt_manager/guides/index): In-depth guides for each PM feature.
+  - [Parsing Prompts](https://madbomber.github.io/prompt_manager/guides/parsing): PM.parse is the main entry point. It accepts a file path, a Symbol, a single word, or a raw string.
+  - [Parameters](https://madbomber.github.io/prompt_manager/guides/parameters): Parameters are declared in the YAML parameters hash and used as ERB template variables.
+  - [Shell Expansion](https://madbomber.github.io/prompt_manager/guides/shell-expansion): Shell expansion replaces environment variable references and command substitutions with their values at parse time.
+  - [ERB Rendering](https://madbomber.github.io/prompt_manager/guides/erb-rendering): ERB templates are evaluated on demand when to_s is called.
+  - [Including Files](https://madbomber.github.io/prompt_manager/guides/includes): Two directives compose a prompt from other files. include parses and renders
+  - [Custom Directives](https://madbomber.github.io/prompt_manager/guides/custom-directives): Register custom methods that become available inside ERB templates.
+  - [Comment Stripping](https://madbomber.github.io/prompt_manager/guides/comment-stripping): HTML comments are stripped before any other processing stage.
+  - [Security](https://madbomber.github.io/prompt_manager/guides/security): PM is a developer tool for prompts you wrote or reviewed. A prompt file is code,
+
+## API Reference
+
+  - [Index](https://madbomber.github.io/prompt_manager/api/index): Complete reference for all PM classes, modules, and methods.
+  - [PM Module](https://madbomber.github.io/prompt_manager/api/pm-module): The top-level PM module is the primary interface. All public methods are class methods on PM.
+  - [Configuration](https://madbomber.github.io/prompt_manager/api/configuration): Global configuration for PM behavior. Accessed via PM.config or PM.configure.
+  - [Metadata](https://madbomber.github.io/prompt_manager/api/metadata): Hash-backed metadata container with dot-notation access and predicate methods for boolean values.
+  - [Parsed](https://madbomber.github.io/prompt_manager/api/parsed): The result object returned by PM.parse and PM.parse_string. An immutable Data with two fields: metadata and content.
+  - [RenderContext](https://madbomber.github.io/prompt_manager/api/render-context): Context object passed as the first argument to every directive block during ERB rendering.
+  - [Errors](https://madbomber.github.io/prompt_manager/api/errors): Everything PM raises itself is a subclass of PM::Error, except the parameter
+  - [Constants](https://madbomber.github.io/prompt_manager/api/constants): Regular expressions, markers, and key lists defined in the PM module.
+
+## Architecture
+
+  - [Index](https://madbomber.github.io/prompt_manager/architecture/index): Technical details about PM's internal design.
+  - [Processing Pipeline](https://madbomber.github.io/prompt_manager/architecture/processing-pipeline): PM processes prompts through a four-stage pipeline. The first three stages run at parse time; the fourth runs on demand when to_s is called.
+  - [Design Decisions](https://madbomber.github.io/prompt_manager/architecture/design-decisions): Key architectural choices and their rationale.
+
+## Examples
+
+  - [Index](https://madbomber.github.io/prompt_manager/examples/index): Practical examples showing PM in real-world scenarios.
+  - [Code Review Prompt](https://madbomber.github.io/prompt_manager/examples/code-review-prompt): A complete example of a parameterized code review prompt.
+  - [Multi-File Composition](https://madbomber.github.io/prompt_manager/examples/multi-file-composition): Compose prompts from shared components using the include directive.
+  - [AI Agent Prompts](https://madbomber.github.io/prompt_manager/examples/ai-agent-prompts): Patterns for building and managing prompt libraries for AI agents.
+

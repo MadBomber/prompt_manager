@@ -10,19 +10,21 @@ require 'yaml'
 # Not thread-safe: PM.config and the directive registry are process-wide state.
 # Configure and register directives at boot, then parse and render from any thread.
 module PM
+  # Both fences must be `---` on a line of their own; trailing blanks and a
+  # CR (Windows line endings) are allowed after each.
   METADATA_REGEXP = /
     \A
     [[:space:]]*
-    ---
+    ---[[:blank:]\r]*\n
     (?<metadata>.*?)
-    ---
-    [[:blank:]]*$[\n\r]?
+    ^---[[:blank:]\r]*$\n?
     (?<content>.*)
     \z
   /mx
 
   HTML_COMMENT_REGEXP = /<!--.*?-->/m
   ENV_VAR_REGEXP      = /\$\{([A-Z_][A-Z0-9_]*)\}|\$([A-Z_][A-Z0-9_]*)/
+  UTF8_BOM            = "\xEF\xBB\xBF".b.freeze
   COMMAND_START       = '$('
 
   # Front-matter keys that control the pipeline and must be true/false.
@@ -46,7 +48,8 @@ module PM
   # When source is a Pathname, responds to :to_path, is a String ending in
   # ".md", a Symbol, or a single word (e.g. "greeting"), it is treated as a
   # file path. Symbols and single-word strings become "name.md" basenames.
-  # Relative paths are resolved against PM.config.prompts_dir. The file is
+  # Relative paths are resolved against PM.config.prompts_dir, or against the
+  # current directory when it is '' or nil. The file is
   # read and `directory`, `name`, `created_at`, `modified_at` are added to
   # the metadata.
   #
@@ -58,7 +61,7 @@ module PM
     return parse_string(source) unless file_source?(source)
 
     path   = resolve_path(source)
-    parsed = parse_string(File.read(path))
+    parsed = parse_file(path)
     stat   = File.stat(path)
 
     metadata = build_metadata(
@@ -78,11 +81,34 @@ module PM
   # when `shell`, `erb`, or `parameters` have values of the wrong type.
   # YAML syntax errors raise Psych::SyntaxError.
   def self.parse_string(string)
+    parse_text(string)
+  end
+
+  # Strips HTML comments from a string.
+  def self.strip_comments(string)
+    string.gsub(HTML_COMMENT_REGEXP, '')
+  end
+
+
+  # Reads a file as UTF-8 whatever the locale, dropping a leading UTF-8
+  # byte order mark. Converts to Encoding.default_internal when it is set,
+  # as File.read does (Ruby's 'r:BOM|UTF-8' mode skips that conversion).
+  def self.read_file(path)
+    text = File.binread(path).delete_prefix(UTF8_BOM).force_encoding(Encoding::UTF_8)
+    Encoding.default_internal ? text.encode(Encoding.default_internal) : text
+  end
+
+  # --- Internals ---
+
+  # Parses text read from path (nil for a string prompt). YAML errors name
+  # the path and count lines from the top of the text.
+  def self.parse_text(string, path = nil)
     stripped = strip_comments(string)
     match    = stripped.match(METADATA_REGEXP)
 
     if match
-      metadata = build_metadata(load_front_matter(match[:metadata]))
+      offset   = stripped[0...match.begin(:metadata)].count("\n")
+      metadata = build_metadata(load_front_matter(match[:metadata], path, offset))
       content  = match[:content]
     else
       metadata = build_metadata({})
@@ -93,13 +119,15 @@ module PM
 
     Parsed.new(metadata: metadata, content: content)
   end
+  private_class_method :parse_text
 
-  # Strips HTML comments from a string.
-  def self.strip_comments(string)
-    string.gsub(HTML_COMMENT_REGEXP, '')
+  # Parses the file at path; a MetadataError names the file, as Psych does.
+  def self.parse_file(path)
+    parse_text(read_file(path), path)
+  rescue MetadataError => e
+    raise MetadataError, "(#{path}): #{e.message}"
   end
-
-  # --- Internals ---
+  private_class_method :parse_file
 
   def self.file_source?(source)
     source.respond_to?(:to_path) || (source.is_a?(String) && source.end_with?('.md'))
@@ -114,8 +142,8 @@ module PM
 
   def self.resolve_path(source)
     raw = source.respond_to?(:to_path) ? source.to_path : source
-    raw = (Pathname.new(config.prompts_dir) + raw).to_s unless config.prompts_dir.empty?
-    File.expand_path(raw)
+    dir = config.prompts_dir
+    File.expand_path(raw, dir.to_s.empty? ? nil : dir)
   end
   private_class_method :resolve_path
 
@@ -128,8 +156,8 @@ module PM
   end
   private_class_method :birthtime
 
-  def self.load_front_matter(yaml)
-    data = YAML.safe_load(yaml, permitted_classes: [Date, Time])
+  def self.load_front_matter(yaml, path = nil, offset = 0)
+    data = YAML.safe_load(("\n" * offset) + yaml, permitted_classes: [Date, Time], filename: path)
     return {} if data.nil?
     raise MetadataError, "Front matter must be a YAML mapping, got #{data.class}" unless data.is_a?(Hash)
 
@@ -145,7 +173,11 @@ module PM
     FLAG_KEYS.each do |key|
       global = config.public_send(key)
       value  = attrs[key]
-      attrs[key] = config.locked? || value.nil? ? global : coerce_flag(key, value)
+      attrs[key] = if config.locked? || value.nil?
+                     coerce_flag("PM.config.#{key}", global)
+                   else
+                     coerce_flag(key, value)
+                   end
     end
 
     params = attrs['parameters']

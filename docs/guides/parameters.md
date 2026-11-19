@@ -70,8 +70,10 @@ parsed.to_s
 #=> PM::MissingParameterError: Missing required parameters: code
 ```
 
-The error message lists all missing parameters. `PM::MissingParameterError` is a
-subclass of `ArgumentError`, so code that rescues `ArgumentError` keeps working.
+The error message lists all missing parameters, and `#names` returns them as an
+Array of Strings (`["code"]`), so you can ask for the values without parsing the
+message. `PM::MissingParameterError` is a subclass of `ArgumentError`, so code
+that rescues `ArgumentError` keeps working.
 
 ## Name Resolution
 
@@ -91,11 +93,12 @@ parameters:
 <%= nothing_here %>         <!-- "" -->
 ```
 
-Calling an unknown name **with** arguments raises `NoMethodError`, as in plain Ruby.
+Calling an unknown name **with** arguments raises `NoMethodError`, as in plain Ruby
+(`PM::UnknownParameterError` in strict mode).
 
 ### Strict mode
 
-Turn step 3 into an error:
+Turn step 3, and the `NoMethodError` above, into `PM::UnknownParameterError`:
 
 ```ruby
 PM.configure { |c| c.strict_parameters = true }

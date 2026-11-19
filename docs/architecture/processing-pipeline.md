@@ -68,14 +68,15 @@ expander handles exactly one of:
 
 Command output is appended to the result and the scan continues **after** the `$(...)`
 in the source, so output is never re-expanded. When the prompt has `erb: true`, `<%`
-in output becomes `<%%` so stage 4 treats it as text.
+in output or in an environment variable's value, or formed where a non-empty expansion meets
+the text beside it, becomes `<%%` so stage 4 treats it as text.
 
 ```
 Input:  "User: $USER\nDate: $(date +%Y-%m-%d)"
 Output: "User: dewayne\nDate: 2026-11-01"
 ```
 
-Errors: `PM::ShellCommandError` for a non-zero exit, `PM::ShellExpansionError` for an unmatched `$(`.
+Errors: `PM::ShellCommandError` for a non-zero exit, `PM::ShellExpansionError` for an unmatched `$(` or a command that cannot be started.
 
 ## Stage 4: ERB Rendering
 
